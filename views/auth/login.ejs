@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nordic Admin logg inn</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url('your-background-image.jpg'); /* Replace with your background image */
+            background-size: cover;
+        }
+
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .input-group label {
+            font-weight: bold;
+        }
+
+        .input-group input {
+            border-radius: 5px;
+        }
+
+        button {
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="height: 100vh;">
+        <div class="col-md-6">
+            <div class="login-container">
+                <h1 class="text-center">AdminPanel</h1>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    onload = () =>{
+        let form = document.querySelector('#loginForm')
+        form.addEventListener('submit',async (e) =>{
+            e.preventDefault()
+
+            let username = document.querySelector('#username')
+            let password = document.querySelector('#password')
+
+            let response = await fetch('/api/login',{
+                method:'POST',headers:{'Content-Type':'application/json'}, body : JSON.stringify({
+                    'username':username.value,
+                    'password':password.value
+                })
+            })
+
+            if(response.status == 200){
+                location.href = '/'
+            }
+            else{
+                alert("Failed To Login")
+            }
+        })
+    }
+</script>
+</html>

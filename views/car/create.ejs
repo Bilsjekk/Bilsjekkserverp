@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legg ny bil</title>
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<%- include('../components/navbar') %>
+<div class="container mt-5">
+    <h1 class="text-center">Legg ny bil</h1>
+    <div id="infoBox" class="alert" role="alert" style="display: none;"></div>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form id="createCarForm">
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="boardNumber" name="boardNumber" placeholder="Regnr." required>
+                </div>
+                <div class="mb-3">
+                    <label for="privateNumber" class="form-label"></label>
+                    <input type="text" class="form-control" id="privateNumber" name="privateNumber" placeholder="Tjenstebilnr." required>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button type="button" class="btn btn-primary me-3" onclick="submitForm()">legge til</button>
+                    &nbsp;
+                    &nbsp;
+                    <a href="/cars" class="btn btn-secondary">Avbryt</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Add Bootstrap JS and Popper.js scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.5.0/js/bootstrap.min.js"></script>
+<script>
+    async function submitForm() {
+        const boardNumber = document.getElementById('boardNumber').value;
+        const privateNumber = document.getElementById('privateNumber').value;
+
+        const formData = {
+            boardNumber: boardNumber,
+            privateNumber: privateNumber
+        };
+
+        let response = await fetch('/api/cars', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+
+        if (response.status == 200) {
+            // Car created successfully, show success message and navigate back after 3 seconds
+            showInfoBox('Bil opprettet vellykket!', 'success', true);
+            setTimeout(() => {
+                window.location.href = '/cars'; // Redirect to the car list page
+            }, 3000);
+        } else {
+            // Handle the failure case
+            showInfoBox('Kunne ikke opprette bilen. Vær så snill, prøv på nytt.', 'danger', false);
+        }
+
+    }
+
+    function showInfoBox(message, type, autoHide) {
+        const infoBox = document.getElementById('infoBox');
+        infoBox.innerHTML = message;
+        infoBox.classList.add(`alert-${type}`);
+        infoBox.style.display = 'block';
+
+        if (autoHide) {
+            setTimeout(() => {
+                infoBox.style.display = 'none';
+                infoBox.innerHTML = '';
+                infoBox.classList.remove(`alert-${type}`);
+            }, 3000);
+        }
+    }
+</script>
+
+</body>
+</html>

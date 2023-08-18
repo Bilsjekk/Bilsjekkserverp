@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Opprett ny bruker</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<%- include('../components/navbar') %>
+<div class="container">
+    <h1>Create New User</h1>
+    <div id="alertBox" class="alert alert-danger" style="display: none;"></div>
+    <form id="createUserForm">
+        <div class="form-group">
+            <label for="name">Navn</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="accountId">PNID</label>
+            <input type="text" class="form-control" id="accountId" name="accountId" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Passord</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-primary" onclick="createUser()">Opprett bruker</button>
+            &nbsp;
+            &nbsp;
+            <a href="/users" class="btn btn-secondary">Avbryt</a>
+        </div>
+    </form>
+</div>
+<script>
+    function createUser() {
+        let name = document.querySelector('#name')
+        let accountId = document.querySelector('#accountId')
+        let password = document.querySelector('#password')
+
+        fetch('/api/users', {
+            method: 'POST',
+            body: JSON.stringify({
+                name: name.value,
+                accountId: accountId.value,
+                password: password.value
+            }),
+            headers:{
+                'Content-Type':'application/json'
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/users';
+                } else {
+                    response.text().then(data => {
+                        const alertBox = document.getElementById('alertBox');
+                        alertBox.innerText = data;
+                        alertBox.style.display = 'block';
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+</script>
+</body>
+</html>

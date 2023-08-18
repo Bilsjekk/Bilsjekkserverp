@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Nordic Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 8px;
+            text-align: center;
+        }
+
+
+        .welcome-message {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .statistics {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            flex: 1;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .stat-card h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .notifications {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .notification-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: white;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .quick-links {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .quick-link-item {
+            background-color: #007bff;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            margin-right: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background-color 0.2s;
+        }
+
+        .quick-link-item:hover {
+            background-color: #0056b3;
+        }
+
+
+    </style>
+</head>
+<body>
+<%- include('./components/navbar') %>>
+<div class="container">
+    <div class="welcome-message">Hei, Admin!</div>
+
+    <div class="statistics">
+        <div class="stat-card" style="margin-right: 12px">
+<!--            <h2>Total Users</h2>-->
+<!--            <span>1500</span>-->
+            <h2>Soon</h2>
+        </div>
+        <div class="stat-card">
+            <h2>Soon</h2>
+<!--            <h2>Total PDFS</h2>-->
+<!--            <span>3000</span>-->
+        </div>
+    </div>
+
+    <div class="notifications">
+        <h1>Coming Soon!</h1>
+<!--        <div class="notification-item">-->
+<!--            <img src="user-avatar.png" alt="User Avatar">-->
+<!--            <span>New user registered - John Doe</span>-->
+<!--        </div>-->
+<!--        <div class="notification-item">-->
+<!--            <img src="order-icon.png" alt="Order Icon">-->
+<!--            <span>New order received - Order #12345</span>-->
+<!--        </div>-->
+        <!-- Add more notification items here -->
+    </div>
+
+    <div class="quick-links">
+        <a href="/users" class="quick-link-item">Administrer brukere</a>
+        <a href="/groups" class="quick-link-item">Administrer grupper</a>
+        <a href="/fields" class="quick-link-item">Administrer skjema</a>
+        <a href="/pdfs" class="quick-link-item">Se Ferdigskjema</a>
+        <!-- Add more quick links as needed -->
+    </div>
+</div>
+<script src="https://kit.fontawesome.com/7d365a7c21.js" crossorigin="anonymous"></script>
+
+</body>
+</html>

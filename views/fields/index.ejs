@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Skjema List</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .table th {
+            text-align: center;
+        }
+
+        .table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #b02a37;
+            border-color: #b02a37;
+        }
+
+        .form-control {
+            border-radius: 5px;
+        }
+
+        .btn-sm {
+            font-size: 12px;
+            padding: 5px 10px;
+        }
+
+        .btn-edit {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+        }
+
+        .controls > * {
+            flex-grow: 1;
+        }
+
+        .controls > :first-child {
+            margin-right: 8px;
+        }
+
+        .btn-edit:hover {
+            background-color: #1e7e34;
+            border-color: #1e7e34;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+<%- include('../components/navbar') %>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center">
+            <h1>Skjema List</h1>
+        <div class="d-flex align-items-center">
+            <a href="/fields/create" class="btn btn-info mr-2">Opprett nytt skjemafelt</a>
+            <button type="button" class="btn btn-danger" onclick="confirmAllDeleteField()">Delete all fields</button>
+        </div>
+    </div>
+    <br>
+
+    <!-- Search Filter -->
+    <div class="search-container">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search by title...">
+    </div>
+
+    <div class="alert alert-success" id="successAlert" style="display: none;">
+        Field Deleted successfully.
+    </div>
+    <!-- Failure Alert Box -->
+    <div class="alert alert-danger" id="failureAlert" style="display: none;">
+        Failed to delete field. Please try again.
+    </div>
+
+    <div class="alert alert-success" id="successAllAlert" style="display: none;">
+        All Fields Were Deleted successfully.
+    </div>
+    <!-- Failure Alert Box -->
+    <div class="alert alert-danger" id="failureAllAlert" style="display: none;">
+        Failed to delete all fields. Please try again.
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover mt-3" id="formFieldsTable">
+            <thead>
+            <tr>
+                <th>Tittel</th>
+                <th>Type</th>
+                <th>Har beskrivelse</th>
+                <th>Beskrivelse</th>
+                <th>whenToGetDescription</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <%if(formFields.length == 0){%>
+                <tr>
+                    <td colspan="6">No Fields Yet</td>
+                </tr>
+            <%} else{%>
+                <% formFields.forEach(formField => { %>
+                    <tr>
+                        <td><%= formField.title %></td>
+                        <td><%= formField.answerDataType %></td>
+                        <td><%= formField.hasRequiredDescription ? 'Ja' : 'Nei' %></td>
+                        <td><%= formField.requiredDescription %></td>
+                        <td><%= formField.whenToGetDescription ? 'Ja' : 'Nei' %></td>
+                        <td class="controls">
+                            <a href="/fields/<%= formField._id %>/update" class="btn btn-info btn-sm btn-edit">Edit</a>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteField('<%= formField._id %>')">Delete</button>
+                        </td>
+                    </tr>
+                <% }); %>
+            <%}%>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" data-dismiss="modal" aria-label="Close" id="deleteConfirmationModalLabel">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this field?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="deleteFieldConfirmed()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="deleteAllConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteAllConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAllConfirmationModalLabel">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete all fields?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close" onclick="deleteAllFieldConfirmed()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let fieldToDeleteId;
+
+    function confirmDeleteField(id) {
+        fieldToDeleteId = id;
+        $('#deleteConfirmationModal').modal('show');
+    }
+
+    function showSuccessAlert() {
+        const successAlert = document.getElementById('successAlert');
+        successAlert.style.display = 'block';
+        setTimeout(function() {
+            successAlert.style.display = 'none';
+            location.reload(); // Reload the page
+        }, 3000);
+    }
+
+    function showFailureAlert() {
+        const failureAlert = document.getElementById('failureAlert');
+        failureAlert.style.display = 'block';
+    }
+
+    function confirmAllDeleteField() {
+        $('#deleteAllConfirmationModal').modal('show');
+    }
+
+    function showAllSuccessAlert() {
+        const successAlert = document.getElementById('successAllAlert');
+        successAlert.style.display = 'block';
+        setTimeout(function() {
+            successAlert.style.display = 'none';
+            location.reload(); // Reload the page
+        }, 3000);
+    }
+
+    function showAllFailureAlert() {
+        const failureAlert = document.getElementById('failureAllAlert');
+        failureAlert.style.display = 'block';
+    }
+
+    function deleteFieldConfirmed() {
+        const id = fieldToDeleteId;
+
+        fetch(`/api/formFields/${id}`, {
+            method: 'DELETE',
+        })
+            .then(response => {
+                if (response.status == 200) {
+                    $('#deleteConfirmationModal').modal('hide');
+                    showSuccessAlert(); // Show the success alert
+                } else {
+                    $('#deleteConfirmationModal').modal('hide');
+                    showFailureAlert(); // Show the failure alert
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                $('#deleteConfirmationModal').modal('hide');
+                alert('An error occurred while deleting the field. Please try again.');
+            });
+    }
+
+    function deleteAllFieldConfirmed() {
+
+        fetch(`/api/formFields`, {
+            method: 'DELETE',
+        })
+            .then(response => {
+                if (response.status == 200) {
+                    showSuccessAlert(); // Show the success alert
+                } else {
+                    showFailureAlert(); // Show the failure alert
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting all fields. Please try again.');
+            });
+    }
+</script>
+
+<script>
+    // JavaScript for Search Filter
+    const searchInput = document.getElementById('searchInput');
+    const formFieldsTable = document.getElementById('formFieldsTable');
+    const tableRows = formFieldsTable.getElementsByTagName('tr');
+
+    searchInput.addEventListener('keyup', function () {
+        const filter = searchInput.value.toLowerCase();
+
+        for (let i = 1; i < tableRows.length; i++) {
+            const title = tableRows[i].getElementsByTagName('td')[0].innerText.toLowerCase();
+            if (title.includes(filter)) {
+                tableRows[i].style.display = '';
+            } else {
+                tableRows[i].style.display = 'none';
+            }
+        }
+    });
+</script>
+</body>
+</html>

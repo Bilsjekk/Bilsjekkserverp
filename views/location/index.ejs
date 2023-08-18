@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruteliste</title>
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .controls{
+            display: flex;
+        }
+
+        .controls > *{
+            flex-grow: 1;
+        }
+
+        .controls > :first-child{
+            margin-right: 10px;
+        }
+
+    </style>
+</head>
+<body>
+<%- include('../components/navbar') %>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1>Rute List</h1>
+        <div class="d-flex">
+            <a href="/locations/create" class="btn btn-info mr-2">Add ny rute</a>
+            <button class="btn btn-danger" data-toggle="modal" data-target="#confirmAllDeleteModal">delete all locations</button>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="alert alert-success" id="successAlert" style="display: none;">
+            Location Deleted successfully.
+        </div>
+        <!-- Failure Alert Box -->
+        <div class="alert alert-danger" id="failureAlert" style="display: none;">
+            Failed to delete location. Please try again.
+        </div>
+
+        <div class="alert alert-success" id="successAllAlert" style="display: none;">
+            All Locations Were Deleted successfully.
+        </div>
+        <!-- Failure Alert Box -->
+        <div class="alert alert-danger" id="failureAllAlert" style="display: none;">
+            Failed to delete all locations. Please try again later.
+        </div>
+        <table class="table table-striped table-bordered text-center">
+            <thead>
+            <tr>
+                <th>Rute</th>
+                <th>Dag</th>
+                <th>Vakt</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="locationTableBody">
+            <!-- Location data will be inserted here -->
+            <% if (locations.length === 0) { %>
+                <tr>
+                    <td colspan="4" class="text-center">Ingen steder funnet.</td>
+                </tr>
+            <% } else { %>
+                <% locations.forEach(location => { %>
+                    <tr>
+                        <td><%= location.location %></td>
+                        <td><%= location.days.join(', ') %></td>
+                        <td><%= location.shifts.join(', ') %></td>
+                        <td class="controls">
+                            <a href="/locations/<%= location._id %>/update" class="btn btn-sm btn-primary">Edit</a>
+                            <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#confirmDeleteModal" data-id="<%= location._id %>">Slett</button>
+                        </td>
+                    </tr>
+                <% }); %>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Bekreft sletting</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Er du sikker på at du vil slette denne ruten?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" id="confirmDeleteBtn">Slett</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmAllDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmAllDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmAllDeleteModalLabel">Bekreft sletting</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete all locations?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deleteAllLocations()" id="confirmDeleteBtn">Slett</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Bootstrap JS and Popper.js scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    let locationToDeleteId = null;
+
+    $('#confirmDeleteModal').on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget);
+        locationToDeleteId = button.data('id');
+    });
+
+    $('#confirmDeleteBtn').click(function () {
+        deleteLocation(locationToDeleteId);
+    });
+    function deleteAllLocations() {
+        fetch(`/api/locations`, {
+            method: 'DELETE',
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    $('#successAllAlert').show();
+                    setTimeout(() => {
+                        $('#successAllAlert').hide();
+                        window.location.reload(); // Redirect to the location list page
+                    }, 3000);
+                } else {
+                    $('#failureAllAlert').show();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                $('#failureAllAlert').show();
+            });
+    }
+
+
+    function deleteLocation(id) {
+        fetch(`/api/locations/${id}`, {
+            method: 'DELETE',
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    $('#confirmDeleteModal').modal('hide');
+                    $('#successAlert').show();
+                    setTimeout(() => {
+                        $('#successAlert').hide();
+                        window.location.reload()
+                    }, 3000);
+                } else {
+                    $('#confirmDeleteModal').modal('hide');
+                    $('#failureAlert').show();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                $('#confirmDeleteModal').modal('hide');
+                $('#failureAlert').show();
+            });
+    }
+</script>
+</body>
+</html>

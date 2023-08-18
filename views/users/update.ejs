@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redeger Bruker</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<%- include('../components/navbar') %>
+<div class="container">
+    <h1>Redeger Bruker</h1>
+    <form id="editUserForm">
+        <div class="form-group">
+            <label for="name">Navn</label>
+            <input type="text" class="form-control" id="name" name="name" value="<%= user.name %>" required>
+        </div>
+        <div class="form-group">
+            <label for="accountId">PN-ID</label>
+            <input type="text" class="form-control" id="accountId" name="accountId" value="<%= user.accountId %>" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Passord</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <div class="d-flex justify-content-center">
+            <button type="button" class="btn btn-primary" onclick="updateUser()">Lagre</button>
+            &nbsp;
+            &nbsp;
+            <a class="btn btn-secondary" href="/users">Avbrytt</a>
+        </div>
+    </form>
+
+    <div id="output"></div>
+</div>
+
+
+
+<script>
+    function showAlert(message, alertType) {
+        const alertContainer = document.createElement('div');
+        alertContainer.className = `alert alert-${alertType} mt-4`;
+        alertContainer.textContent = message;
+
+        const container = document.querySelector('#output');
+        container.appendChild(alertContainer);
+
+        // Remove the alert after a few seconds
+        setTimeout(() => {
+            alertContainer.remove();
+        }, 5000);
+    }
+
+
+    function updateUser() {
+        const name = document.getElementById("name");
+        const accountId = document.getElementById("accountId");
+        const password = document.getElementById("password");
+
+        const userId = "<%= user._id %>";
+
+        fetch(`/api/users/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                name: name.value,
+                accountId: accountId.value,
+                password: password.value,
+            }),
+            headers:{
+                'Content-Type': 'application/json; charset=utf-8'
+            }
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    // Reload the page after successful deletion
+                    showAlert("User Was Updated","info")
+                    setTimeout(() =>{
+                        location.href = '/users'
+                    },3000)
+                } else {
+                    showAlert("Failed To Update User","danger")
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert("An error occurred while updating user.",'danger')
+            });
+    }
+</script>
+
+</body>
+</html>

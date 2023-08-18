@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rediger rute</title>
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<%- include('../components/navbar') %>
+
+<div class="container mt-5">
+    <h1 class="text-center">Rediger rute</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form id="editLocationForm" style="height: 500px;">
+                <div class="form-group">
+                    <label for="location">Rute</label>
+                    <input type="text" class="form-control" id="location" name="location" value="<%= location.location %>" required>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <div class="form-group">
+                        <label>Velg dager</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="saturday" <% if (location.days.includes('saturday')) { %>checked<% } %>> Lørdag</label>
+                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="sunday" <% if (location.days.includes('sunday')) { %>checked<% } %>> Søndag</label>
+                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="monday" <% if (location.days.includes('monday')) { %>checked<% } %>> Mandag</label>
+                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="tuesday" <% if (location.days.includes('tuesday')) { %>checked<% } %>> Tirsdag</label>
+                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="wednesday" <% if (location.days.includes('wednesday')) { %>checked<% } %>> Onsdag</label>
+                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="thursday" <% if (location.days.includes('thursday')) { %>checked<% } %>> Torsdag</label>
+                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="friday" <% if (location.days.includes('friday')) { %>checked<% } %>> Fredag</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Velg Shift</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label"><input type="checkbox" name="shifts[]" value="day" <% if (location.shifts.includes('day')) { %>checked<% } %>> Dag</label>
+                            <label class="checkbox-label"><input type="checkbox" name="shifts[]" value="night" <% if (location.shifts.includes('night')) { %>checked<% } %>> Natt</label>
+                            <label class="checkbox-label"><input type="checkbox" name="shifts[]" value="evening" <% if (location.shifts.includes('weekend')) { %>checked<% } %>> Kveld</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="button" class="btn btn-primary" onclick="updateLocation()">lagre</button>
+                    <a href="/locations" class="btn btn-secondary">Avbrytt</a>
+                </div>
+            </form>
+            <div id="successAlert" class="alert alert-success mt-3" style="display: none;">
+                Lokasjonen er oppdatert vellykket.
+            </div>
+            <div id="failureAlert" class="alert alert-danger mt-3" style="display: none;">
+                Kunne ikke oppdatere lokasjonen. Vær så snill, prøv på nytt.
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Add Bootstrap JS and Popper.js scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    async function updateLocation() {
+        const locationId = '<%= location._id %>';
+        const location = document.querySelector('#location');
+
+        const days = document.querySelectorAll('input[name="days[]"]');
+        const selectedDays = [];
+        days.forEach(function (checkbox) {
+            if (checkbox.checked) {
+                selectedDays.push(checkbox.value);
+            }
+        });
+
+        const shifts = document.querySelectorAll('input[name="shifts[]"]');
+
+        const selectedShifts = [];
+        shifts.forEach(function (checkbox) {
+            if (checkbox.checked) {
+                selectedShifts.push(checkbox.value);
+            }
+        });
+
+        let response = await fetch(`/api/locations/${locationId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                location: location.value,
+                days: selectedDays,
+                shifts: selectedShifts
+            })
+        })
+
+        if (response.status === 200) {
+            document.getElementById('successAlert').style.display = 'block';
+            setTimeout(() => {
+                window.location.href = '/locations'; // Redirect to the location list page
+            }, 3000);
+        } else {
+            document.getElementById('failureAlert').style.display = 'block';
+        }
+    }
+</script>
+</body>
+</html>

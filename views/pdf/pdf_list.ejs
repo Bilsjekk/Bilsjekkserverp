@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Liste</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .custom-pdf-container {
+            padding-top: 20px;
+        }
+
+        .custom-pdf-table {
+            border-radius: 5px;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .custom-pdf-table th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .custom-pdf-table td {
+            vertical-align: middle;
+        }
+
+        .custom-pdf-table td a {
+            margin-right: 5px;
+        }
+
+        .custom-pdf-controls > :first-child {
+            flex-grow: 1;
+        }
+
+        .custom-pdf-controls > :last-child {
+            flex-grow: 1;
+        }
+
+        .container{
+            width: 90% !important;
+        }
+
+        /* Media query for screen width less than 980px */
+        @media (max-width: 980px) {
+            .form-group {
+                flex-direction: column;
+                align-items: stretch; /* Align items to stretch the full width */
+            }
+
+            .form-group input,
+            .form-group button {
+                margin-bottom: 10px;
+            }
+
+            .form-group button{
+                width: 100% !important;
+            }
+        }
+    </style>
+</head>
+<body>
+<%- include('../components/navbar') %>
+<div class="container custom-pdf-container">
+
+
+    <div class="form-group d-flex justify-content-between">
+        <input type="text" class="form-control mr-2" id="searchInput" placeholder="Search by Date, Name, User, ID, or Link">
+        <input type="date" class="form-control mr-2" id="datePicker">
+        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteAllPdfModal" style="width: 240px;" onclick="">delete all pdfs</button>
+    </div>
+    <div class="table-responsive text-center">
+
+        <!-- Success Alert -->
+        <div class="alert alert-success mt-3" id="successAlert" style="display: none;">
+            PDF deleted successfully!
+        </div>
+
+        <!-- Failure Alert -->
+        <div class="alert alert-danger mt-3" id="failureAlert" style="display: none;">
+            Failed to delete PDF.
+        </div>
+        <table class="table table-bordered table-hover table-striped">
+            <thead>
+            <tr>
+                <th>Dato</th>
+                <th>Navn</th>
+                <th>Bruker</th>
+                <th>ID</th>
+                <th>Link</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <%if(pdfs.length == 0){%>
+                <tr>
+                    <td colspan="6">No Pdfs Yet</td>
+                </tr>
+            <%} else{%>
+                <% pdfs.forEach(pdf => { %>
+                    <tr>
+                        <td><%= pdf.createdAt %></td>
+                        <td><%= pdf.name %></td>
+                        <td><%= pdf.userId?.name ?? 'Removed'  %></td>
+                        <td><%= pdf.userId?.accountId ?? "Unknown"  %></td>
+                        <td><a href="/pdfs/<%= pdf._id %>">Se PDF</a></td>
+                        <td class="d-flex custom-pdf-controls">
+                            <button class="btn btn-danger btn-sm w-100" data-toggle="modal" data-target="#deletePdfModal" data-id="<%= pdf._id %>">Slett</button>
+
+                        </td>
+                    </tr>
+
+                    <div class="modal fade" id="deletePdfModal" tabindex="-1" aria-labelledby="deletePdfModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deletePdfModalLabel">Delete PDF Confirmation</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to delete this PDF file?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deletePdf('<%= pdf._id %>')" id="confirmDeleteBtn">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <%}%>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="modal fade" id="deleteAllPdfModal" tabindex="-1" aria-labelledby="deleteAllPdfModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAllPdfModalLabel">Delete PDF Confirmation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete all PDFs files?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deleteAllPdfs()" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const datePicker = document.getElementById('datePicker');
+    const tableRows = document.getElementsByTagName('tr');
+
+    datePicker.addEventListener('change', function () {
+        const selectedDate = datePicker.value;
+        console.log(selectedDate)
+
+        for (let i = 1; i < tableRows.length; i++) {
+            const dateCell = tableRows[i].getElementsByTagName('td')[0]; // Adjust the index as per your table structure
+            console.log(dateCell.innerText)
+            if (dateCell && dateCell.innerText == selectedDate) {
+                tableRows[i].style.display = '';
+            } else {
+                tableRows[i].style.display = 'none';
+            }
+        }
+    });
+
+
+    const deletePdfModal = document.getElementById('deletePdfModal');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    const successAlert = document.createElement('div');
+    successAlert.className = 'alert alert-success mt-3';
+    successAlert.innerHTML = 'PDF deleted successfully!';
+
+    const successAllAlert = document.createElement('div');
+    successAllAlert.className = 'alert alert-success mt-3';
+    successAllAlert.innerHTML = 'All PDFs deleted successfully!';
+
+    const failureAlert = document.createElement('div');
+    failureAlert.className = 'alert alert-danger mt-3';
+    failureAlert.innerHTML = 'Failed to delete PDF.';
+
+    const failureAllAlert = document.createElement('div');
+    failureAllAlert.className = 'alert alert-danger mt-3';
+    failureAllAlert.innerHTML = 'Failed to delete PDF.';
+
+    function deletePdf(pdfId) {
+        // Open the Bootstrap modal
+        deletePdfModal.classList.add('show');
+        deletePdfModal.style.display = 'block';
+
+        fetch(`/api/pdfs/${pdfId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+        })
+            .then(response => {
+                if (response.status == 200) {
+                    // Handle success
+                    deletePdfModal.classList.remove('show'); // Dismiss the modal
+                    document.querySelector('.custom-pdf-container').prepend(successAlert);
+                    setTimeout(() => location.reload(),3000)
+                } else {
+                    // Handle error
+                    deletePdfModal.classList.remove('show'); // Dismiss the modal
+                    document.querySelector('.custom-pdf-container').prepend(failureAlert);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                deletePdfModal.classList.remove('show'); // Dismiss the modal
+                document.querySelector('.custom-pdf-container').prepend(failureAlert);
+            });
+    }
+
+    const deleteAllPdfModal = document.getElementById('deleteAllPdfModal');
+
+    function deleteAllPdfs() {
+        // Open the Bootstrap modal
+        deleteAllPdfModal.classList.add('show');
+        deleteAllPdfModal.style.display = 'block';
+
+        fetch(`/api/pdfs`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+        })
+            .then(response => {
+                if (response.status == 200) {
+                    // Handle success
+                    deleteAllPdfModal.classList.remove('show'); // Dismiss the modal
+                    document.querySelector('.custom-pdf-container').prepend(successAllAlert);
+                    setTimeout(() => location.reload(),3000)
+                } else {
+                    // Handle error
+                    deleteAllPdfModal.classList.remove('show'); // Dismiss the modal
+                    document.querySelector('.custom-pdf-container').prepend(failureAllAlert);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                deleteAllPdfModal.classList.remove('show'); // Dismiss the modal
+                document.querySelector('.custom-pdf-container').prepend(failureAllAlert);
+            });
+    }
+
+    const searchInput = document.getElementById('searchInput');
+
+    searchInput.addEventListener('keyup', function () {
+        const filter = searchInput.value.toLowerCase();
+
+        for (let i = 1; i < tableRows.length; i++) {
+            const columns = tableRows[i].getElementsByTagName('td');
+            let rowContent = "";
+            for (let j = 0; j < columns.length; j++) {
+                rowContent += columns[j].innerText.toLowerCase() + " ";
+            }
+
+            if (rowContent.includes(filter)) {
+                tableRows[i].style.display = '';
+            } else {
+                tableRows[i].style.display = 'none';
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

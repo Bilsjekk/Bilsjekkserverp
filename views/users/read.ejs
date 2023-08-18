@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bruker Liste</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        table {
+            text-align: center;
+        }
+
+        .controls {
+            display: flex;
+        }
+
+        .controls > * {
+            flex-grow: 1;
+        }
+
+        .controls > :first-child{
+            margin-right: 10px !important;
+        }
+    </style>
+</head>
+<body>
+<%- include('../components/navbar') %>
+<div class="container">
+    <div class="d-flex justify-content-end mb-4">
+        <a href="/users/create" class="btn btn-info mr-3"> Lage ny bruker</a>
+        <button class="btn btn-danger" onclick="showDeleteAllConfirmation()">delete all users</button>
+    </div>
+    <div id="output"></div>
+    <div class="form-group">
+        <input type="text" class="form-control" id="searchInput" placeholder="Søk etter navn, konto-ID">
+    </div>
+    <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>Navn</th>
+            <th>PN-ID</th>
+            <th>Ble lagt siden</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% users.forEach(user => { %>
+            <tr>
+                <td><%= user.name %></td>
+                <td><%= user.accountId %></td>
+                <td><%= new Date(+user.createdAt).toLocaleString() %></td>
+                <td class="controls">
+                    <a href="/users/<%= user._id %>/edit" class="btn btn-primary btn-sm me-1">Rediger</a>
+                    <a href="#" onclick="showDeleteConfirmation('<%= user._id %>')" class="btn btn-danger btn-sm ms-4">Slett</a>
+                </td>
+            </tr>
+
+            <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteConfirmationModalLabel">Bekreft sletting</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Er du sikker på at du vil slette denne brukeren?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                            <button id="confirmDeleteButton" type="button" data-dismiss="modal" class="btn btn-danger" onclick="deleteUser('<%= user._id %>')">Slett</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <% }); %>
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="deleteAllConfirmationModal" tabindex="-1" aria-labelledby="deleteAllConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAllConfirmationModalLabel">Bekreft sletting</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete all users?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                <button id="confirmDeleteButton" type="button" data-dismiss="modal" class="btn btn-danger" onclick="deleteAllUsers()">Slett</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function showDeleteConfirmation(userId) {
+        $('#deleteConfirmationModal').modal('show');
+    }
+
+    function showDeleteAllConfirmation(userId) {
+        $('#deleteAllConfirmationModal').modal('show');
+    }
+
+    function showAlert(message, alertType) {
+        const alertContainer = document.createElement('div');
+        alertContainer.className = `alert alert-${alertType} mt-4`;
+        alertContainer.textContent = message;
+
+        const container = document.querySelector('#output');
+        container.appendChild(alertContainer);
+
+        // Remove the alert after a few seconds
+        setTimeout(() => {
+            alertContainer.remove();
+        }, 5000);
+    }
+
+    async function deleteAllUsers(){
+        try {
+            const response = await fetch(`/api/users`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+            });
+
+            console.log(response.status)
+
+            if (response.status === 200) {
+                // Reload the page after successful deletion
+                showAlert("All Users Were Deleted","success")
+                setTimeout(() =>{
+                    location.reload();
+                },3000)
+            } else {
+                showAlert("Failed To Delete All Users","danger")
+            }
+        } catch (error) {
+            console.error('Error deleting all users:', error);
+            showAlert("An error occurred while deleting all users. Please try again.","danger")
+        }
+    }
+
+    async function deleteUser(userId) {
+        try {
+            const response = await fetch(`/api/users/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+            });
+
+            console.log(response.status)
+
+            if (response.status === 200) {
+                // Reload the page after successful deletion
+                showAlert("User Was Deleted","success")
+                setTimeout(() =>{
+                    location.reload();
+                },3000)
+            } else {
+                showAlert("Failed To Delete User","danger")
+            }
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            showAlert("An error occurred while deleting the user. Please try again.","danger")
+        }
+    }
+
+    const searchInput = document.getElementById('searchInput');
+    const tableRows = document.getElementsByTagName('tr');
+
+    searchInput.addEventListener('keyup', function () {
+        const filter = searchInput.value.toLowerCase();
+
+        for (let i = 1; i < tableRows.length; i++) {
+            const name = tableRows[i].getElementsByTagName('td')[0].innerText.toLowerCase();
+            const accountId = tableRows[i].getElementsByTagName('td')[1].innerText.toLowerCase();
+            const phone = tableRows[i].getElementsByTagName('td')[2].innerText.toLowerCase();
+            if (name.includes(filter) || accountId.includes(filter) || phone.includes(filter)) {
+                tableRows[i].style.display = '';
+            } else {
+                tableRows[i].style.display = 'none';
+            }
+        }
+    });
+</script>
+</body>
+</html>
