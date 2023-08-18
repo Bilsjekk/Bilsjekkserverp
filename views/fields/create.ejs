@@ -14,7 +14,7 @@
             <input type="text" class="form-control" id="title" name="title" required>
         </div>
         <div class="form-group">
-            <label for="answerDataType">Answer Data Type</label>
+            <label for="answerDataType">Svardatatype</label>
             <select class="form-control" id="answerDataType" name="answerDataType" required onchange="toggleAdditionalFields()">
                 <option value="text">Text</option>
                 <option value="number">Nummer</option>
@@ -36,8 +36,8 @@
         <div class="form-group">
             <label for="form">Skjema</label>
             <select class="form-control" id="form" name="form">
-                <option value="First">First</option>
-                <option value="Second">Second</option>
+                <option value="First">Første</option>
+                <option value="Second">Andre</option>
             </select>
         </div>
 
@@ -51,10 +51,10 @@
             <input type="text" class="form-control" id="requiredDescription" name="requiredDescription" disabled>
         </div>
         <div class="form-group" style="display: none;" id="positiveGroup">
-            <label for="positive">Choose when to get description</label>
+            <label for="positive">Velg når du vil få beskrivelse</label>
             <select name="positive" class="form-control" id="positive" disabled>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
+                <option value="yes">Ja</option>
+                <option value="no">Nei</option>
             </select>
         </div>
 
@@ -158,15 +158,15 @@
         </script>
         <div class="d-flex justify-content-center align-items-center">
             <button type="submit" class="btn btn-primary pl-3 pr-3 mr-3">Legge til</button>
-            <a href="/fields" class="btn btn-secondary pl-3 pr-3">Cancel</a>
+            <a href="/fields" class="btn btn-secondary pl-3 pr-3">Avbrytt</a>
         </div>
     </form>
 
     <div class="alert alert-success mt-3" id="successAlert" style="display: none;">
-        Field Created successfully.
+        Opprettet!.
     </div>
     <div class="alert alert-danger mt-3" id="failureAlert" style="display: none;">
-        Failed To Create Field. Please try again.
+        Æsj feil, prøv igjen..
     </div>
 </div>
 </body>
