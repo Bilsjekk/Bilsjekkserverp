@@ -3,6 +3,8 @@
 <head>
     <title>PDF</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://nordic.bilsjekk.in/css/viewer.css"> <!-- Replace with the actual path -->
+    <script src="https://nordic.bilsjekk.in/js/viewer.js"></script> <!-- Replace with the actual path -->
     <style>
         body {
             background-color: #f5f5f5;
@@ -63,14 +65,35 @@
 </head>
 <body>
 <div class="pdf-container">
-    <div style="overflow: auto; -webkit-overflow-scrolling: touch;height:100%;width: 100%;" id="my">
-        <iframe src="<%= pdf.link %>" style="overflow: auto; -webkit-overflow-scrolling: touch; border: none;" scrolling="yes" width="100%" height="100%"> </iframe>
-    </div>
+    <div class="pdf-viewer" id="pdf-container"></div>
 
     <div class="pdf-controls">
         <a href="/pdfs" class="btn btn-back btn-lg">Tilbake</a>
         <a href="/pdfs" class="btn btn-delete btn-lg">Slett</a>
     </div>
 </div>
+<script>
+    const pdfUrl = "<%= pdf.link %>"; // Replace with the actual PDF URL
+    const pdfContainer = document.getElementById('pdf-container');
+
+    pdfjsLib.getDocument(pdfUrl).promise.then(pdfDoc => {
+        for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+            pdfDoc.getPage(pageNum).then(page => {
+                const canvas = document.createElement('canvas');
+                pdfContainer.appendChild(canvas);
+
+                const viewport = page.getViewport({ scale: 1 });
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+
+                const context = canvas.getContext('2d');
+                const renderTask = page.render({ canvasContext: context, viewport });
+                renderTask.promise.then(() => {
+                    console.log(`Page ${pageNum} rendered`);
+                });
+            });
+        }
+    });
+</script>
 </body>
 </html>
