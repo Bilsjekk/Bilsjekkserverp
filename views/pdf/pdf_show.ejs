@@ -30,11 +30,20 @@
 
         .pdf-viewer {
             flex: 1;
-            height: 100%;
-            border: 1px solid #ddd;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .pdf-page {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
             background-color: white;
-            overflow: auto;
+            border-bottom: 1px solid #ddd;
         }
 
         .pdf-controls {
@@ -89,7 +98,6 @@
         .pageNumber {
             margin: 0 20px;
         }
-
     </style>
 </head>
 <body>
@@ -109,24 +117,14 @@
 <script>
     const pdfUrl = "<%= pdf.link %>"; // Replace with the actual PDF URL
     const pdfContainer = document.getElementById('pdf-container');
+    let pageNum = 1;
+    let pdfDoc;
 
-    pdfjsLib.getDocument(pdfUrl).promise.then(pdfDoc => {
-        for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
-            pdfDoc.getPage(pageNum).then(page => {
-                const canvas = document.createElement('canvas');
-                pdfContainer.appendChild(canvas);
-
-                const viewport = page.getViewport({ scale: 1 });
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
-
-                const context = canvas.getContext('2d');
-                const renderTask = page.render({ canvasContext: context, viewport });
-                renderTask.promise.then(() => {
-                    console.log(`Page ${pageNum} rendered`);
-                });
-            });
-        }
+    pdfjsLib.getDocument(pdfUrl).promise.then(doc => {
+        pdfDoc = doc;
+        const numPages = pdfDoc.numPages;
+        document.querySelector('#numPages').textContent = numPages;
+        renderPage(pageNum);
     });
 
     const previousButton = document.getElementById('previous');
@@ -152,22 +150,24 @@
     function renderPage(pageNumber) {
         pdfContainer.innerHTML = '';
         pdfDoc.getPage(pageNumber).then(page => {
-            const canvas = document.createElement('canvas');
-            pdfContainer.appendChild(canvas);
-
             const viewport = page.getViewport({ scale: 1 });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
             canvas.width = viewport.width;
             canvas.height = viewport.height;
 
-            const context = canvas.getContext('2d');
             const renderTask = page.render({ canvasContext: context, viewport });
             renderTask.promise.then(() => {
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'pdf-page';
+                pageDiv.appendChild(canvas);
+                pdfContainer.appendChild(pageDiv);
+
                 console.log(`Page ${pageNumber} rendered`);
                 pageNumberSpan.textContent = pageNumber;
             });
         });
     }
-
 </script>
 </body>
 </html>
