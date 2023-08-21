@@ -95,20 +95,15 @@
 <body>
 <div class="pdf-container">
     <div class="pdf-header">
-        <h2>PDF Viewer</h2>
-        <div class="pdf-controls">
-            <a href="/pdfs" class="btn btn-back btn-lg">Tilbake</a>
-            <a href="/pdfs" class="btn btn-delete btn-lg">Slett</a>
+        <div class="pdf-toolbar">
+            <button id="previous" class="toolbarButton pageUp"></button>
+            <div class="pageNumber">
+                Page <span id="pageNumber">1</span> of <span id="numPages">-</span>
+            </div>
+            <button id="next" class="toolbarButton pageDown"></button>
         </div>
     </div>
 
-    <div class="pdf-toolbar">
-        <button id="previous" class="toolbarButton pageUp"></button>
-        <div class="pageNumber">
-            Page <span id="pageNumber">1</span> of <span id="numPages">-</span>
-        </div>
-        <button id="next" class="toolbarButton pageDown"></button>
-    </div>
     <div class="pdf-viewer" id="pdf-container">
 
     </div>
