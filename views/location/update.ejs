@@ -23,21 +23,21 @@
                     <div class="form-group">
                         <label>Velg dager</label>
                         <div class="checkbox-group">
-                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="saturday" <% if (location.days.includes('saturday')) { %>checked<% } %>> Lørdag</label>
-                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="sunday" <% if (location.days.includes('sunday')) { %>checked<% } %>> Søndag</label>
-                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="monday" <% if (location.days.includes('monday')) { %>checked<% } %>> Mandag</label>
-                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="tuesday" <% if (location.days.includes('tuesday')) { %>checked<% } %>> Tirsdag</label>
-                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="wednesday" <% if (location.days.includes('wednesday')) { %>checked<% } %>> Onsdag</label>
-                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="thursday" <% if (location.days.includes('thursday')) { %>checked<% } %>> Torsdag</label>
-                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="friday" <% if (location.days.includes('friday')) { %>checked<% } %>> Fredag</label>
+                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="lørdag" <% if (location.days.includes('lørdag')) { %>checked<% } %>> Lørdag</label>
+                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="søndag" <% if (location.days.includes('søndag')) { %>checked<% } %>> Søndag</label>
+                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="mandag" <% if (location.days.includes('mandag')) { %>checked<% } %>> Mandag</label>
+                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="tirsdag" <% if (location.days.includes('tirsdag')) { %>checked<% } %>> Tirsdag</label>
+                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="onsdag" <% if (location.days.includes('onsdag')) { %>checked<% } %>> Onsdag</label>
+                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="torsdag" <% if (location.days.includes('torsdag')) { %>checked<% } %>> Torsdag</label>
+                            <label class="checkbox-label"><input type="checkbox" name="days[]" value="fredag" <% if (location.days.includes('fredag')) { %>checked<% } %>> Fredag</label>
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Velg Shift</label>
                         <div class="checkbox-group">
-                            <label class="checkbox-label"><input type="checkbox" name="shifts[]" value="day" <% if (location.shifts.includes('day')) { %>checked<% } %>> Dag</label>
-                            <label class="checkbox-label"><input type="checkbox" name="shifts[]" value="night" <% if (location.shifts.includes('night')) { %>checked<% } %>> Natt</label>
-                            <label class="checkbox-label"><input type="checkbox" name="shifts[]" value="evening" <% if (location.shifts.includes('weekend')) { %>checked<% } %>> Kveld</label>
+                            <label class="checkbox-label"><input type="checkbox" name="shifts[]" value="dag" <% if (location.shifts.includes('day') || location.shifts.includes('dag')) { %>checked<% } %>> Dag</label>
+                            <label class="checkbox-label"><input type="checkbox" name="shifts[]" value="natt" <% if (location.shifts.includes('night') || location.shifts.includes('natt')) { %>checked<% } %>> Natt</label>
+                            <label class="checkbox-label"><input type="checkbox" name="shifts[]" value="kveld" <% if (location.shifts.includes('evening') || location.shifts.includes('kveld')) { %>checked<% } %>> Kveld</label>
                         </div>
                     </div>
                 </div>
