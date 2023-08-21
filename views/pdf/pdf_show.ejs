@@ -4,7 +4,6 @@
     <title>PDF</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf_viewer.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <style>
         body {
             background-color: #f5f5f5;
@@ -14,11 +13,21 @@
 
         .pdf-container {
             display: flex;
+            flex-direction: column;
             height: 100vh;
         }
 
+        .pdf-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+        }
+
         .pdf-viewer {
-            flex: 8;
+            flex: 1;
             height: 100%;
             border: 1px solid #ddd;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -27,16 +36,15 @@
         }
 
         .pdf-controls {
-            flex: 2;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            padding: 20px;
+            padding: 10px 20px;
+            background-color: #f5f5f5;
+            border-top: 1px solid #ddd;
         }
 
         .pdf-controls a {
-            margin-top: 10px;
             text-transform: uppercase;
             letter-spacing: 1px;
             font-weight: 500;
@@ -45,7 +53,6 @@
         .btn-back {
             background-color: #007bff;
             color: white;
-            width: 200px;
         }
 
         .btn-back:hover {
@@ -55,7 +62,6 @@
         .btn-delete {
             background-color: #dc3545;
             color: white;
-            width: 200px;
         }
 
         .btn-delete:hover {
@@ -65,12 +71,14 @@
 </head>
 <body>
 <div class="pdf-container">
-    <div class="pdf-viewer" id="pdf-container"></div>
-
-    <div class="pdf-controls">
-        <a href="/pdfs" class="btn btn-back btn-lg">Tilbake</a>
-        <a href="/pdfs" class="btn btn-delete btn-lg">Slett</a>
+    <div class="pdf-header">
+        <h2>PDF Viewer</h2>
+        <div class="pdf-controls">
+            <a href="/pdfs" class="btn btn-back btn-lg">Tilbake</a>
+            <a href="/pdfs" class="btn btn-delete btn-lg">Slett</a>
+        </div>
     </div>
+    <div class="pdf-viewer" id="pdf-container"></div>
 </div>
 <script>
     const pdfUrl = "<%= pdf.link %>"; // Replace with the actual PDF URL
