@@ -20,24 +20,6 @@ app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs')
 
 
-app.get('/qrcode', (req, res) => {
-    const data = JSON.stringify({
-        data:{x:'y'},
-        list:[1,2,32]
-    }); // URL or any data you want to encode
-    const qrCode = qr.image(data, { type: 'png' });
-
-    // Generate a unique filename
-    const filename = `qrcode_${Date.now()}.png`;
-    const filePath = `./public/qrcodes/${filename}`;
-
-    const qrStream = qrCode.pipe(fs.createWriteStream(filePath));
-
-    qrStream.on('finish', () => {
-        res.send(`QR Code saved as ${filename}`);
-    });
-});
-
 app.get('/login', (req,res) =>{
     return res.status(200).render('auth/login')
 })
@@ -107,5 +89,5 @@ app.get('/',(req,res) =>{
     return res.status(200).render('index')
 })
 
-const port = process.env.port || 9090
+const port = process.env.port || 3000
 app.listen(port, () => console.log(`Server is running on port ${port}`))
