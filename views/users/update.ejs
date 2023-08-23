@@ -76,12 +76,12 @@
                         location.href = '/users'
                     },3000)
                 } else {
-                    showAlert("Failed To Update User","danger")
+                    showAlert("Kunne ikke oppdatere bruker","danger")
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showAlert("An error occurred while updating user.",'danger')
+                showAlert("Det oppsto en feil under oppdatering av bruker.",'danger')
             });
     }
 </script>

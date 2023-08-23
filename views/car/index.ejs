@@ -38,6 +38,9 @@
             <tr>
                 <th>Regnr.</th>
                 <th>Tjenstebilnr.</th>
+                <th>Kilometers.</th>
+                <th>Kilometer brukt.</th>
+                <th>Qr-Kode.</th>
                 <th>Handlinger</th>
             </tr>
             </thead>
@@ -47,8 +50,14 @@
                     <tr>
                         <td><%= car.boardNumber %></td>
                         <td><%= car.privateNumber %></td>
+                        <td><%= car.kilometers %></td>
+                        <td><%= car.currentKilometers %></td>
+                        <td>
+                            <a href="cars/<%= car._id %>/qrcode">Se QR-kode</a>
+                        </td>
                         <td class="controls">
                             <a href="/cars/<%= car._id %>/update" class="btn btn-sm btn-primary">Redigere</a>
+                            <button class="btn btn-sm btn-info mr-2" onclick="resetCarService('<%= car._id %>')">Nullstille</button>
                             <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteModal<%= car._id %>">Slett</button>
                         </td>
                     </tr>
@@ -107,6 +116,18 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
+    async function resetCarService(carId){
+        let response = await fetch(`/api/cars/${carId}/reset`)
+        if(response.status == 200){
+            showInfoBox('Bilkilometer ble nullstilt', 'success');
+            setTimeout(() =>{
+                location.reload()
+            },3000)
+        }else{
+            showInfoBox('Kunne ikke tilbakestille kilometer', 'danger');
+        }
+    }
+
     function deleteCar(carId) {
         fetch(`/api/cars/${carId}`, {
             method: 'DELETE',
@@ -114,18 +135,18 @@
             .then(response => {
                 if (response.ok) {
                     // Car deleted successfully, you can update the UI or show a success message
-                    showInfoBox('Car deleted successfully.', 'success');
+                    showInfoBox('Bilen ble slettet.', 'success');
                     setTimeout(() => {
                         window.location.reload(); // Refresh the page to reflect the changes
                     }, 3000);
                 } else {
                     // Handle the error response if needed
-                    showInfoBox('Failed to delete car. Please try again.', 'danger');
+                    showInfoBox('Kunne ikke slette bilen. Vær så snill, prøv på nytt.', 'danger');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showInfoBox('An error occurred. Please try again later.', 'danger');
+                showInfoBox('En feil oppstod. Prøv igjen senere.', 'danger');
             });
     }
 
@@ -137,18 +158,18 @@
             .then(response => {
                 if (response.ok) {
                     // Car deleted successfully, you can update the UI or show a success message
-                    showInfoBox('All cars were deleted successfully.', 'success');
+                    showInfoBox('Alle bilene ble slettet.', 'success');
                     setTimeout(() => {
                         window.location.reload(); // Refresh the page to reflect the changes
                     }, 3000);
                 } else {
                     // Handle the error response if needed
-                    showInfoBox('Failed to delete all cars. Please try again.', 'danger');
+                    showInfoBox('Kunne ikke slette alle bilene. Vær så snill, prøv på nytt.', 'danger');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showInfoBox('An error occurred. Please try again later.', 'danger');
+                showInfoBox('En feil oppstod. Prøv igjen senere.', 'danger');
             });
     }
 

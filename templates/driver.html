@@ -188,18 +188,18 @@
             <div></div>
         </div>
         <hr>
-            {{#each groupedImages}}
-            <h2>{{@key}}</h2>
-            <div class="image-grid"></div>
-                {{#each this}}
-                    <div class="image-item">
-                        <img src="{{path}}" alt="{{@key}}">
-                    </div>
-                {{/each}}
+        {{#each groupedImages}}
+        <h2>{{@key}}</h2>
+        <div class="image-grid"></div>
+        {{#each this}}
+        <div class="image-item">
+            <img src="{{path}}" alt="{{@key}}">
+        </div>
+        {{/each}}
 
-            </div>
-            {{/each}}
     </div>
+    {{/each}}
+</div>
 </div>
 </body>
 </html>

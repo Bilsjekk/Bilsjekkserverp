@@ -142,17 +142,17 @@
 
             if (response.status == 200) {
                 // Show success message and reload after successful deletion
-                showInfoBox(`All Groups Were Deleted.`, 'success');
+                showInfoBox(`Alle grupper ble slettet.`, 'success');
                 setTimeout(() => {
                     window.location.reload();
                 }, 3000);
             } else {
                 // Show error message
-                showInfoBox(`Could not delete all groups. Please try again later.`, 'danger');
+                showInfoBox(`Kunne ikke slette alle grupper. Prøv igjen senere.`, 'danger');
             }
         } catch (error) {
             console.error('Error deleting group:', error);
-            showInfoBox(`An error occurred while deleting all groups. Try again later.`, 'danger');
+            showInfoBox(`Det oppsto en feil under sletting av alle grupper. Prøv igjen senere.`, 'danger');
         }
     }
 

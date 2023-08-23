@@ -1,13 +1,13 @@
-const PDFDocument = require('pdfkit');
 const fs = require('fs')
-const Group = require('../models/Group')
-const uuid = require("uuid");
-const bucket = require("../utils/firebase");
 const PDF = require('../models/PDF')
 const jwt = require('jsonwebtoken')
 const User = require('../models/usersModel')
 const Handlebars = require('handlebars')
 const puppeteer = require('puppeteer')
+const Car = require('../models/Car')
+
+const { sendAlertMail } = require('../utils/smtp_service')
+const { sendAlertSMS } = require('../utils/sms_service')
 
 
 
@@ -15,6 +15,32 @@ const createNewDriver = async (req,res) =>{
     try{
         const { data, token } = req.headers
         const information = JSON.parse(decodeURIComponent(data))
+        console.log(information)
+        if(information.carId != undefined){
+            let existingCar = await Car.findOne({ _id: information.carId })
+            if(+information.kilometers + +existingCar.currentKilometers >= +existingCar.kilometers){
+                sendAlertMail({
+                    to:'me@mutaz.no',
+                    subject:`Car ${information.boardNumber + "  " + information.privateNumber} Service Limit`,
+                    text:`Car ${information.boardNumber + "  " + information.privateNumber} Exceeded ${existingCar.kilometers} By ${+information.kilometers + +existingCar.currentKilometers - +existingCar.kilometers}`,
+                    html:`Car ${information.boardNumber + "  " + information.privateNumber} Exceeded ${existingCar.kilometers} By ${+information.kilometers + +existingCar.currentKilometers - +existingCar.kilometers}`
+                })
+
+                await sendAlertSMS(
+                    `Car ${information.boardNumber + "  " + information.privateNumber} Exceeded ${existingCar.kilometers} By ${+information.kilometers + +existingCar.currentKilometers - +existingCar.kilometers}`,
+                    "4740088605"
+                );
+
+                await Car.findOneAndUpdate({ _id: information.carId },{
+                    kilometers:0,
+                    currentKilometers:0
+                },{ $new: true })
+            }else{
+                await Car.findOneAndUpdate({ _id: information.carId },{
+                    currentKilometers: existingCar.currentKilometers + information.kilometers
+                })
+            }
+        }
 
 
         let values = Object.values(req.body).map(e => JSON.parse(e))
@@ -40,23 +66,6 @@ const createNewDriver = async (req,res) =>{
         let decodedToken = jwt.verify(token,'your-secret-key')
         let user = await User.findOne({ _id: decodedToken.userId })
 
-        const imagesAlias = req.headers.files
-        /*
-         * 
-         *{
-            fieldnameOriginal1: ['ax1','ax2','ax3'],
-            fieldnameOriginal2: ['ac1','ac2'],
-         }
-         savedImages = []
-         originals = {}
-         Object.keys(req.headers.files).map(original) =>
-            req.headers.files[original].map(alias) =>
-                req.files.filter(x => where x.filedname == alias) =>
-                     savedImages.push(x.path)
-
-                     originals[original] = savedImages
-         *
-         */
 
         const groupedImages = {};
 

@@ -30,6 +30,10 @@
                     <label for="privateNumber">Bil kode</label>
                     <input type="text" class="form-control" id="privateNumber" name="privateNumber" value="<%= car.privateNumber %>" required >
                 </div>
+                <div class="form-group">
+                    <label for="kilometers">Kilometers</label>
+                    <input type="number" class="form-control" id="kilometers" name="kilometers" value="<%= +car.kilometers %>" required >
+                </div>
                 <div class="text-center">
                     <button type="button" class="btn btn-primary" onclick="updateCar()">Lagre</button>
                     <a href="/cars" class="btn btn-secondary">Avbryt</a>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ... your existing head content ... -->
+</head>
+<body>
+<%- include('../components/navbar') %>
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="text">QR-kode</h2>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <img src="<%= car.qrcode %>" alt="QR Code" class="img-fluid">
+            <div class="mt-3">
+                <a href="/cars/<%= car._id %>/update" class="btn btn-primary mr-2">Oppdatere</a>
+                <a href="<%= car.qrcode %>" class="btn btn-info mr-2" download>Nedlasting</a>
+                <a href="/cars" class="btn btn-secondary">Avbrytt</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ... your existing Bootstrap scripts ... -->
+<script>
+    // ... your existing scripts ...
+</script>
+</body>
+</html>

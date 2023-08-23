@@ -10,13 +10,13 @@
 <div class="container">
     <form id="createForm">
         <div class="form-group">
-            <label for="title">Title</label>
+            <label for="title">Tittel</label>
             <input type="text" class="form-control" id="title" name="title" required>
         </div>
         <div class="form-group">
             <label for="answerDataType">Svardatatype</label>
             <select class="form-control" id="answerDataType" name="answerDataType" required onchange="toggleAdditionalFields()">
-                <option value="text">Text</option>
+                <option value="text">Tekst</option>
                 <option value="number">Nummer</option>
                 <option value="yes_no">Ja-Nei</option>
                 <option value="file">Fil</option>
@@ -141,7 +141,7 @@
 
                     if (response.status === 200) {
                         // Show success alert and navigate back after 3 seconds
-                        showAlert('success', 'Field Created successfully.');
+                        showAlert('success', 'Feltet ble opprettet.');
                         setTimeout(() => {
                             location.href = '/fields';
                         }, 3000);
@@ -150,9 +150,9 @@
                         showAlert('danger', 'Failed To Create Field');
                     }
                 } catch (error) {
-                    console.error('Error occurred:', error);
+                    console.error('Feil oppsto:', error);
                     // Show failure alert
-                    showAlert('danger', 'An error occurred. Please try again.');
+                    showAlert('danger', 'En feil oppstod. Vær så snill, prøv på nytt.');
                 }
             });
         </script>

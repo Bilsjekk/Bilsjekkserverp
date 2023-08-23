@@ -41,18 +41,18 @@
     <div class="row justify-content-center align-items-center" style="height: 100vh;">
         <div class="col-md-6">
             <div class="login-container">
-                <h1 class="text-center">AdminPanel</h1>
+                <h1 class="text-center">Administrasjonspanel</h1>
                 <form id="loginForm">
                     <div class="form-group">
-                        <label for="username">username</label>
+                        <label for="username">brukernavn</label>
                         <input type="text" class="form-control" id="username" name="username" required>
                     </div>
                     <div class="form-group">
-                        <label for="password">password</label>
+                        <label for="password">passord</label>
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
                     <div class="text-center">
-                        <button type="submit" class="btn btn-primary">login</button>
+                        <button type="submit" class="btn btn-primary">Logg Inn</button>
                     </div>
                 </form>
             </div>
@@ -81,7 +81,7 @@
                 location.href = '/'
             }
             else{
-                alert("Failed To Login")
+                alert("Kunne ikke logge på")
             }
         })
     }

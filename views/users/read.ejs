@@ -88,7 +88,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                Are you sure you want to delete all users?
+                Er du sikker på at du vil slette alle brukere?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
@@ -133,16 +133,16 @@
 
             if (response.status === 200) {
                 // Reload the page after successful deletion
-                showAlert("All Users Were Deleted","success")
+                showAlert("Alle brukere ble slettet","success")
                 setTimeout(() =>{
                     location.reload();
                 },3000)
             } else {
-                showAlert("Failed To Delete All Users","danger")
+                showAlert("Kunne ikke slette alle brukere","danger")
             }
         } catch (error) {
             console.error('Error deleting all users:', error);
-            showAlert("An error occurred while deleting all users. Please try again.","danger")
+            showAlert("Det oppsto en feil under sletting av alle brukere. Vær så snill, prøv på nytt.","danger")
         }
     }
 
@@ -164,11 +164,11 @@
                     location.reload();
                 },3000)
             } else {
-                showAlert("Failed To Delete User","danger")
+                showAlert("Kunne ikke slette bruker","danger")
             }
         } catch (error) {
             console.error('Error deleting user:', error);
-            showAlert("An error occurred while deleting the user. Please try again.","danger")
+            showAlert("Det oppstod en feil under sletting av brukeren. Vær så snill, prøv på nytt.","danger")
         }
     }
 

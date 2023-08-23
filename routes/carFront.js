@@ -29,6 +29,19 @@ router.get('/cars/:id/update', async (req,res) =>{
     })
   }
 })
+
+router.get('/cars/:id/qrcode', async (req,res) =>{
+  try{
+    let car = await Car.findOne({ _id: req.params.id })
+    return res.status(200).render('car/car_qrcode_view',{
+      car
+    })
+  }catch (error){
+    return res.status(500).render('errors/internal',{
+      error: error.message
+    })
+  }
+})
 // router.get('/cars/update')
 
 module.exports = router

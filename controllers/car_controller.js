@@ -1,12 +1,53 @@
 const Car = require('../models/Car')
+const qr = require("qr-image");
+const fs = require("fs");
 
 
 const createNewCar = async (req,res) =>{
     try{
         console.log(req.body)
-        const { boardNumber, privateNumber } = req.body
-        const car = new Car({ boardNumber, privateNumber })
+        const { boardNumber, privateNumber, kilometers } = req.body
+
+        let existingCar = await Car.findOne({ 
+            boardNumber,
+            privateNumber
+         })
+
+         if(existingCar){
+            return res.status(400).send("Car Data Already Exists")
+         }
+
+        
+
+        const car = new Car({
+            boardNumber, privateNumber, kilometers,
+        })
         await car.save()
+
+        const data = JSON.stringify({
+            boardNumber,privateNumber,kilometers: +kilometers,
+            _id: car._id
+        }); // URL or any data you want to encode
+        const qrCode = qr.image(data, { type: 'png' });
+
+
+        // Generate a unique filename
+        const filename = `qrcode_${Date.now()}.png`;
+        const filePath = `public/qrcodes/${filename}`;
+
+        const qrStream = qrCode.pipe(fs.createWriteStream(filePath));
+
+        qrStream.on('finish', () => {
+            console.log(`QR Code saved as ${filename}`);
+        });
+
+
+        await Car.findOneAndUpdate({ _id: car._id },{
+            qrcode: process.env.BASE_URL  + `qrcodes/${filename}`
+        },{ $new:true }
+        
+        )
+
 
         return res.status(200).send("Car Was Created")
     }catch (error){
@@ -29,9 +70,28 @@ const getAllCars = async (req,res) =>{
 const updateCar = async (req,res) =>{
     try{
         const { id } = req.params
-        const { boardNumber, privateNumber } = req.body
+        const { boardNumber, privateNumber,kilometers } = req.body
+
+        const data = JSON.stringify({
+            boardNumber,privateNumber,kilometers: +kilometers
+        }); // URL or any data you want to encode
+        const qrCode = qr.image(data, { type: 'png' });
+
+
+        // Generate a unique filename
+        const filename = `qrcode_${Date.now()}.png`;
+        const filePath = `public/qrcodes/${filename}`;
+
+        const qrStream = qrCode.pipe(fs.createWriteStream(filePath));
+
+        qrStream.on('finish', () => {
+            console.log(`QR Code saved as ${filename}`);
+        });
+
         await Car.findOneAndUpdate({ _id: id },{
-            boardNumber, privateNumber
+            boardNumber, privateNumber,kilometers,
+            _id:id,
+            qrcode: process.env.BASE_URL  + `qrcodes/${filename}`
         },{ $new: true })
 
         return res.status(200).send("Car Was Updated")
@@ -61,10 +121,25 @@ const deleteAllCars = async (req,res) =>{
     }
 }
 
+const resetCarKilometers = async (req,res) =>{
+    try{
+        const { id } = req.params
+        await Car.findOneAndUpdate({ _id:id },{
+            currentKilometers:0,
+            kilometers:0
+        },{ $new: true })
+
+        return res.sendStatus(200)
+    }catch(error){
+        return res.status(500).send(error.message)
+    }
+}
+
 module.exports = {
     createNewCar,
     getAllCars,
     updateCar,
     deleteCar,
-    deleteAllCars
+    deleteAllCars,
+    resetCarKilometers
 }

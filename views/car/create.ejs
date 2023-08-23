@@ -22,6 +22,10 @@
                     <label for="privateNumber" class="form-label"></label>
                     <input type="text" class="form-control" id="privateNumber" name="privateNumber" placeholder="Tjenstebilnr." required>
                 </div>
+                <div class="mb-3">
+                    <label for="kilometers" class="form-label">Kilometers</label>
+                    <input type="number" class="form-control" id="kilometers" name="kilometers" required>
+                </div>
                 <div class="d-flex justify-content-center">
                     <button type="button" class="btn btn-primary me-3" onclick="submitForm()">legge til</button>
                     &nbsp;
@@ -39,10 +43,12 @@
     async function submitForm() {
         const boardNumber = document.getElementById('boardNumber').value;
         const privateNumber = document.getElementById('privateNumber').value;
+        const kilometers = document.getElementById('kilometers').value;
 
         const formData = {
             boardNumber: boardNumber,
-            privateNumber: privateNumber
+            privateNumber: privateNumber,
+            kilometers: kilometers
         };
 
         let response = await fetch('/api/cars', {
