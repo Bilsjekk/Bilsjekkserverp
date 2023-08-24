@@ -20,7 +20,7 @@ const createNewDriver = async (req,res) =>{
             let existingCar = await Car.findOne({ _id: information.carId })
             if(+information.kilometers + +existingCar.currentKilometers >= +existingCar.kilometers){
                 sendAlertMail({
-                    to:'me@mutaz.no',
+                    to:'vaktleder@parknordic.no',
                     subject:`Car ${information.boardNumber + "  " + information.privateNumber} Service Limit`,
                     text:`Car ${information.boardNumber + "  " + information.privateNumber} Exceeded ${existingCar.kilometers} By ${+information.kilometers + +existingCar.currentKilometers - +existingCar.kilometers}`,
                     html:`Car ${information.boardNumber + "  " + information.privateNumber} Exceeded ${existingCar.kilometers} By ${+information.kilometers + +existingCar.currentKilometers - +existingCar.kilometers}`
@@ -28,7 +28,7 @@ const createNewDriver = async (req,res) =>{
 
                 await sendAlertSMS(
                     `Car ${information.boardNumber + "  " + information.privateNumber} Exceeded ${existingCar.kilometers} By ${+information.kilometers + +existingCar.currentKilometers - +existingCar.kilometers}`,
-                    "4740088605"
+                    "4747931499"
                 );
 
                 await Car.findOneAndUpdate({ _id: information.carId },{
