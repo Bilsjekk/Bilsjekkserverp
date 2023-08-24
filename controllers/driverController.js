@@ -21,13 +21,16 @@ const createNewDriver = async (req,res) =>{
             if(+information.kilometers + +existingCar.currentKilometers >= +existingCar.kilometers){
                 sendAlertMail({
                     to:'vaktleder@parknordic.no',
-                    subject:`Car ${information.boardNumber + "  " + information.privateNumber} Service Limit`,
-                    text:`Car ${information.boardNumber + "  " + information.privateNumber} Exceeded ${existingCar.kilometers} By ${+information.kilometers + +existingCar.currentKilometers - +existingCar.kilometers}`,
-                    html:`Car ${information.boardNumber + "  " + information.privateNumber} Exceeded ${existingCar.kilometers} By ${+information.kilometers + +existingCar.currentKilometers - +existingCar.kilometers}`
+                    subject:`Bil nr ${information.privateNumber} Trenger services`,
+                    text: `Bilen med skilt nr:${information.boardNumber} Og tjenesternr ${information.privateNumber} Har nå gått over service. Service blir i ${existingCar.kilometers} Kilometer`,
+                    html: `<h2>Bilen med skilt nr:${information.boardNumber} Og tjenesternr ${information.privateNumber} Har nå gått over service. Service blir i ${existingCar.kilometers} Kilometer</h2>`
+                    // text:`Car ${information.boardNumber + "  " + information.privateNumber} Exceeded ${existingCar.kilometers} By ${+information.kilometers + +existingCar.currentKilometers - +existingCar.kilometers}`,
+                    // html:`Car ${information.boardNumber + "  " + information.privateNumber} Exceeded ${existingCar.kilometers} By ${+information.kilometers + +existingCar.currentKilometers - +existingCar.kilometers}`
+                    
                 })
 
                 await sendAlertSMS(
-                    `Car ${information.boardNumber + "  " + information.privateNumber} Exceeded ${existingCar.kilometers} By ${+information.kilometers + +existingCar.currentKilometers - +existingCar.kilometers}`,
+                    `Bilen med skilt nr:${information.boardNumber} Og tjenesternr ${information.privateNumber} Har nå gått over service. Service blir i ${existingCar.kilometers} Kilometer`,
                     "4747931499"
                 );
 
