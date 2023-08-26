@@ -22,64 +22,68 @@ const createNewDriver = async (req,res) =>{
         let decodedToken = jwt.verify(token,'your-secret-key')
         let user = await User.findOne({ _id: decodedToken.userId })
 
-        if(information.carId != undefined && +information.kilometers + +existingCar.currentKilometers >= +existingCar.kilometers){
-        
+
+        if(information.carId != undefined){
             let existingCar = await Car.findOne({ _id: information.carId })
-            let emailData = fs.readFileSync(path.join(__dirname,'../data/email.json'),{ 
-                encoding: 'utf8',
-                flag: 'r'
-            })
-            
-            let emailJson = JSON.parse(emailData)
-            let emailSubject = emailJson.subject
-            .replace(/{private}/g, information.privateNumber)
-            .replace(/{board}/g, information.boardNumber)
-            .replace(/{pnid}/g, user.accountId)
-            .replace(/{kilometers}/g, existingCar.kilometers);
 
-            let emailText = emailJson.text
-            .replace(/{private}/g, information.privateNumber)
-            .replace(/{board}/g, information.boardNumber)
-            .replace(/{pnid}/g, user.accountId)
-            .replace(/{kilometers}/g, existingCar.kilometers);
-
-
-            sendAlertMail({
-                to:'vaktleder@parknordic.no',
-                subject: emailSubject,
-                text: emailText,
-                html: `<h2>${emailText}</h2>`                    
-            })
-
-            let smsData = fs.readFileSync(path.join(__dirname,'../data/sms.json'),{ 
-                encoding: 'utf8',
-                flag: 'r'
-            })
-            
-            let smsJson = JSON.parse(smsData)
-            let smsText = smsJson.text
-            .replace(/{private}/g, information.privateNumber)
-            .replace(/{board}/g, information.boardNumber)
-            .replace(/{pnid}/g, user.accountId)
-            .replace(/{kilometers}/g, existingCar.kilometers);
-
-            console.log(smsText)
-
-            await sendAlertSMS({
-                text: smsText,
-                to:'4747931499'
-            });
-
-            await Car.findOneAndUpdate({ _id: information.carId },{
-                kilometers:0,
-                currentKilometers:0
-            },{ $new: true })
-        }
-            else{
-                await Car.findOneAndUpdate({ _id: information.carId },{
-                    currentKilometers: existingCar.currentKilometers + information.kilometers
+            if(+information.kilometers + +existingCar.currentKilometers >= +existingCar.kilometers){
+        
+                let emailData = fs.readFileSync(path.join(__dirname,'../data/email.json'),{ 
+                    encoding: 'utf8',
+                    flag: 'r'
                 })
+                
+                let emailJson = JSON.parse(emailData)
+                let emailSubject = emailJson.subject
+                .replace(/{private}/g, information.privateNumber)
+                .replace(/{board}/g, information.boardNumber)
+                .replace(/{pnid}/g, user.accountId)
+                .replace(/{kilometers}/g, existingCar.kilometers);
+    
+                let emailText = emailJson.text
+                .replace(/{private}/g, information.privateNumber)
+                .replace(/{board}/g, information.boardNumber)
+                .replace(/{pnid}/g, user.accountId)
+                .replace(/{kilometers}/g, existingCar.kilometers);
+    
+    
+                sendAlertMail({
+                    to:'me@mutaz.no',
+                    subject: emailSubject,
+                    text: emailText,
+                    html: `<h2>${emailText}</h2>`                    
+                })
+    
+                let smsData = fs.readFileSync(path.join(__dirname,'../data/sms.json'),{ 
+                    encoding: 'utf8',
+                    flag: 'r'
+                })
+                
+                let smsJson = JSON.parse(smsData)
+                let smsText = smsJson.text
+                .replace(/{private}/g, information.privateNumber)
+                .replace(/{board}/g, information.boardNumber)
+                .replace(/{pnid}/g, user.accountId)
+                .replace(/{kilometers}/g, existingCar.kilometers);
+    
+                console.log(smsText)
+    
+                await sendAlertSMS({
+                    text: smsText,
+                    to:'4740088605'
+                });
+    
+                await Car.findOneAndUpdate({ _id: information.carId },{
+                    kilometers:0,
+                    currentKilometers:0
+                },{ $new: true })
             }
+                else{
+                    await Car.findOneAndUpdate({ _id: information.carId },{
+                        currentKilometers: existingCar.currentKilometers + information.kilometers
+                    })
+                }
+        }
 
 
         let values = Object.values(req.body).map(e => JSON.parse(e))
