@@ -164,7 +164,6 @@ const createNewDriver = async (req,res) =>{
             pdfData:{
                 name: filename,
                 link: process.env.BASE_URL + 'profiles/' + filename,
-                createdAt:formattedDate
             }
         })
 
