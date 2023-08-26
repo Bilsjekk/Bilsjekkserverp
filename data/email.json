@@ -1,0 +1,4 @@
+{
+  "subject":"Email Subject",
+  "text":"this is a simple SMS template use _________{board}_________{private}_________{kilometers}_________{pnid}_________"
+}

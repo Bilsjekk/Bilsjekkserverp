@@ -5,9 +5,12 @@ const User = require('../models/usersModel')
 const Handlebars = require('handlebars')
 const puppeteer = require('puppeteer')
 const Car = require('../models/Car')
+const path = require('path')
+
 
 const { sendAlertMail } = require('../utils/smtp_service')
 const { sendAlertSMS } = require('../utils/sms_service')
+const { storeArchieve } = require('./pdf_archieve_controller')
 
 
 
@@ -15,24 +18,57 @@ const createNewDriver = async (req,res) =>{
     try{
         const { data, token } = req.headers
         const information = JSON.parse(decodeURIComponent(data))
-        console.log(information)
+
+        let decodedToken = jwt.verify(token,'your-secret-key')
+        let user = await User.findOne({ _id: decodedToken.userId })
+
         if(information.carId != undefined){
             let existingCar = await Car.findOne({ _id: information.carId })
             if(+information.kilometers + +existingCar.currentKilometers >= +existingCar.kilometers){
+                let emailData = fs.readFileSync(path.join(__dirname,'../data/email.json'),{ 
+                    encoding: 'utf8',
+                    flag: 'r'
+                })
+                
+                let emailJson = JSON.parse(emailData)
+                let emailSubject = emailJson.subject
+                .replace(/{private}/g, information.privateNumber)
+                .replace(/{board}/g, information.boardNumber)
+                .replace(/{pnid}/g, user.accountId)
+                .replace(/{kilometers}/g, existingCar.kilometers);
+
+                let emailText = emailJson.text
+                .replace(/{private}/g, information.privateNumber)
+                .replace(/{board}/g, information.boardNumber)
+                .replace(/{pnid}/g, user.accountId)
+                .replace(/{kilometers}/g, existingCar.kilometers);
+
+
                 sendAlertMail({
-                    to:'vaktleder@parknordic.no',
-                    subject:`Bil nr ${information.privateNumber} Trenger services`,
-                    text: `Bilen med skilt nr:${information.boardNumber} Og tjenesternr ${information.privateNumber} Har nå gått over service. Service blir i ${existingCar.kilometers} Kilometer`,
-                    html: `<h2>Bilen med skilt nr:${information.boardNumber} Og tjenesternr ${information.privateNumber} Har nå gått over service. Service blir i ${existingCar.kilometers} Kilometer</h2>`
-                    // text:`Car ${information.boardNumber + "  " + information.privateNumber} Exceeded ${existingCar.kilometers} By ${+information.kilometers + +existingCar.currentKilometers - +existingCar.kilometers}`,
-                    // html:`Car ${information.boardNumber + "  " + information.privateNumber} Exceeded ${existingCar.kilometers} By ${+information.kilometers + +existingCar.currentKilometers - +existingCar.kilometers}`
-                    
+                    to:'me@mutaz.no',
+                    subject: emailSubject,
+                    text: emailText,
+                    html: `<h2>${emailText}</h2>`                    
                 })
 
-                await sendAlertSMS(
-                    `Bilen med skilt nr:${information.boardNumber} Og tjenesternr ${information.privateNumber} Har nå gått over service. Service blir i ${existingCar.kilometers} Kilometer`,
-                    "4747931499"
-                );
+                let smsData = fs.readFileSync(path.join(__dirname,'../data/sms.json'),{ 
+                    encoding: 'utf8',
+                    flag: 'r'
+                })
+                
+                let smsJson = JSON.parse(smsData)
+                let smsText = smsJson.text
+                .replace(/{private}/g, information.privateNumber)
+                .replace(/{board}/g, information.boardNumber)
+                .replace(/{pnid}/g, user.accountId)
+                .replace(/{kilometers}/g, existingCar.kilometers);
+
+                console.log(smsText)
+
+                await sendAlertSMS({
+                    text: smsText,
+                    to:'4740088605'
+                });
 
                 await Car.findOneAndUpdate({ _id: information.carId },{
                     kilometers:0,
@@ -66,8 +102,7 @@ const createNewDriver = async (req,res) =>{
 
         // Load the HTML template
         const htmlTemplate = fs.readFileSync('templates/driver.html', 'utf8');
-        let decodedToken = jwt.verify(token,'your-secret-key')
-        let user = await User.findOne({ _id: decodedToken.userId })
+    
 
 
         const groupedImages = {};
@@ -82,7 +117,6 @@ const createNewDriver = async (req,res) =>{
             });
         }
 
-        console.log(groupedImages);
 
         // Replace placeholders with dynamic data
         const template_data = {
@@ -102,19 +136,6 @@ const createNewDriver = async (req,res) =>{
             }),
             groupedImages:groupedImages,
         };
-
-/*
-
-images: req.files.map(file =>{
-
-                return {
-                    fieldname: decodeURIComponent(file.fieldname),
-                    path: 
-                }
-            })
-
- */
-
 
         const filledTemplate = Handlebars.compile(htmlTemplate)(template_data);
 
@@ -140,6 +161,15 @@ images: req.files.map(file =>{
             createdAt:formattedDate
         })
 
+        await storeArchieve({
+            id: decodedToken.userId,
+            pdfData:{
+                name: filename,
+                link: process.env.BASE_URL + 'profiles/' + filename,
+                createdAt:formattedDate
+            }
+        })
+
         await pdf.save()
         console.log(`PDF saved: ${process.env.BASE_URL + 'profiles/' + filename}`);
 
@@ -152,16 +182,5 @@ images: req.files.map(file =>{
     }
 }
 
-const getAllDrivers = async (req,res) =>{
-    return res.status(200).json([])
-}
 
-const getDriverFile = async () =>{
-    try{
-
-    }catch (error){
-
-    }
-}
-
-module.exports = { createNewDriver, getAllDrivers, getDriverFile }
+module.exports = { createNewDriver }

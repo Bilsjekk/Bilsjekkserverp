@@ -21,9 +21,5 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 router.post('/drivers',upload.any(), createNewDriver)
-router.get('/drivers', getAllDrivers)
-
-
-router.get('/drivers/:id', getDriverFile)
 
 module.exports = router
