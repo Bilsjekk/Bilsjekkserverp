@@ -1,4 +1,4 @@
 {
-  "subject":"Email Subject",
-  "text":"this is a simple SMS template use _________{board}_________{private}_________{kilometers}_________{pnid}_________"
+  "subject":"Tid på service for bilnr {board}",
+  "text":"{pnid} har oppdaterer kjøretøyets {board}, tjenestenr er: {private}  kjørelengde {kilometers} og dette er den planlagte servicedatoen."
 }
