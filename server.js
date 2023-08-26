@@ -160,5 +160,5 @@ app.get('/',(req,res) =>{
     return res.status(200).render('index')
 })
 
-const port = process.env.port || 9090
+const port = process.env.port || 3000
 app.listen(port, () => console.log(`Server is running on port ${port}`))
