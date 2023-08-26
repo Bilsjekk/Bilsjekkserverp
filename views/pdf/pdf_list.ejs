@@ -71,7 +71,7 @@
         <input type="text" class="form-control mr-2" id="searchInput" placeholder="Søk etter dato, navn, bruker, ID eller lenke">
         <input type="date" class="form-control mr-2" id="datePicker" placeholder="Select a date">
         <button class="btn btn-danger btn-sm mr-2" data-toggle="modal" data-target="#deleteAllPdfModal" style="width: 240px;" >Slett alle</button>
-        <button class="btn btn-info btn-sm" style="width: 240px;" onclick="archieveAll()">Archieve All</button>
+        <button class="btn btn-info btn-sm" style="width: 240px;" onclick="archieveAll()">Arkiver alt</button>
     </div>
     <div class="table-responsive text-center">
 
@@ -103,8 +103,8 @@
                 <% pdfs.forEach(pdf => { %>
                     <tr>
                         <td><%= pdf.createdAt %></td>
-                        <td><%= pdf.userId?.name ?? 'Removed'  %></td>
-                        <td><%= pdf.userId?.accountId ?? "Unknown"  %></td>
+                        <td><%= pdf.userId?.name ?? 'Fjernet'  %></td>
+                        <td><%= pdf.userId?.accountId ?? "Ukjent"  %></td>
                         <td><a href="/pdfs/<%= pdf._id %>">Se PDF</a></td>
                         <td class="d-flex custom-pdf-controls">
                             <button class="btn btn-danger btn-sm w-100" data-toggle="modal" data-target="#deletePdfModal" data-id="<%= pdf._id %>">Slett</button>
