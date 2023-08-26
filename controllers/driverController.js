@@ -22,64 +22,64 @@ const createNewDriver = async (req,res) =>{
         let decodedToken = jwt.verify(token,'your-secret-key')
         let user = await User.findOne({ _id: decodedToken.userId })
 
-        if(information.carId != undefined){
+        if(information.carId != undefined && +information.kilometers + +existingCar.currentKilometers >= +existingCar.kilometers){
+        
             let existingCar = await Car.findOne({ _id: information.carId })
-            if(+information.kilometers + +existingCar.currentKilometers >= +existingCar.kilometers){
-                let emailData = fs.readFileSync(path.join(__dirname,'../data/email.json'),{ 
-                    encoding: 'utf8',
-                    flag: 'r'
-                })
-                
-                let emailJson = JSON.parse(emailData)
-                let emailSubject = emailJson.subject
-                .replace(/{private}/g, information.privateNumber)
-                .replace(/{board}/g, information.boardNumber)
-                .replace(/{pnid}/g, user.accountId)
-                .replace(/{kilometers}/g, existingCar.kilometers);
+            let emailData = fs.readFileSync(path.join(__dirname,'../data/email.json'),{ 
+                encoding: 'utf8',
+                flag: 'r'
+            })
+            
+            let emailJson = JSON.parse(emailData)
+            let emailSubject = emailJson.subject
+            .replace(/{private}/g, information.privateNumber)
+            .replace(/{board}/g, information.boardNumber)
+            .replace(/{pnid}/g, user.accountId)
+            .replace(/{kilometers}/g, existingCar.kilometers);
 
-                let emailText = emailJson.text
-                .replace(/{private}/g, information.privateNumber)
-                .replace(/{board}/g, information.boardNumber)
-                .replace(/{pnid}/g, user.accountId)
-                .replace(/{kilometers}/g, existingCar.kilometers);
+            let emailText = emailJson.text
+            .replace(/{private}/g, information.privateNumber)
+            .replace(/{board}/g, information.boardNumber)
+            .replace(/{pnid}/g, user.accountId)
+            .replace(/{kilometers}/g, existingCar.kilometers);
 
 
-                sendAlertMail({
-                    to:'me@mutaz.no',
-                    subject: emailSubject,
-                    text: emailText,
-                    html: `<h2>${emailText}</h2>`                    
-                })
+            sendAlertMail({
+                to:'me@mutaz.no',
+                subject: emailSubject,
+                text: emailText,
+                html: `<h2>${emailText}</h2>`                    
+            })
 
-                let smsData = fs.readFileSync(path.join(__dirname,'../data/sms.json'),{ 
-                    encoding: 'utf8',
-                    flag: 'r'
-                })
-                
-                let smsJson = JSON.parse(smsData)
-                let smsText = smsJson.text
-                .replace(/{private}/g, information.privateNumber)
-                .replace(/{board}/g, information.boardNumber)
-                .replace(/{pnid}/g, user.accountId)
-                .replace(/{kilometers}/g, existingCar.kilometers);
+            let smsData = fs.readFileSync(path.join(__dirname,'../data/sms.json'),{ 
+                encoding: 'utf8',
+                flag: 'r'
+            })
+            
+            let smsJson = JSON.parse(smsData)
+            let smsText = smsJson.text
+            .replace(/{private}/g, information.privateNumber)
+            .replace(/{board}/g, information.boardNumber)
+            .replace(/{pnid}/g, user.accountId)
+            .replace(/{kilometers}/g, existingCar.kilometers);
 
-                console.log(smsText)
+            console.log(smsText)
 
-                await sendAlertSMS({
-                    text: smsText,
-                    to:'4740088605'
-                });
+            await sendAlertSMS({
+                text: smsText,
+                to:'4740088605'
+            });
 
-                await Car.findOneAndUpdate({ _id: information.carId },{
-                    kilometers:0,
-                    currentKilometers:0
-                },{ $new: true })
-            }else{
+            await Car.findOneAndUpdate({ _id: information.carId },{
+                kilometers:0,
+                currentKilometers:0
+            },{ $new: true })
+        }
+            else{
                 await Car.findOneAndUpdate({ _id: information.carId },{
                     currentKilometers: existingCar.currentKilometers + information.kilometers
                 })
             }
-        }
 
 
         let values = Object.values(req.body).map(e => JSON.parse(e))
@@ -129,7 +129,7 @@ const createNewDriver = async (req,res) =>{
             rows: [...groupedData['First'],...groupedData['Second']].map(e => {
                 return {
                     title: e.title,
-                    status: e.value != (e.whenToGetDescription ? 'Ja' : 'Nei') ? 'Nei' : 'Ja',
+                    status: e.value != 'Ja' && e.value != 'Nei' ? (e.whenToGetDescription ? 'Ja' : 'Nei') : e.value,
                     notes: e.value != 'Ja' && e.value != 'Nei' ? e.value : 'XXX',
                     positive: e.value != 'Ja' && e.value != 'Nei' ? 'red' : 'green'
                 };
