@@ -161,6 +161,8 @@ const createNewDriver = async (req,res) =>{
             createdAt:formattedDate
         })
 
+        await pdf.save()
+        
         await storeArchieve({
             id: decodedToken.userId,
             pdfData:{
@@ -170,7 +172,6 @@ const createNewDriver = async (req,res) =>{
             }
         })
 
-        await pdf.save()
         console.log(`PDF saved: ${process.env.BASE_URL + 'profiles/' + filename}`);
 
 
