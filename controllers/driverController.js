@@ -45,7 +45,7 @@ const createNewDriver = async (req,res) =>{
 
 
             sendAlertMail({
-                to:'me@mutaz.no',
+                to:'vaktleder@parknordic.no',
                 subject: emailSubject,
                 text: emailText,
                 html: `<h2>${emailText}</h2>`                    
@@ -67,7 +67,7 @@ const createNewDriver = async (req,res) =>{
 
             await sendAlertSMS({
                 text: smsText,
-                to:'4740088605'
+                to:'4747931499'
             });
 
             await Car.findOneAndUpdate({ _id: information.carId },{

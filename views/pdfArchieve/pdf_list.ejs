@@ -40,6 +40,12 @@
                 width: 100% !important;
             }
         }
+
+        .card-grid{
+            display: grid;
+            grid-template-columns:1fr 1fr;
+            grid-gap: 1em;
+        }
     </style>
 </head>
 <body>
@@ -51,23 +57,21 @@
         <input type="text" class="form-control mr-3" id="searchInput" placeholder="Søk etter dato, navn, bruker, ID eller lenke">
         <input type="date" class="form-control" id="datePicker" placeholder="Select a date">
     </div>
-    <div class="row">
+    <div class="card-grid">
         <% pdfs.forEach(pdf => { %>
-            <div class="col-sm-6 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <p class="card-title">Dato: <%= pdf.createdAt %></p>
-                        <p class="card-text">Bruker: <%= pdf.username %></p>
-                        <p class="card-text">ID: <%= pdf.accountId %></p>
-                        <div class="d-flex justify-content-end align-items-center">
-                            <a href="/archieves/<%= pdf._id %>" class="btn btn-info">Se PDF</a>
-                        </div>
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">Dato: <%= pdf.createdAt %></p>
+                    <p class="card-text">Bruker: <%= pdf.username %></p>
+                    <p class="card-text">ID: <%= pdf.accountId %></p>
+                    <div class="d-flex justify-content-end align-items-center">
+                        <a href="/archieves/<%= pdf._id %>" class="btn btn-info">Se PDF</a>
                     </div>
                 </div>
             </div>
         <% }); %>
         <% if (pdfs.length === 0) { %>
-            <div class="col-12">
+            <div class="no-results">
                 <p>Ingen arkiver ennå</p>
             </div>
         <% } %>
@@ -96,9 +100,9 @@
     for (let i = 0; i < cards.length; i++) {
             const dateInfo = cards[i].querySelector('.card-title').textContent;
             if (dateInfo.includes(date)) {
-                cards[i].style.display = '';
+                cards[i].style.display = 'block !important';
             } else {
-                cards[i].style.display = 'none';
+                cards[i].style.display = 'none !important';
             }
         }
 
@@ -110,9 +114,9 @@
         for (let i = 0; i < cards.length; i++) {
             const cardContent = cards[i].textContent.toLowerCase();
             if (cardContent.includes(filter)) {
-                cards[i].style.display = '';
+                cards[i].style.display = 'block !important';
             } else {
-                cards[i].style.display = 'none';
+                cards[i].style.display = 'none !important';
             }
         }
     });
