@@ -42,7 +42,7 @@ app.post('/api/archieves', async (req,res) =>{
         })
 
         for(let pdf of pdfs){
-            let isExisting = await PDFArchieve.find({
+            let isExisting = await PDFArchieve.findOne({
                 accountId: pdf.userId.accountId,
                 link:pdf.link,
                 createdAt:pdf.createdAt
@@ -160,5 +160,5 @@ app.get('/',(req,res) =>{
     return res.status(200).render('index')
 })
 
-const port = process.env.port || 3000
+const port = process.env.port || 9090
 app.listen(port, () => console.log(`Server is running on port ${port}`))
