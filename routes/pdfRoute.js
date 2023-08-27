@@ -13,9 +13,9 @@ router.delete('/pdfs/:id', async (req,res) =>{
         console.log(pdf)
 
         let vDeleted = await Violation.deleteOne({ 
-            accountId:pdf.userId.accountId,
+            accountId:pdf.userId?.accountId ?? 'xxx',
             createdAt: pdf.createdAt,
-            username:pdf.userId.name
+            username:pdf.userId?.name ?? 'xxx'
          })
 
          console.log(vDeleted)
