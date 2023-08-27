@@ -231,29 +231,29 @@
         // deletePdfModal.classList.add('show');
         // deletePdfModal.style.display = 'block';
 
-        // fetch(`/api/pdfs/${pdfId}`, {
-        //     method: 'DELETE',
-        //     headers: {
-        //         'Content-Type': 'application/json;charset=utf-8'
-        //     },
-        // })
-        //     .then(response => {
-        //         if (response.status == 200) {
-        //             // Handle success
-        //             deletePdfModal.classList.remove('show'); // Dismiss the modal
-        //             document.querySelector('.custom-pdf-container').prepend(successAlert);
-        //             setTimeout(() => location.reload(),3000)
-        //         } else {
-        //             // Handle error
-        //             deletePdfModal.classList.remove('show'); // Dismiss the modal
-        //             document.querySelector('.custom-pdf-container').prepend(failureAlert);
-        //         }
-        //     })
-        //     .catch(error => {
-        //         console.error('Error:', error);
-        //         deletePdfModal.classList.remove('show'); // Dismiss the modal
-        //         document.querySelector('.custom-pdf-container').prepend(failureAlert);
-        //     });
+        fetch(`/api/pdfs/${pdfId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+        })
+            .then(response => {
+                if (response.status == 200) {
+                    // Handle success
+                    deletePdfModal.classList.remove('show'); // Dismiss the modal
+                    document.querySelector('.custom-pdf-container').prepend(successAlert);
+                    setTimeout(() => location.reload(),3000)
+                } else {
+                    // Handle error
+                    deletePdfModal.classList.remove('show'); // Dismiss the modal
+                    document.querySelector('.custom-pdf-container').prepend(failureAlert);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                deletePdfModal.classList.remove('show'); // Dismiss the modal
+                document.querySelector('.custom-pdf-container').prepend(failureAlert);
+            });
     }
 
     const deleteAllPdfModal = document.getElementById('deleteAllPdfModal');
