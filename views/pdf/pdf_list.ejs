@@ -169,7 +169,7 @@
             const dateCell = tableRows[i].getElementsByTagName('td')[0]; // Adjust the index as per your table structure
             console.log(dateCell.innerText)
             if (dateCell && dateCell.innerText == selectedDate) {
-                tableRows[i].style.display = 'block';
+                tableRows[i].style.display = '';
             } else {
                 tableRows[i].style.display = 'none';
             }
@@ -183,7 +183,7 @@
             const dateCell = tableRows[i].getElementsByTagName('td')[0]; // Adjust the index as per your table structure
             console.log(dateCell.innerText)
             if (dateCell && dateCell.innerText == date) {
-                tableRows[i].style.display = 'block';
+                tableRows[i].style.display = '';
             } else {
                 tableRows[i].style.display = 'none';
             }
