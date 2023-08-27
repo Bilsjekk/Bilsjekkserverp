@@ -144,6 +144,35 @@ router.get('/violations/:id',async (req,res) =>{
       } catch (err) {
         console.error('Error:', err);
       }
+    }else if(id == 6){
+      const now = new Date();
+      const yesterday = new Date();
+      yesterday.setDate(now.getDate() - 1);
+    
+      try {
+        const result = await Violation.aggregate([
+          {
+            $match: {
+              createdAt: {
+                $gte: new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate(), 0, 0, 0),
+                $lt: new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate(), 23, 59, 59)
+              }
+            }
+          },
+          {
+            $group: {
+              _id: null,
+              totalViolations: { $sum: '$violations' } // Sum the violations field
+            }
+          }
+        ]);
+    
+        const totalViolations = result.length > 0 ? result[0].totalViolations : 0;
+        console.log('Total violations for yesterday:', totalViolations);
+        return res.send(totalViolations.toString())
+      } catch (err) {
+        console.error('Error:', err);
+      }
     }else{
       return res.send("0")
     }
