@@ -40,16 +40,29 @@
             border-radius: 8px;
             padding: 20px;
             flex: 1;
+            flex-direction: column;
             text-align: center;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        .stat-card h2 {
-            font-size: 32px;
-            margin-bottom: 10px;
+        .stat-card select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
         }
+
+        .stat-card .info{
+            width: 100%;
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
 
         .notifications {
             background-color: #f5f5f5;
@@ -102,6 +115,8 @@
         }
 
 
+
+
     </style>
 </head>
 <body>
@@ -112,9 +127,18 @@
 
     <div class="statistics">
         <div class="stat-card" style="margin-right: 12px">
-<!--            <h2>Total Users</h2>-->
-<!--            <span>1500</span>-->
-            <h2>Snart</h2>
+            <select name="violationsFilter" id="violationsFilter" onchange="updateViolationCount()">
+                <option value="0">All Time</option>
+                <option value="1">Today</option>
+                <option value="2">3 days</option>
+                <option value="3">one week</option>
+                <option value="4">one month</option>
+                <option value="5">one year</option>
+            </select>
+            <div class="info">
+                <h3>Violations</h3>
+                <p id="vio-num"></p>
+            </div>
         </div>
         <div class="stat-card">
             <h2>Snart</h2>
@@ -146,5 +170,36 @@
 </div>
 <script src="https://kit.fontawesome.com/7d365a7c21.js" crossorigin="anonymous"></script>
 
+<script>
+    async function fetchData(url) {
+        const response = await fetch(url);
+        if (response.status === 200) {
+            return await response.json();
+        } else {
+            throw new Error('Failed to fetch data');
+        }
+    }
+
+    async function updateViolationCount() {
+        const holder = document.getElementById('vio-num');
+        const selectVio = document.getElementById('violationsFilter');
+        const value = selectVio.value;
+
+        try {
+            const data = await fetchData(`/api/violations/${value}`);
+            holder.textContent = data;
+        } catch (error) {
+            console.error(error);
+            alert('Something went wrong');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateViolationCount();
+
+        const selectVio = document.getElementById('violationsFilter');
+        selectVio.addEventListener('change', updateViolationCount);
+    });
+</script>
 </body>
 </html>

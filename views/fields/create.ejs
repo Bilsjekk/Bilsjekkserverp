@@ -26,7 +26,7 @@
         </div>
         <div class="form-group">
             <label for="group">Gruppe</label>
-            <select class="form-control" id="group" name="group">
+            <select class="form-control" id="group" name="group" required>
                 <% groups.forEach(group => { %>
                     <option value="<%= group._id %>"><%= group.name %></option>
                 <% }); %>
@@ -35,20 +35,21 @@
 
         <div class="form-group">
             <label for="form">Skjema</label>
-            <select class="form-control" id="form" name="form">
+            <select class="form-control" id="form" name="form" required>
                 <option value="First">Første</option>
                 <option value="Second">Andre</option>
             </select>
+        </div>
+
+        <div class="form-group" id="requiredDescriptionField">
+            <label for="requiredDescription">Beskrivelse</label>
+            <input type="text" class="form-control" id="requiredDescription" name="requiredDescription" required>
         </div>
 
         <!-- Display these fields only for "Ja-Nei" question type -->
         <div class="form-group form-check" style="display: none;" id="requiredDescriptionGroup">
             <input type="checkbox" class="form-check-input" id="hasRequiredDescription" onchange="toggleRequiredDescription()" name="hasRequiredDescription">
             <label class="form-check-label" for="hasRequiredDescription">Har nødvendig beskrivelse?</label>
-        </div>
-        <div class="form-group" style="display: none;" id="requiredDescriptionField">
-            <label for="requiredDescription">Nødvendig beskrivelse</label>
-            <input type="text" class="form-control" id="requiredDescription" name="requiredDescription" disabled>
         </div>
         <div class="form-group" style="display: none;" id="positiveGroup">
             <label for="positive">Velg når du vil få beskrivelse</label>
@@ -61,10 +62,8 @@
         <script>
             // Function to enable/disable the required description based on checkbox state
             function toggleRequiredDescription() {
-                const requiredDescriptionInput = document.getElementById("requiredDescription");
                 const positive = document.getElementById("positive");
                 const checkbox = document.getElementById("hasRequiredDescription");
-                requiredDescriptionInput.disabled = !checkbox.checked;
                 positive.disabled = !checkbox.checked;
             }
 
@@ -94,16 +93,13 @@
             function toggleAdditionalFields() {
                 const answerDataType = document.getElementById("answerDataType");
                 const requiredDescriptionGroup = document.getElementById("requiredDescriptionGroup");
-                const requiredDescriptionField = document.getElementById("requiredDescriptionField");
                 const positiveGroup = document.getElementById("positiveGroup");
 
                 if (answerDataType.value === "yes_no") {
                     requiredDescriptionGroup.style.display = "block";
-                    requiredDescriptionField.style.display = "block";
                     positiveGroup.style.display = "block";
                 } else {
                     requiredDescriptionGroup.style.display = "none";
-                    requiredDescriptionField.style.display = "none";
                     positiveGroup.style.display = "none";
                 }
             }
@@ -130,7 +126,7 @@
                             group: group.value,
                             form: form.value,
                             hasRequiredDescription: hasRequiredDescription.checked,
-                            requiredDescription: hasRequiredDescription.checked ? requiredDescription.value : undefined,
+                            requiredDescription: requiredDescription.value,
                             answerDataType: answerDataType.value,
                             whenToGetDescription: whenToGetDescription.value == 'yes'
                         }),
@@ -147,7 +143,7 @@
                         }, 3000);
                     } else {
                         // Show failure alert
-                        showAlert('danger', 'Failed To Create Field');
+                        showAlert('danger', 'Kunne ikke opprette felt');
                     }
                 } catch (error) {
                     console.error('Feil oppsto:', error);

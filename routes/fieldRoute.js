@@ -36,7 +36,7 @@ router.post('/formFields/', async (req, res) => {
         return res.status(200).json(formField);
     } catch (error) {
         console.log(error.message)
-        return res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: error.message });
     }
 });
 
@@ -72,8 +72,6 @@ router.get('/formFields/form/:formName', async (req,res) =>{
     try{
         const {formName} = req.params
 
-        let add = await FormField.find({})
-        console.log(add)
         const formFields = await FormField.find({ form: formName }).populate({
             path:'group',
             ref:'Group'

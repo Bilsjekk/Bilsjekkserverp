@@ -23,7 +23,7 @@ const FormFieldSchema = new mongoose.Schema({
     },
     requiredDescription:{
         type:String,
-        default: ""
+        required:true
     },
     whenToGetDescription:{
         type: Boolean,

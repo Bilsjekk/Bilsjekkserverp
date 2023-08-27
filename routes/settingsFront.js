@@ -20,9 +20,15 @@ router.get('/settings',(req,res) =>{
     flag: 'r'
    })
 
+   let applicationData = fs.readFileSync(path.join(__dirname,'../data/application.json'),{ 
+    encoding: 'utf8',
+    flag: 'r'
+   })
+
    let emailJson = JSON.parse(emailData)
    let smsJson = JSON.parse(smsData)
    let credentialsJson = JSON.parse(credentialsData)
+   let applicationJson = JSON.parse(applicationData)
 
 
   return res.status(200).render('settings/index',{
@@ -33,6 +39,10 @@ router.get('/settings',(req,res) =>{
 
     username: credentialsJson.username,
     password: credentialsJson.password,
+
+    kilometer: applicationJson.kilometer,
+    car: applicationJson.car,
+    shift: applicationJson.shift,
 
   })
 })

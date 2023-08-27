@@ -41,13 +41,15 @@
                 <% }); %>
             </select>
         </div>
+
+        <div class="form-group" id="requiredDescriptionGroup">
+            <label for="requiredDescription">Nødvendig beskrivelse</label>
+            <input type="text" class="form-control" id="requiredDescription" name="requiredDescription" value="<%= formField.requiredDescription %>">
+        </div>
+
         <div class="form-group form-check" style="display: none" id="hasRequiredDescriptionGroup">
             <input type="checkbox" class="form-check-input" id="hasRequiredDescription" name="hasRequiredDescription" <%= formField.hasRequiredDescription ? 'checked' : '' %> onchange="toggleRequiredDescription()">
             <label class="form-check-label" for="hasRequiredDescription">Har nødvendig beskrivelse</label>
-        </div>
-        <div class="form-group" style="display: none" id="requiredDescriptionGroup">
-            <label for="requiredDescription">Nødvendig beskrivelse</label>
-            <input type="text" class="form-control" id="requiredDescription" name="requiredDescription" disabled value="<%= formField.requiredDescription %>">
         </div>
         <div class="form-group" style="display: none;" id="positiveGroup">
             <label for="positive">Velg når du vil få beskrivelse</label>
@@ -73,10 +75,8 @@
 
 <script>
     function toggleRequiredDescription() {
-        const requiredDescriptionInput = document.getElementById("requiredDescription");
         const positive = document.getElementById("positive");
         const checkbox = document.getElementById("hasRequiredDescription");
-        requiredDescriptionInput.disabled = !checkbox.checked;
         positive.disabled = !checkbox.checked;
     }
 
@@ -84,17 +84,14 @@
     function toggleAdditionalFields() {
         const answerDataType = document.getElementById("answerDataType");
         const requiredDescriptionGroup = document.getElementById("hasRequiredDescriptionGroup"); // Corrected ID
-        const requiredDescriptionField = document.getElementById("requiredDescriptionGroup"); // Corrected ID
         const positiveGroup = document.getElementById("positiveGroup"); // Corrected ID
 
         console.log(answerDataType.value)
         if (answerDataType.value === "yes_no") {
             requiredDescriptionGroup.style.display = "block";
-            requiredDescriptionField.style.display = "block";
             positiveGroup.style.display = "block";
         } else {
             requiredDescriptionGroup.style.display = "none";
-            requiredDescriptionField.style.display = "none";
             positiveGroup.style.display = "none";
         }
     }

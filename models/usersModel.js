@@ -23,6 +23,5 @@ const userSchema = new mongoose.Schema({
 
 // Define the User model
 const User = mongoose.model('User', userSchema);
-console.log(User.findI)
 
 module.exports = User;
