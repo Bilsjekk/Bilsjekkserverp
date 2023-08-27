@@ -53,6 +53,7 @@ router.get('/violations/:id',async (req,res) =>{
 
         const totalViolations = result.length > 0 ? result[0].totalViolations : 0;
         console.log('Total violations in the last 3 days:', totalViolations);
+        return res.send(totalViolations.toString())
       } catch (err) {
         console.error('Error:', err);
       }
@@ -81,6 +82,7 @@ router.get('/violations/:id',async (req,res) =>{
 
         const totalViolations = result.length > 0 ? result[0].totalViolations : 0;
         console.log('Total violations in the last one week:', totalViolations);
+        return res.send(totalViolations.toString())
       } catch (err) {
         console.error('Error:', err);
       }
@@ -109,6 +111,7 @@ router.get('/violations/:id',async (req,res) =>{
 
         const totalViolations = result.length > 0 ? result[0].totalViolations : 0;
         console.log('Total violations in the last one month:', totalViolations);
+        return res.send(totalViolations.toString())
       } catch (err) {
         console.error('Error:', err);
       }
@@ -137,6 +140,7 @@ router.get('/violations/:id',async (req,res) =>{
 
         const totalViolations = result.length > 0 ? result[0].totalViolations : 0;
         console.log('Total violations in the last one year:', totalViolations);
+        return res.send(totalViolations.toString())
       } catch (err) {
         console.error('Error:', err);
       }

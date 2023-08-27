@@ -35,7 +35,7 @@
         }
 
         .stat-card {
-            background-color: white;
+            background-color: #209873;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             padding: 20px;
@@ -47,12 +47,13 @@
             align-items: center;
         }
 
-        .stat-card select {
+        #violationsFilter {
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 16px;
+            margin-bottom: 12px;
         }
 
         .stat-card .info{
@@ -125,25 +126,25 @@
 <div class="container">
     <div class="welcome-message">Hei, Admin!</div>
 
+    <select name="violationsFilter" id="violationsFilter">
+        <option value="0">All Time</option>
+        <option value="1">Today</option>
+        <option value="2">3 days</option>
+        <option value="3">one week</option>
+        <option value="4">one month</option>
+        <option value="5">one year</option>
+    </select>
+
     <div class="statistics">
         <div class="stat-card" style="margin-right: 12px">
-            <select name="violationsFilter" id="violationsFilter" onchange="updateViolationCount()">
-                <option value="0">All Time</option>
-                <option value="1">Today</option>
-                <option value="2">3 days</option>
-                <option value="3">one week</option>
-                <option value="4">one month</option>
-                <option value="5">one year</option>
-            </select>
-            <div class="info">
-                <h3>Violations</h3>
-                <p id="vio-num"></p>
-            </div>
+            <h3>Total K.S: <span id="vio-num"></span></h3>
         </div>
+        <div class="stat-card" style="margin-right: 12px">
+            <h2>Snart</h2>
+        </div>
+
         <div class="stat-card">
             <h2>Snart</h2>
-<!--            <h2>Total PDFS</h2>-->
-<!--            <span>3000</span>-->
         </div>
     </div>
 
@@ -184,13 +185,14 @@
         const holder = document.getElementById('vio-num');
         const selectVio = document.getElementById('violationsFilter');
         const value = selectVio.value;
+        console.log(value);
 
         try {
             const data = await fetchData(`/api/violations/${value}`);
+            console.log(data);
             holder.textContent = data;
         } catch (error) {
             console.error(error);
-            alert('Something went wrong');
         }
     }
 
