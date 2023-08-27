@@ -1,10 +1,30 @@
 const express = require('express')
 const router = express.Router()
 const PDF = require('../models/PDF')
+const Violation = require('../models/Violation')
 
 router.delete('/pdfs/:id', async (req,res) =>{
     try{
-        await PDF.findOneAndDelete({ _id: req.params.id });
+        let pdf = await PDF.findOne({ _id: req.params.id }).populate({
+            path:'userId',
+            ref:'User'
+        })
+
+        console.log(pdf)
+
+        let vDeleted = await Violation.deleteOne({ 
+            accountId:pdf.userId.accountId,
+            createdAt: pdf.createdAt,
+            username:pdf.userId.name
+         })
+
+         console.log(vDeleted)
+
+        let dPdf = await PDF.deleteOne({
+            _id: req.params.id
+        });
+
+        console.log(dPdf)
         return res.status(200).send("PDF Was Deleted")
     }catch (error){
         return res.status(500).send(error.message)
