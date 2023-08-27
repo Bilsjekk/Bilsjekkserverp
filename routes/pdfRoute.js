@@ -27,6 +27,7 @@ router.delete('/pdfs/:id', async (req,res) =>{
         console.log(dPdf)
         return res.status(200).send("PDF Was Deleted")
     }catch (error){
+        console.log(error.message)
         return res.status(500).send(error.message)
     }
 })
