@@ -48,8 +48,8 @@ textarea{
 <body>
     <%- include('../components/navbar.ejs') %>
     <div class="tab">
-      <button class="tablinks" onclick="openSection(event, 'general')">General</button>
-      <button class="tablinks" onclick="openSection(event, 'application')">Application</button>
+      <button class="tablinks" onclick="openSection(event, 'general')">Generell</button>
+      <button class="tablinks" onclick="openSection(event, 'application')">applikasjon</button>
     </div>
 
     <div class="mt-4"></div>
@@ -124,45 +124,45 @@ textarea{
     <div class="container tabcontent" id="application">
       <div class="card mb-4">
           <div class="card-body">
-              <h2 class="card-title">Shift Select Information</h2>
+              <h2 class="card-title">Skift Velg Informasjon</h2>
               <div>
                   <div class="mb-3">
-                      <label for="shiftSelectText" class="form-label">Text</label>
+                      <label for="shiftSelectText" class="form-label">Tekst</label>
                       <textarea id="shiftSelectText" name="shiftSelectText" class="form-control" rows="6" required><%= shift %></textarea>
                   </div>
               </div>
               <div class="d-flex justify-content-end align-items-center">
-                  <button type="submit" class="btn btn-info" onclick="updateShiftSelectText()">Save</button>
+                  <button type="submit" class="btn btn-info" onclick="updateShiftSelectText()">Lagre</button>
               </div>
           </div>
       </div>
   
       <div class="card mb-4">
           <div class="card-body">
-              <h2 class="card-title">Car Selection Information</h2>
+              <h2 class="card-title">Informasjon om bilvalg</h2>
               <div>
                   <div class="mb-3">
-                      <label for="carSelectText" class="form-label">Text</label>
+                      <label for="carSelectText" class="form-label">Tekst</label>
                       <textarea id="carSelectText" name="carSelectText" class="form-control" rows="6" required><%= car %></textarea>
                   </div>
               </div>
               <div class="d-flex justify-content-end align-items-center">
-                  <button type="submit" class="btn btn-info" onclick="updateCarSelectText()">Save</button>
+                  <button type="submit" class="btn btn-info" onclick="updateCarSelectText()">Lagre</button>
               </div>
           </div>
       </div>
   
       <div class="card">
           <div class="card-body">
-              <h2 class="card-title">Service Kilometers Description</h2>
+              <h2 class="card-title">Service Kilometer Beskrivelse</h2>
               <div>
                   <div class="mb-3">
-                      <label for="serviceKilometersText" class="form-label">Text</label>
+                      <label for="serviceKilometersText" class="form-label">Tekst</label>
                       <textarea id="serviceKilometersText" name="serviceKilometersText" class="form-control" rows="6"><%= kilometer %></textarea>
                   </div>
               </div>
               <div class="d-flex justify-content-end align-items-center">
-                  <button type="submit" class="btn btn-info" onclick="updateServiceKilometersText()">Save</button>
+                  <button type="submit" class="btn btn-info" onclick="updateServiceKilometersText()">Lagre</button>
               </div>
           </div>
       </div>
