@@ -169,7 +169,7 @@
             const dateCell = tableRows[i].getElementsByTagName('td')[0]; // Adjust the index as per your table structure
             console.log(dateCell.innerText)
             if (dateCell && dateCell.innerText == selectedDate) {
-                tableRows[i].style.display = '';
+                tableRows[i].style.display = 'block';
             } else {
                 tableRows[i].style.display = 'none';
             }
@@ -183,7 +183,7 @@
             const dateCell = tableRows[i].getElementsByTagName('td')[0]; // Adjust the index as per your table structure
             console.log(dateCell.innerText)
             if (dateCell && dateCell.innerText == date) {
-                tableRows[i].style.display = '';
+                tableRows[i].style.display = 'block';
             } else {
                 tableRows[i].style.display = 'none';
             }
@@ -228,32 +228,32 @@
     function deletePdf(pdfId) {
         console.log(pdfId);
         // Open the Bootstrap modal
-        deletePdfModal.classList.add('show');
-        deletePdfModal.style.display = 'block';
+        // deletePdfModal.classList.add('show');
+        // deletePdfModal.style.display = 'block';
 
-        fetch(`/api/pdfs/${pdfId}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8'
-            },
-        })
-            .then(response => {
-                if (response.status == 200) {
-                    // Handle success
-                    deletePdfModal.classList.remove('show'); // Dismiss the modal
-                    document.querySelector('.custom-pdf-container').prepend(successAlert);
-                    setTimeout(() => location.reload(),3000)
-                } else {
-                    // Handle error
-                    deletePdfModal.classList.remove('show'); // Dismiss the modal
-                    document.querySelector('.custom-pdf-container').prepend(failureAlert);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                deletePdfModal.classList.remove('show'); // Dismiss the modal
-                document.querySelector('.custom-pdf-container').prepend(failureAlert);
-            });
+        // fetch(`/api/pdfs/${pdfId}`, {
+        //     method: 'DELETE',
+        //     headers: {
+        //         'Content-Type': 'application/json;charset=utf-8'
+        //     },
+        // })
+        //     .then(response => {
+        //         if (response.status == 200) {
+        //             // Handle success
+        //             deletePdfModal.classList.remove('show'); // Dismiss the modal
+        //             document.querySelector('.custom-pdf-container').prepend(successAlert);
+        //             setTimeout(() => location.reload(),3000)
+        //         } else {
+        //             // Handle error
+        //             deletePdfModal.classList.remove('show'); // Dismiss the modal
+        //             document.querySelector('.custom-pdf-container').prepend(failureAlert);
+        //         }
+        //     })
+        //     .catch(error => {
+        //         console.error('Error:', error);
+        //         deletePdfModal.classList.remove('show'); // Dismiss the modal
+        //         document.querySelector('.custom-pdf-container').prepend(failureAlert);
+        //     });
     }
 
     const deleteAllPdfModal = document.getElementById('deleteAllPdfModal');
