@@ -107,7 +107,7 @@
                         <td><%= pdf.userId?.accountId ?? "Ukjent"  %></td>
                         <td><a href="/pdfs/<%= pdf._id %>">Se PDF</a></td>
                         <td class="d-flex custom-pdf-controls">
-                            <button class="btn btn-danger btn-sm w-100" data-toggle="modal" data-target="#deletePdfModal" data-id="<%= pdf._id %>">Slett</button>
+                            <button class="btn btn-danger btn-sm w-100" onclick="deletePdf('<%= pdf._id %>')">Slett</button>
                         </td>
                     </tr>
 
