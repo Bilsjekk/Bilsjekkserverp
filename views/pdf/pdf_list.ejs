@@ -107,11 +107,11 @@
                         <td><%= pdf.userId?.accountId ?? "Ukjent"  %></td>
                         <td><a href="/pdfs/<%= pdf._id %>">Se PDF</a></td>
                         <td class="d-flex custom-pdf-controls">
-                            <button class="btn btn-danger btn-sm w-100" onclick="deletePdf('<%= pdf._id %>')">Slett</button>
+                            <button class="btn btn-danger btn-sm w-100" data-toggle="modal" data-target="#deletePdfModal<%= pdf._id %>">Slett</button>
                         </td>
                     </tr>
 
-                    <div class="modal fade" id="deletePdfModal" tabindex="-1" aria-labelledby="deletePdfModalLabel" aria-hidden="true">
+                    <div class="modal fade" id="deletePdfModal<%= pdf._id %>" tabindex="-1" aria-labelledby="deletePdfModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -130,6 +130,8 @@
                             </div>
                         </div>
                     </div>
+                    
+
                 <% }); %>
             <%}%>
             </tbody>
@@ -239,10 +241,8 @@
         })
             .then(response => {
                 if (response.status == 200) {
-                    // Handle success
-                    deletePdfModal.classList.remove('show'); // Dismiss the modal
                     document.querySelector('.custom-pdf-container').prepend(successAlert);
-                    setTimeout(() => location.reload(),3000)
+                    setTimeout(() => location.reload(),2000)
                 } else {
                     // Handle error
                     deletePdfModal.classList.remove('show'); // Dismiss the modal
