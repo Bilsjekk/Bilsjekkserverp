@@ -40,29 +40,9 @@
             border-radius: 8px;
             padding: 20px;
             flex: 1;
-            flex-direction: column;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
-        #violationsFilter {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            margin-bottom: 12px;
-        }
-
-        .stat-card .info{
-            width: 100%;
-            margin-top: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        
 
 
         .notifications {
@@ -115,8 +95,48 @@
             background-color: #0056b3;
         }
 
+        .stat-card{
+            background-color: #5601cc;
+            color: white;
+            font-size: 24px;
+        }
 
 
+        .ks{
+            display: flex;
+        }
+
+        #violationsFilter {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .ks i{
+            font-size: 40px !important;
+        }
+
+        .ks > *{
+            flex-grow: 1;
+        }
+
+        .ks > :first-child{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ks > :last-child{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        
 
     </style>
 </head>
@@ -137,8 +157,15 @@
     </select>
 
     <div class="statistics">
-        <div class="stat-card" style="margin-right: 12px">
-            <h3>Total K.S: <span id="vio-num"></span></h3>
+        <div class="stat-card ks" style="margin-right: 12px">
+            <div class="info">
+                <span id="vio-num" style="margin-right: 10px;"></span>
+                <span>Violations</span>
+            </div>
+
+            <div class="icon">
+                <i class="fas fa-car"></i> 
+            </div>
         </div>
         <div class="stat-card" style="margin-right: 12px">
             <h2>Snart</h2>
