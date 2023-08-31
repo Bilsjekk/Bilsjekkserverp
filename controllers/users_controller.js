@@ -5,14 +5,6 @@ const jwt = require('jsonwebtoken');
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const token = req.headers.token;
-    const decodedToken = jwt.verify(token, 'ManagerLoginKey');
-    const role = decodedToken.role;
-
-    if (role !== 'admin') {
-      return res.status(403).json({ error: 'Forbidden' });
-    }
-
     const users = await User.find({}, { __v: false });
     return res.status(200).json(users);
   } catch (error) {
