@@ -6,6 +6,7 @@ const User = require('../models/usersModel')
 const Handlebars = require('handlebars')
 const puppeteer = require('puppeteer')
 const Car = require('../models/Car')
+const Accident = require('../models/Accident')
 const path = require('path')
 
 
@@ -50,7 +51,7 @@ const createNewDriver = async (req,res) =>{
     
                 sendAlertMail({
                     //to:'me@mutaz.no',
-                     to:"vaktleder@parknordic.no",
+                    to:"vaktleder@parknordic.no",
                     subject: emailSubject,
                     text: emailText,
                     html: `<h2>${emailText}</h2>`                    
@@ -152,35 +153,56 @@ const createNewDriver = async (req,res) =>{
         await page.setContent(filledTemplate);
         await page.pdf({ path: `./public/profiles/${filename}`, format: 'A4' });
 
+        const now = new Date();
+        const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+        const localDateString = localDate.toISOString().split('T')[0];
+        const localTimeString = localDate.toISOString().split('T')[1];
+
         let pdf = new PDF({
             name: filename,
             link: process.env.BASE_URL + 'profiles/' + filename,
             userId: decodedToken.userId,
+            createdAt: localDateString,
+            time: localTimeString
         })
 
-        
-
         await pdf.save()
+        console.log(`PDF saved: ${process.env.BASE_URL + 'profiles/' + filename}`);
         
         await storeArchieve({
             id: decodedToken.userId,
             pdfData:{
                 name: filename,
                 link: process.env.BASE_URL + 'profiles/' + filename,
+                createdAt:localDateString,
+                time:localTimeString
             }
         })
 
-        console.log(`PDF saved: ${process.env.BASE_URL + 'profiles/' + filename}`);
-
-        console.log(information.trafficViolations)
-        console.log(eval(information.trafficViolations))
         let violation = new Violation({
             username:user.name,
             accountId:user.accountId,
-            violations:eval(information.trafficViolations)
+            violations:eval(information.trafficViolations),
+            createdAt:localDateString,
+            time:localTimeString
         })
 
         await violation.save()
+
+        if(information.accidents > 0 && information.carId != undefined){
+            let existingCar = await Car.findOne({ _id: information.carId })
+
+            let accident = new Accident({
+                username:user.name,
+                pnid:user.accountId,
+                boardNumber: existingCar.boardNumber,
+                privateNumber: existingCar.privateNumber,
+                createdAt: localDateString,
+                time: localTimeString
+            })
+
+            await accident.save()
+        }
 
 
         await browser.close();

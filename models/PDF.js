@@ -17,6 +17,10 @@ const PDFSchema = new mongoose.Schema({
         type: String,
         default: new Date().toISOString().split('T')[0]
     },
+    time:{
+        type: String,
+        default: new Date().toISOString().split('T')[1]
+    }
 })
 
 const PDFModel = mongoose.model('PDF', PDFSchema)

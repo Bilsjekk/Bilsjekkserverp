@@ -7,7 +7,7 @@ const storeArchieve = async ({ id, pdfData }) =>{
   const archieve = new PDFArchieve({
     ...pdfData,
     username:user.name,
-    accountId: user.accountId
+    accountId: user.accountId,
   })
 
   console.log(archieve)

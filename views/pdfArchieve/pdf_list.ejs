@@ -95,11 +95,13 @@
         }
     });
 
-    const date = new Date().toISOString().split('T')[0]
+    const now = new Date();
+    const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+    const localDateString = localDate.toISOString().split('T')[0];
 
     for (let i = 0; i < cards.length; i++) {
             const dateInfo = cards[i].querySelector('.card-title').textContent;
-            if (dateInfo == date) {
+            if (dateInfo == localDateString) {
                 cards[i].style.display = '';
             } else {
                 cards[i].style.display = 'none';

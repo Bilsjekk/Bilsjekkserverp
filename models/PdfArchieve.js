@@ -21,6 +21,10 @@ const PDFArchieveSchema = new mongoose.Schema({
         type: String,
         default: new Date().toISOString().split('T')[0]
     },
+    time:{
+      type: String,
+      default: new Date().toISOString().split('T')[1]
+    }
 })
 
 const PDFArchieveModel = mongoose.model('PDFArchieve', PDFArchieveSchema)

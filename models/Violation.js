@@ -18,6 +18,10 @@ const violationSchema = new mongoose.Schema({
     type: String,
     default: new Date().toISOString().split('T')[0]
   },
+  time:{
+    type: String,
+    default: new Date().toISOString().split('T')[1]
+}
 });
 
 // Define the User model
