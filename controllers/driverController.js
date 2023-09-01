@@ -189,7 +189,11 @@ const createNewDriver = async (req,res) =>{
 
         await violation.save()
 
-        if(information.accidents > 0 && information.carId != undefined){
+	let filteredWanted = groupedData['First'].filter(e => {
+            return e.title.includes('Lakk/bulker/merker')
+        })
+
+        if((filteredWanted[0].value != 'Ja' || filteredWanted[0].value != 'Nei') && information.carId != undefined){
             let existingCar = await Car.findOne({ _id: information.carId })
 
             let accident = new Accident({
@@ -197,6 +201,7 @@ const createNewDriver = async (req,res) =>{
                 pnid:user.accountId,
                 boardNumber: existingCar.boardNumber,
                 privateNumber: existingCar.privateNumber,
+                content:filteredWanted[0].value,
                 createdAt: localDateString,
                 time: localTimeString
             })

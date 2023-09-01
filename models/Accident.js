@@ -21,6 +21,10 @@ const AccidentSchema = new mongoose.Schema({
       type:String,
       required: true
     },
+    content:{
+      type: String,
+      required: true
+    },
     time:{
       type: String,
       default: new Date().toISOString().split('T')[1]
