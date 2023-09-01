@@ -17,9 +17,9 @@ router.get('/violations/:id',async (req,res) =>{
       return res.send(totalViolations.toString())      
     }else if(id == 1){
 	const now = new Date();
-    const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+    const localDate = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
     const localDateString = localDate.toISOString().split('T')[0];
-	console.log(localDate.toISOString())
+console.log(localDate.toISOString())
 
       let violations = await Violation.find({
         createdAt: localDateString
