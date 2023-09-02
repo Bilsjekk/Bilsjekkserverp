@@ -144,7 +144,9 @@ const locationRouter = require('./routes/locationRoute')
 const settingsRouter = require('./routes/settingsRoute')
 const violationRouter = require('./routes/violationRoute')
 const informationRouter = require('./routes/information')
-app.use('/api',violationRouter,informationRouter,driverRouter,settingsRouter,groupRouter,fieldRouter,userRouter,pdfRouter,carRouter, locationRouter)
+const accidentRouter = require('./routes/accident')
+const vpsRouter = require('./routes/vpsRouter')
+app.use('/api',vpsRouter,violationRouter,accidentRouter,informationRouter,driverRouter,settingsRouter,groupRouter,fieldRouter,userRouter,pdfRouter,carRouter, locationRouter)
 
 const driverFront = require('./routes/driverFront')
 const groupFront = require('./routes/groupFront')
@@ -158,8 +160,30 @@ const settingsFront = require('./routes/settingsFront')
 app.use(settingsFront,driverFront,groupFront,fieldFront,pdfFront,usersFront,carFront,locationFront)
 
 
-app.get('/',(req,res) =>{
-    return res.status(200).render('index')
+const Violation = require('./models/Violation')
+app.get('/',async (req,res) =>{
+    let violations = await Violation.find({});
+
+const combinedViolations = violations.reduce((result, v) => {
+    const existingEntry = result.find(entry => entry.date === v.createdAt);
+    if (existingEntry) {
+        existingEntry.value += v.violations;
+    } else {
+        result.push({
+            date: v.createdAt,
+            value: v.violations
+        });
+    }
+    return result;
+}, []);
+
+    console.log(combinedViolations)
+
+    const violationsJSON = JSON.stringify(combinedViolations);
+
+    return res.status(200).render('index',{
+        violations: violationsJSON
+    })
 })
 
 const port = process.env.port || 3000

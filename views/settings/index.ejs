@@ -49,7 +49,8 @@ textarea{
     <%- include('../components/navbar.ejs') %>
     <div class="tab">
       <button class="tablinks" onclick="openSection(event, 'general')">Generell</button>
-      <button class="tablinks" onclick="openSection(event, 'application')">applikasjon</button>
+      <button class="tablinks" onclick="openSection(event, 'application')">Applikasjon</button>
+      <button class="tablinks" onclick="openSection(event, 'vps')">VPS</button>
     </div>
 
     <div class="mt-4"></div>
@@ -152,7 +153,7 @@ textarea{
           </div>
       </div>
   
-      <div class="card">
+      <div class="card mb-4">
           <div class="card-body">
               <h2 class="card-title">Service Kilometer Beskrivelse</h2>
               <div>
@@ -166,7 +167,33 @@ textarea{
               </div>
           </div>
       </div>
+  </div>
 
+  <div class="container tabcontent" id="vps">
+    <div class="card mb-4 p-2">
+      <div class="card-title">
+        VPS ledelse
+      </div>
+      <div class="card-body d-flex align-items-center justify-content-end">
+        <button class="btn btn-info me-2" onclick="updateNordic()">
+          Oppdater Nordic
+        </button>  
+        
+        <button class="btn btn-info" onclick="restartVPS()">
+          Start VPS på nytt
+        </button>
+      </div>
+  </div>
+
+  <div class="card mb-4 p-2">
+    <div class="card-title">
+      Sikkerhetskopiering av data
+    </div>
+    <div class="card-body d-flex align-items-center justify-content-end">
+      <button onclick="prepareBackup()" class="btn btn-info">Forbered sikkerhetskopiering</button>
+    </div>
+  </div>
+  </div>
 
 <!-- Success Modal -->
 <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
@@ -188,6 +215,30 @@ textarea{
     
     <!-- Include Bootstrap JS -->
     <script src="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+      async function restartVPS() {
+        await fetch('/api/vps/restart').then(() =>{
+          $('#successModal').modal('show');
+            setTimeout(() => location.reload(), 3000);
+        }).catch(err => console.log(err))
+      }
+
+      async function updateNordic() {
+        await fetch('/api/vps/update').then(() =>{
+          $('#successModal').modal('show');
+            setTimeout(() => location.reload(), 3000);
+        }).catch(err => console.log(err))
+      }
+
+      async function prepareBackup(){
+        await fetch('/api/vps/backup/prepare').then(() =>{
+          $('#successModal').modal('show');
+            setTimeout(() => location.reload(), 3000);
+        }).catch(err => console.log(err))
+      }
+
+    </script>
     <script>
       async function updateShiftSelectText(){
         try{

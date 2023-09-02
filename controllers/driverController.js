@@ -29,7 +29,8 @@ const createNewDriver = async (req,res) =>{
             let existingCar = await Car.findOne({ _id: information.carId })
 
             if(+information.kilometers + +existingCar.currentKilometers >= +existingCar.kilometers){
-        
+       
+                console.log('in if')
                 let emailData = fs.readFileSync(path.join(__dirname,'../data/email.json'),{ 
                     encoding: 'utf8',
                     flag: 'r'
@@ -83,7 +84,8 @@ const createNewDriver = async (req,res) =>{
                 },{ $new: true })
             }
                 else{
-                    await Car.findOneAndUpdate({ _id: information.carId },{
+                    console.log(information)
+                    await Car.updateOne({ _id: information.carId },{
                         currentKilometers: existingCar.currentKilometers + information.kilometers
                     })
                 }
@@ -189,7 +191,7 @@ const createNewDriver = async (req,res) =>{
 
         await violation.save()
 
-	let filteredWanted = groupedData['First'].filter(e => {
+        let filteredWanted = groupedData['First'].filter(e => {
             return e.title.includes('Lakk/bulker/merker')
         })
 

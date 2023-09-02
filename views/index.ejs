@@ -204,12 +204,50 @@
   color: white;
 }
 
+.chart-container{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    align-items: stretch;
+    flex-direction: column;
+    padding: 8px;
+    width: 100% !important;
+}
+
+#chart{
+    width:100% !important
+}
+
+svg{
+    width: 100% !important;
+}
+
+.chart-header{
+    display: flex;
+    align-items: center;
+    color: black;
+}
+
+
+.tick{
+    color:black
+}
+.wrapper{
+    width:100% !important;
+    padding: 12px;
+}
+
     </style>
+
+<script src="https://d3js.org/d3.v6.js"></script>
+
 </head>
 <body>
 <%- include('./components/navbar') %>
 <div class="mt-4"></div>
-<div class="container">
+<div class="wrapper">
+    <div class="container">
     <div class="welcome-message">Hei, Admin!</div>
 
     <select name="violationsFilter" id="violationsFilter">
@@ -222,7 +260,6 @@
         <option value="5">ett år siden</option>
     </select>
 
-
     <div class="box-container">
  
         <div class="box box1">
@@ -232,57 +269,54 @@
             </div>
 
             <img src=
-"https://nordic.bilsjekk.in/images/violations.png"
+"/images/violations.png"
                 alt="Views">
         </div>
 
         <div class="box box2">
             <div class="text">
-                <h2 class="topic-heading">-</h2>
-                <h2 class="topic">Snart</h2>
+                <h2 class="topic-heading" id="pdf-num">-</h2>
+                <h2 class="topic">Pdf-er</h2>
             </div>
 
             <img src=
-"https://nordic.bilsjekk.in/images/pdfs.png"
+"/images/pdfs.png"
                  alt="likes">
         </div>
 
         <div class="box box3">
             <div class="text">
-                <h2 class="topic-heading">-</h2>
-                <h2 class="topic">Snart</h2>
+                <h2 class="topic-heading" id="user-num">-</h2>
+                <h2 class="topic">Brukere</h2>
             </div>
 
             <img src=
-"https://nordic.bilsjekk.in/images/users.png"
+"/images/users.png"
                 alt="comments">
         </div>
 
         <div class="box box4">
             <div class="text">
-                <h2 class="topic-heading">-</h2>
-                <h2 class="topic">Snart</h2>
+                <h2 class="topic-heading" id="accident-num">-</h2>
+                <h2 class="topic">Ulykker</h2>
             </div>
 
             <img src=
-"https://nordic.bilsjekk.in/images/accidents.png" alt="published">
+"/images/accidents.png" alt="published">
         </div>
     </div>
 
+</div>
 
-    <div class="notifications">
-        <h1>Kommer Snart!</h1>
-<!--        <div class="notification-item">-->
-<!--            <img src="user-avatar.png" alt="User Avatar">-->
-<!--            <span>New user registered - John Doe</span>-->
-<!--        </div>-->
-<!--        <div class="notification-item">-->
-<!--            <img src="order-icon.png" alt="Order Icon">-->
-<!--            <span>New order received - Order #12345</span>-->
-<!--        </div>-->
-        <!-- Add more notification items here -->
+    <div class="chart-container">
+        <div class="chart-header">
+            <img src="/images/calendar.png" alt="Calendar">
+            <h3>Nordic K.S Diagram</h3>
+        </div>
+        <div id="chart"></div>
     </div>
 
+    <div class="container">
     <div class="quick-links">
         <a href="/users" class="quick-link-item">Administrer brukere</a>
         <a href="/groups" class="quick-link-item">Administrer grupper</a>
@@ -291,7 +325,248 @@
         <!-- Add more quick links as needed -->
     </div>
 </div>
+</div>
 <script src="https://kit.fontawesome.com/7d365a7c21.js" crossorigin="anonymous"></script>
+
+<script>
+// Sample data (replace this with your actual data)
+// const generateRandomData = () => {
+//             const startDate = new Date('2023-08-01');
+//             const endDate = new Date('2023-11-01');
+//             const data = [];
+
+//             for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+//                 data.push({
+//                     date: d.toISOString().split('T')[0],
+//                     value: Math.floor(Math.random() * 50) + 10
+//                 });
+//             }
+
+//             return data;
+//         };
+
+// const data = generateRandomData();
+
+        const data = <%- violations %>;
+        console.log(data);
+
+// Set up the dimensions of the chart
+const margin = { top: 20, right: 30, bottom: 30, left: 40 };
+const width = 1100 ;
+const height = 450;
+
+// Parse the date format
+const parseDate = d3.utcParse('%Y-%m-%d');
+
+// Get the width of the chart container
+const chartContainer = document.getElementById('chart');
+const containerWidth = chartContainer.clientWidth;
+
+// Set up the scales
+const x = d3.scaleUtc()
+  .domain(d3.extent(data, d => parseDate(d.date)))
+  .range([0, containerWidth - margin.right - 40]);
+
+const y = d3.scaleLinear()
+  .domain([0, d3.max(data, d => d.value)])
+  .nice()
+  .range([height, 0]);
+
+// Create the line
+const line = d3.line()
+  .x(d => x(parseDate(d.date)))
+  .y(d => y(d.value))
+  .curve(d3.curveMonotoneX);
+
+// Create the SVG element
+
+// Create the SVG element with dynamic width
+const svg = d3.select('#chart').append('svg')
+            .attr('width', '100%')
+            .attr('height', height + margin.top + margin.bottom)
+            .append('g')
+            .attr('transform', `translate(${margin.left},${margin.top})`);
+
+
+            // This allows to find the closest X index of the mouse:
+  var bisect = d3.bisector(function(d) { return d.x; }).left;
+
+// Create the circle that travels along the curve of chart
+var focus = svg
+  .append('g')
+  .append('circle')
+    .style("fill", "steelblue")
+    .attr("stroke", "black")
+    .attr('r', 8.5)
+    .style("opacity", 0)
+
+// Create the text that travels along the curve of chart
+var focusText = svg
+  .append('g')
+  .append('text')
+  .attr('fill', 'black') // Set the fill attribute to white
+    .style("opacity", 0)
+    .attr('fill', 'black') // Set the fill attribute to white
+    .attr("text-anchor", "left")
+    .attr("alignment-baseline", "middle")
+
+        // Add the line to the chart with dynamic width
+        svg.append('path')
+            .datum(data)
+            .attr('fill', 'none')
+            .attr('stroke', 'steelblue')
+            .attr('stroke-width', 2)
+            .attr('d', line)
+            .attr('class', 'line'); // Add a class for the line
+
+            // Create a rect on top of the svg area: this rectangle recovers mouse position
+  svg
+    .append('rect')
+    .style("fill", "none")
+    .style("pointer-events", "all")
+    .attr('width', width)
+    .attr('height', height)
+    .on('mouseover', mouseover)
+    .on('mousemove', mousemove)
+    .on('mouseout', mouseout);
+
+
+  // What happens when the mouse move -> show the annotations at the right positions.
+  function mouseover() {
+    focus.style("opacity", 1)
+    focusText.style("opacity",1)
+  }
+
+  function mousemove(e) {
+    const xCoord = d3.pointer(e)[0];
+const clampedX = Math.max(0, Math.min(width, xCoord)); // Clamp to the range [0, width]
+
+const xScale = d3.zoomTransform(svg.node()).rescaleX(x);
+
+
+// Get the corresponding date using the clamped x-coordinate
+const x0 = xScale.invert(clampedX);
+
+// Convert x0 to ISO string format
+const x0ISOString = x0.toISOString().split('T')[0];
+
+// Create a bisector using a comparator function for the date property
+const bisect = d3.bisector(d => d.date).left;
+
+// Find the index of the data point corresponding to the given date
+const i = bisect(data, x0ISOString);
+
+const lastIndex = data.length - 1;
+const index = i === lastIndex ? lastIndex - 1 : i;
+
+selectedData = data[index];
+    
+    focus
+  .attr("cx", xScale(parseDate(selectedData.date)))
+  .attr("cy", y(selectedData.value));
+
+focusText
+  .html(selectedData.value)
+  .attr("x", xScale(parseDate(selectedData.date)) - 8)
+  .attr("y", y(selectedData.value) - 15);
+    }
+  function mouseout() {
+    focus.style("opacity", 0)
+    focusText.style("opacity", 0)
+  }
+
+        // Add the X axis with dynamic width
+        svg.append('g')
+            .attr('class', 'x-axis') // Add a class for the X axis
+            .attr('transform', `translate(0,${height})`)
+            .call(d3.axisBottom(x));
+
+        // Add the Y axis
+        svg.append('g')
+            .call(d3.axisLeft(y));
+
+        
+
+        const pointLabels = svg.selectAll('.point-label')
+  .data([data[data.length - 1]])
+  .enter()
+  .append('text')
+  .attr('class', 'point-label')
+  .attr('x', d => x(parseDate(d.date)))
+  .attr('y', d => y(d.value) - 10) // Adjust the y position above the point
+  .attr('text-anchor', 'middle')
+  .attr('font-size', '12px')
+  .attr('fill', 'black') // Set the fill attribute to white
+  .attr('font-weight', 'bold')
+  .text(d => d.value);
+
+
+// Create a zoom behavior
+const zoom = d3.zoom()
+    .scaleExtent([1, 8]) // Define the zoom extent
+    .translateExtent([[0, 0], [containerWidth - margin.right + 12, height]])
+    .on('zoom', zoomed);
+
+// Apply zoom behavior to the SVG
+svg.call(zoom);
+
+  // Define the zoomed function
+function zoomed(event) {
+    const newX = event.transform.rescaleX(x);
+    svg.select('.line').attr('d', line.x(d => newX(parseDate(d.date))));
+    svg.select('.x-axis').call(d3.axisBottom(newX));
+    svg.selectAll('.point')
+        .attr('cx', d => newX(parseDate(d.date)))
+        .attr('cy', d => y(d.value));
+    pointLabels.attr('x', d => newX(parseDate(d.date))).attr('y', d => y(d.value) - 10);
+}
+
+
+
+        const tooltip = svg.append('g')
+            .attr('class', 'tooltip')
+            .style('display', 'none');
+
+        tooltip.append('rect')
+            .attr('width', 60)
+            .attr('height', 30)
+            .attr('fill', 'white')
+            .style('opacity', 0.8);
+
+        tooltip.append('text')
+            .attr('x', 30)
+            .attr('dy', '1.2em')
+            .style('text-anchor', 'middle')
+            .attr('font-size', '12px')
+            .attr('font-weight', 'bold');
+        
+        function showTooltip(event, d) {
+            tooltip.style('display', 'block');
+            tooltip.attr('transform', `translate(${x(parseDate(d.date))},${y(d.value)})`);
+            tooltip.select('text').text(d.value);
+        }
+
+        function hideTooltip() {
+            tooltip.style('display', 'none');
+        }
+
+        svg.selectAll('.point')
+  .data([data[0],data[data.length - 1]])
+  .enter()
+  .append('circle')
+  .attr('class', 'point')
+  .attr('cx', d => x(parseDate(d.date)))
+  .attr('cy', d => y(d.value))
+  .attr('r', 5) // Radius of the circle
+  .attr('fill', 'steelblue')
+  .on('mouseover', (event, d) => showTooltip(event, d))
+  .on('mouseout', hideTooltip);
+
+  
+
+</script>
+
+
 
 <script>
     async function fetchData(url) {
@@ -303,26 +578,50 @@
         }
     }
 
-    async function updateViolationCount() {
-        const holder = document.getElementById('vio-num');
+    async function updateCount() {
+        const vioHolder = document.getElementById('vio-num');
+        const pdfHolder = document.getElementById('pdf-num');
+        const userHolder = document.getElementById('user-num');
+        const accidentHolder = document.getElementById('accident-num');
+
         const selectVio = document.getElementById('violationsFilter');
         const value = selectVio.value;
-        console.log(value);
 
         try {
-            const data = await fetchData(`/api/violations/${value}`);
-            console.log(data);
-            holder.textContent = data;
+            let responseData = await fetchData(`/api/violations/${value}`);
+            vioHolder.textContent = responseData;
         } catch (error) {
             console.error(error);
+        }
+
+
+        try{
+            let responseData = await fetchData(`/api/info/pdfs`);
+            pdfHolder.textContent = responseData;
+        }catch(error){
+            console.log(error)
+        }
+
+        try{
+            let responseData = await fetchData(`/api/info/users`);
+            userHolder.textContent = responseData;
+        }catch(error){
+            console.log(error)
+        }
+
+        try{
+            let responseData = await fetchData(`/api/info/accidents`);
+            accidentHolder.textContent = responseData;
+        }catch(error){
+            console.log(error)
         }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        updateViolationCount();
+        updateCount();
 
         const selectVio = document.getElementById('violationsFilter');
-        selectVio.addEventListener('change', updateViolationCount);
+        selectVio.addEventListener('change', updateCount);
     });
 </script>
 </body>
