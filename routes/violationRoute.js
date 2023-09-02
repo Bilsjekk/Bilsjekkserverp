@@ -31,15 +31,9 @@ console.log(localDate.toISOString())
       });
 
       return res.send(totalViolations.toString())      
-    }else if(id == 2){
-const now = new Date();
-const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
-
-// If you want to account for the timezone offset, you can adjust it as follows:
-const timezoneOffsetMinutes = now.getTimezoneOffset();
-threeDaysAgo.setMinutes(threeDaysAgo.getMinutes() - timezoneOffsetMinutes);
-
-const threeDaysAgoString = threeDaysAgo.toISOString().split('T')[0]
+    }else if(id == 2){      const now = new Date();
+      const threeDaysAgo = new Date();
+      threeDaysAgo.setDate(now.getDate() - 3);
 
 
       try {
@@ -47,7 +41,7 @@ const threeDaysAgoString = threeDaysAgo.toISOString().split('T')[0]
           {
             $match: {
               createdAt: {
-                $gte: threeDaysAgoString.toISOString(), // Filter for documents created after three days ago
+                $gte: threeDaysAgo.toISOString(), // Filter for documents created after three days ago
                 $lt: now.toISOString() // Filter for documents created until now
               }
             }
