@@ -39,6 +39,7 @@
             <th>Navn</th>
             <th>PN-ID</th>
             <th>Ble lagt siden</th>
+            <th>K.S</th>
             <th>Handlinger</th>
         </tr>
         </thead>
@@ -48,13 +49,14 @@
                 <td><%= user.name %></td>
                 <td><%= user.accountId %></td>
                 <td><%= new Date(+user.createdAt).toLocaleString() %></td>
+                <td><a href="/users/<%- user.accountId %>/violations">Se K.S</a></td>
                 <td class="controls">
                     <a href="/users/<%= user._id %>/edit" class="btn btn-primary btn-sm me-1">Rediger</a>
-                    <a href="#" onclick="showDeleteConfirmation('<%= user._id %>')" class="btn btn-danger btn-sm ms-4">Slett</a>
+                    <a href="#" data-toggle="modal" data-target="#deleteConfirmationModal<%= user._id %>" class="btn btn-danger btn-sm ms-4">Slett</a>
                 </td>
             </tr>
 
-            <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+            <div class="modal fade" id="deleteConfirmationModal<%= user._id %>" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
