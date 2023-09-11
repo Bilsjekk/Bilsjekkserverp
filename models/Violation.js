@@ -14,6 +14,10 @@ const violationSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  removed:{
+    type: Number,
+    required: true
+  },
   createdAt: {
     type: String,
     default: new Date().toISOString().split('T')[0]

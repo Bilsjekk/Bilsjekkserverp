@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Postsletting</title>
+  <link href="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .controls {
+      display: flex;
+    }
+
+    .controls > * {
+      flex-grow: 1;
+    }
+
+    .controls > :first-child {
+      margin-right: 10px;
+    }
+
+    /* Custom CSS for overlay */
+    .image-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7); /* Background with opacity */
+      z-index: 9999;
+    }
+
+    .image-container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10000;
+    }
+
+    .image-container img {
+      min-width: 90%;
+      min-height: 80vh; /* Adjust as needed */
+    }
+
+    body {
+      background-color: #f5f5f5;
+    }
+
+    .custom-container {
+      padding-top: 20px;
+      width: 90% !important;
+      margin: 0 auto; /* Center the container horizontally */
+    }
+
+    .custom-controls > :first-child {
+      flex-grow: 1;
+    }
+
+    .custom-controls > :last-child {
+      flex-grow: 1;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* Two columns grid */
+      grid-gap: 1em;
+    }
+  </style>
+</head>
+<body>
+  <%- include('../components/navbar.ejs') %>
+
+
+    <div class="container custom-container">
+      <div class="custom-controls d-flex justify-content-between mb-2">
+        <input type="text" class="form-control mr-3" id="searchInput" placeholder="Søk...">
+        <input type="date" class="form-control" id="datePicker" placeholder="Velg en dato">
+      </div>
+  
+      <div class="card-grid">
+        <% scans.forEach(function(postalViolation) { %>
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Overtredelsesnummer: <%= postalViolation.violationNumber %></h5>
+              <p class="card-text">PNID: <%= postalViolation.pnid %></p>
+              <p class="card-text">Dato: <%= postalViolation.date %></p>
+              <div class="d-flex justify-content-end align-items-center">
+                <a href="/scans/<%= postalViolation.id %>" class="btn btn-info btn-sm">See Postal</a>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+  
+        <% if (scans.length === 0) { %>
+          <div class="no-results">
+            <p>Ingen postslettinger funnet.</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+
+  <!-- Modal for Delete Confirmation -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Bekreft sletting</h5>
+          <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Er du sikker på at du vil slette denne postslettingen?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+          <button type="button" class="btn btn-danger" id="confirmDelete">Slett</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Overlay and Container -->
+  <div class="image-overlay" id="imageOverlay">
+    <div class="image-container">
+      <img src="" alt="Postal Violation Image" id="modalImage">
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/medium-zoom@1.0.8/dist/medium-zoom.js"></script>
+ 
+  <script>
+    const datePicker = document.getElementById('datePicker');
+    const cards = document.getElementsByClassName('card');
+
+    datePicker.addEventListener('change', function () {
+        const selectedDate = datePicker.value;
+
+        for (let i = 0; i < cards.length; i++) {
+            const dateInfo = cards[i].querySelector('.card-title').textContent;
+            if (dateInfo.includes(selectedDate)) {
+                cards[i].style.display = '';
+            } else {
+                cards[i].style.display = 'none';
+            }
+        }
+    });
+
+    const now = new Date();
+    const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+    const localDateString = localDate.toISOString().split('T')[0];
+
+    for (let i = 0; i < cards.length; i++) {
+            const dateInfo = cards[i].querySelector('.card-title').textContent;
+            if (dateInfo == localDateString) {
+                cards[i].style.display = '';
+            } else {
+                cards[i].style.display = 'none';
+            }
+        }
+
+    const searchInput = document.getElementById('searchInput');
+
+    searchInput.addEventListener('keyup', function () {
+        const filter = searchInput.value.toLowerCase();
+
+        for (let i = 0; i < cards.length; i++) {
+            const cardContent = cards[i].textContent.toLowerCase();
+            if (cardContent.includes(filter)) {
+                cards[i].style.display = 'block !important';
+            } else {
+                cards[i].style.display = 'none !important';
+            }
+        }
+    });
+</script>
+
+  <script>
+    // JavaScript to handle showing the image on top of body elements
+    const showImageButtons = document.querySelectorAll('.show-image');
+    const imageOverlay = document.getElementById('imageOverlay');
+    const modalImage = document.getElementById('modalImage');
+
+    showImageButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        const imageUrl = this.getAttribute('data-image-url');
+        modalImage.src = imageUrl;
+        imageOverlay.style.display = 'block';
+      });
+    });
+
+    // Close the image overlay when clicking on it
+    imageOverlay.addEventListener('click', function () {
+      imageOverlay.style.display = 'none';
+    });
+
+    // Prevent image container from closing overlay on click
+    const imageContainer = document.querySelector('.image-container');
+    imageContainer.addEventListener('click', function (event) {
+      event.stopPropagation();
+    });
+
+    // JavaScript to handle delete action
+    const deleteButtons = document.querySelectorAll('.delete-violation');
+    const deleteModal = document.getElementById('deleteModal');
+    const confirmDeleteButton = document.getElementById('confirmDelete');
+
+    let selectedViolationId = null;
+
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        selectedViolationId = this.getAttribute('data-violation-id');
+        $('#deleteModal').modal('show');
+      });
+    });
+
+    confirmDeleteButton.addEventListener('click', function () {
+      if (selectedViolationId) {
+        // Send a DELETE request to the server
+        fetch(`/api/postals/${selectedViolationId}`, {
+          method: 'DELETE',
+        })
+          .then(response => {
+            if (response.ok) {
+              // Reload the page after successful deletion
+              location.reload();
+            } else {
+              console.error('Error deleting Postal Violation:', response.statusText);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      }
+
+      // Close the modal
+      $('#deleteModal').modal('hide');
+    });
+  </script>
+</body>
+</html>

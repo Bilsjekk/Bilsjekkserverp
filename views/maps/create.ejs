@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lag kart</title>
+    <link href="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .live-preview {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #ccc;
+            margin: 10px 0;
+        }
+
+        #map {
+            width: 100%;
+            height: 450px;
+        }
+    </style>
+</head>
+<body>
+<%- include('../components/navbar.ejs') %>
+
+<div class="container">
+    <h1 class="mt-4">Lag kart</h1>
+    <div>
+      <div id="map"></div>
+
+        <div class="mb-3">
+          <label for="initialCoordinates" class="form-label">Startkoordinater (breddegrad, lengdegrad)</label>
+          <div class="d-flex justify-content-between align-items-center">
+            <input type="text" id="lati" name="lati" class="form-control me-2" required placeholder="Breddegrad">
+            <input type="text" id="long" name="long" class="form-control" required placeholder="Lengdegrad">
+          </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="zone" class="form-label">Velg Sone</label>
+        <select id="zone" name="zone" class="form-select" required>
+            <!-- Options will be added dynamically using JavaScript -->
+        </select>
+    </div>
+
+        <div class="mb-3">
+            <label for="data" class="form-label">GeoJSON Data <a href="https://geojson.io/" target="_blank">open to create</a></label>
+            <textarea id="data" name="data" class="form-control" rows="5" required placeholder="Enter area json data"></textarea>
+        </div>
+        <div class="d-flex justify-content-center align-items-center mt-3 mb-3">
+            <button class="btn btn-primary me-3 ps-3 pe-3" id="createButton">Skape</button>
+            <a href="/maps" class="btn btn-secondary ps-3 pe-3">Avbryt</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_RMmoc5iVAGRDfxi8WLjQc27_QocN-eI&libraries=places"></script>
+<script>
+  // Function to populate the zone dropdown with data from /api/zones
+async function populateZoneDropdown() {
+            try {
+                const zoneDropdown = document.getElementById('zone');
+
+                // Fetch zones data from /api/zones
+                const response = await fetch('/api/zones');
+                const zones = await response.json();
+
+                // Populate the dropdown options
+                zones.forEach((zone) => {
+                    const option = document.createElement('option');
+                    option.value = zone._id;
+                    option.text = zone.name;
+                    zoneDropdown.appendChild(option);
+                 });
+            } catch (error) {
+                console.error('Error fetching and populating zones:', error);
+            }
+        }
+
+        // Invoke the code when the DOM content is loaded
+      document.addEventListener('DOMContentLoaded', () => {
+            // Populate the zone dropdown when the page loads
+            populateZoneDropdown();
+        });
+</script>
+
+<script>
+    // Google Maps
+    const map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 59.911491, lng: 10.757933 }, // Centered on Norway
+        zoom: 13, // Adjust the zoom level as needed
+        mapTypeId: google.maps.MapTypeId.HYBRID
+    });
+
+
+    // Create map
+    const createButton = document.getElementById('createButton');
+
+    createButton.addEventListener('click', () => {
+        const data = document.getElementById('data').value;
+        const latitude = document.getElementById('lati').value
+        const longitude = document.getElementById('long').value
+        const zone = document.getElementById('zone').value
+
+        // Create a JSON object with the map data
+        const newMap = {
+            data: data,
+            latitude: latitude,
+            longitude: longitude,
+            zone: zone
+        };
+
+        // Send a fetch request to create the map
+        fetch('/api/maps', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newMap)
+        })
+        .then(response => {
+            if (response.ok) {
+                // Redirect to the maps page after successful creation
+                location.href = '/maps';
+            } else {
+                console.error('Error creating map:', response.statusText);
+                // Handle errors here, e.g., display an error message
+                alert('Kunne ikke opprette kartet. Vær så snill, prøv på nytt.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Display an error message to the user
+            alert('Det oppsto en feil under oppretting av kartet. Prøv igjen senere.');
+        });
+    });
+
+    // Function to parse and display GeoJSON data on the map
+function displayGeoJSONData(data) {
+    try {
+        const geoJson = JSON.parse(data);
+
+        // Create a Data layer and add it to the map
+        const dataLayer = new google.maps.Data({ map: map });
+
+          dataLayer.addGeoJson(geoJson);        
+        
+
+        // Set the style for the GeoJSON features (customize as needed)
+        dataLayer.setStyle({
+            fillColor: 'blue',
+            strokeColor: 'blue',
+            fillOpacity: 0.35,
+            strokeWeight: 1
+        });
+    } catch (error) {
+        console.error('Error parsing GeoJSON data:', error);
+    }
+}
+
+// Call the function to display GeoJSON data when the page loads
+google.maps.event.addDomListener(window, 'load', () => {
+    displayGeoJSONData(document.getElementById('data').value);
+});
+
+// Call the function whenever the 'data' textarea value changes
+document.getElementById('data').addEventListener('input', () => {
+    const newData = document.getElementById('data').value;
+    displayGeoJSONData(newData);
+});
+
+</script>
+</body>
+</html>

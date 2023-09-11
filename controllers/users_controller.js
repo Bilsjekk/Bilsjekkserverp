@@ -50,6 +50,7 @@ exports.register = async (req, res) => {
   }
 };
 
+
 exports.login = async (req, res) => {
   try {
     const { accountId, password } = req.body;
@@ -72,7 +73,7 @@ exports.login = async (req, res) => {
 
       return res.status(200).json({
         token: token,
-        user: user.name
+        user: user
       });
     } else {
       return res.status(401).send('Invalid password');

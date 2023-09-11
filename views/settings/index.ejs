@@ -13,6 +13,7 @@
   top: 0;
 }
 
+
 /* Style the buttons inside the tab */
 .tab button {
   background-color: inherit;
@@ -42,6 +43,31 @@
 textarea{
   white-space: pre-wrap;
 }
+
+.wrap-options{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.wrap-options > div{
+  margin-right: 10px;
+  margin-bottom: 10px;
+  background-color: grey;
+  color: white;
+  font-weight: bolder;
+  border-radius: 12px;
+  user-select: none;
+  padding: 4px 20px;
+  transition: 0.8 ease-in;
+}
+
+.selected-option{
+  background-color: steelblue !important;
+}
+
+#zonesModal,#imeisModal{
+  z-index: 999999999
+}
     </style>
     <link href="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -51,6 +77,7 @@ textarea{
       <button class="tablinks" onclick="openSection(event, 'general')">Generell</button>
       <button class="tablinks" onclick="openSection(event, 'application')">Applikasjon</button>
       <button class="tablinks" onclick="openSection(event, 'vps')">VPS</button>
+      <button class="tablinks" onclick="openSection(event, 'notifications')">Varsler</button>
     </div>
 
     <div class="mt-4"></div>
@@ -195,6 +222,75 @@ textarea{
   </div>
   </div>
 
+  <div class="container tabcontent" id="notifications">
+    <div class="d-flex justify-content-end p-2 mb-2">
+      <button data-toggle="modal" data-target="#createIMEIModal" class="btn btn-info me-2">Ny IMEI</button>
+      <button data-toggle="modal" data-target="#createZoneModal" class="btn btn-info me-2">Ny sone</button>
+      <a class="btn btn-dark me-2" href="/zones">Administrer soner</a>
+      <a class="btn btn-dark" href="/imeis">Administrer IMEIS</a>
+    </div>
+
+    <div class="card p-4 mb-2">
+      <div class="card-title">
+        Send varsler for alle brukere/enheter
+      </div>
+      <div class="form-group mb-2">
+        <label for="all-title">Enter Title</label>
+        <input type="text" placeholder="Title" id="all-title" class="form-control"/>
+      </div>
+      <div class="form-group mb-2">
+        <label for="all-body">Skriv inn innhold</label>
+        <input type="text" placeholder="Innhold" id="all-body" class="form-control"/>
+      </div>
+      <div class="card-body d-flex justify-content-end">
+        <button onclick="sendNotification()" class="btn btn-info">Send varsler</button>
+      </div>
+    </div>
+
+    <div class="card p-2 mb-2">
+      <div class="card-body">
+        <div class="card-title">Velg Enhet for å sende varsel</div>
+        <div class="form-group mb-2">
+          <label for="imei-title">Skriv inn tittel</label>
+          <input type="text" placeholder="Tittel" id="imei-title" class="form-control"/>
+        </div>
+        <div class="form-group mb-2">
+          <label for="imei-body">Skriv inn innhold</label>
+          <input type="text" placeholder="Innhold" id="imei-body" class="form-control"/>
+        </div>
+        <div class="wrap-options" id="imei-options">
+            
+        </div>
+        <div class="d-flex justify-content-end">
+          <button onclick="sendNotificationToDevice()" class="btn btn-info">Send varsler</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card p-2 mb-2">
+      <div class="card-body">
+        <div class="card-title">Velg Sone for å sende varsler</div>
+        <div class="form-group mb-2">
+          <label for="zone-title">Skriv inn tittel</label>
+          <input type="text" placeholder="Tittel" id="zone-title" class="form-control"/>
+        </div>
+        <div class="form-group mb-2">
+          <label for="zone-body">Skriv inn innhold</label>
+          <input type="text" placeholder="Innhold" id="zone-body" class="form-control"/>
+        </div>
+        <div class="form-group">
+          <label for="zoneSelect">Velg Sone</label>
+          <div class="wrap-options" id="zones-options">
+            
+          </div>
+        </div>
+        <div class="d-flex justify-content-end">
+          <button onclick="sendNotificationsToZones()" class="btn btn-info">Send varsler</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <!-- Success Modal -->
 <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -212,10 +308,321 @@ textarea{
 
     <br>
     <br>
+
+    <!-- Create IMEI Modal -->
+<div class="modal fade" id="createIMEIModal" tabindex="-1" aria-labelledby="createIMEIModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="createIMEIModalLabel">Opprett IMEI</h5>
+              <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form>
+                  <div class="mb-3">
+                      <label for="imeiInput" class="form-label">IMEI-nummer</label>
+                      <input type="text" class="form-control" id="imeiInput" placeholder="Skriv inn IMEI-nummer" required>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="imeiName" class="form-label">IMEI-navn</label>
+                    <input type="text" class="form-control" id="imeiName" placeholder="Skriv inn IMEI-navn" required>
+                </div>
+
+                  <div class="mb-3">
+                    <label for="zone" class="form-label">Velg Sone</label>
+                    <select id="zone" name="zone" class="form-select" required>
+                        <!-- Options will be added dynamically using JavaScript -->
+                    </select>
+                </div>
+                  <!-- Add more input fields for other IMEI-related data as needed -->
+              </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Lukk</button>
+              <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveIMEIData()">Lagre</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- Create Zone Modal -->
+<div class="modal fade" id="createZoneModal" tabindex="-1" aria-labelledby="createZoneModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="createZoneModalLabel">Opprett sone</h5>
+              <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form>
+                  <div class="mb-3">
+                      <label for="zoneNameInput" class="form-label">Sonenavn:</label>
+                      <input type="text" class="form-control" id="zoneNameInput" placeholder="Enter zone name" required>
+                  </div>
+                  <!-- Add more input fields for other zone-related data as needed -->
+              </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Lukk</button>
+              <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveZoneData()">Lagre</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+
     
     <!-- Include Bootstrap JS -->
     <script src="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+
+    <script>
+      // Function to populate the zone dropdown with data from /api/zones
+async function populateZoneDropdown() {
+            try {
+                const zoneDropdown = document.getElementById('zone');
+
+                // Fetch zones data from /api/zones
+                const response = await fetch('/api/zones');
+                const zones = await response.json();
+
+                // Populate the dropdown options
+                zones.forEach((zone) => {
+                    const option = document.createElement('option');
+                    option.value = zone._id;
+                    option.text = zone.name;
+                    zoneDropdown.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching and populating zones:', error);
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Populate the zone dropdown when the page loads
+            populateZoneDropdown();
+        });
+    </script>
+
+<script>
+  async function initializeData(){
+
+    let zonesOptions = document.getElementById('zones-options')
+    let imeiOptions = document.getElementById('imei-options')
+  
+    let zones = await (await fetch('/api/zones')).json()
+    let imeis = await (await fetch('/api/imeis')).json()
+
+  console.log(zones);
+  console.log(imeis);
+
+  let zoneSelected = []
+  let imeiSelected = []
+  
+  for(let i = 0; i < zones.length; i++){
+    let div = document.createElement('div')
+    div.textContent = zones[i].name
+    div.setAttribute('data-value',zones[i]._id)
+
+    div.addEventListener('click',(e) =>{
+      if(!zoneSelected.includes(e.target.textContent)){
+        e.target.classList.add('selected-option')
+        zoneSelected.push(zones[i].name)
+      }else{
+        e.target.classList.remove('selected-option')
+        zoneSelected = zoneSelected.filter(el => el != e.target.textContent)
+      }
+    })
+
+    zonesOptions.appendChild(div)
+  }
+
+
+  for(let i = 0; i < imeis.length; i++){
+    let div = document.createElement('div')
+    div.textContent = imeis[i].serial
+    div.setAttribute('data-value',imeis[i]._id)
+
+    div.addEventListener('click',(e) =>{
+      if(!imeiSelected.includes(e.target.textContent)){
+        e.target.classList.add('selected-option')
+        imeiSelected.push(imeis[i].serial)
+      }else{
+        e.target.classList.remove('selected-option')
+        imeiSelected = imeiSelected.filter(el => el != e.target.textContent)
+      }
+
+      console.log(imeiSelected)
+    })
+
+    imeiOptions.appendChild(div)
+  }
+  }
+
+  initializeData()
+</script>
+
+<script>
+      async function saveIMEIData() {
+        try{
+// Retrieve data from input fields
+const imeiInput = document.getElementById('imeiInput').value;
+const zone = document.getElementById('zone').value;
+
+
+let response = await fetch('/api/imeis',{
+  method: 'POST',
+  headers:{
+    'Content-Type': 'application/json; charset=utf-8'
+  },
+  body:JSON.stringify({
+    serial: imeiInput,
+    zone: zone
+  })
+})
+
+if(response.status == 200){
+  $('#createIMEIModal').modal('hide');
+  $('#successModal').modal('show');
+  setTimeout(() =>{
+    location.reload()
+  },2000)
+}else{
+  $('#createIMEIModal').modal('hide');
+  alert('Nothing')
+}
+        }catch(error){
+          alert(error.message)          
+        }
+      }
+  
+      async function saveZoneData() {
+        try{
+          // Retrieve data from input fields
+          const zoneInput = document.getElementById('zoneNameInput').value;
+
+          let response = await fetch('/api/zones',{
+            method: 'POST',
+            headers:{
+              'Content-Type': 'application/json; charset=utf-8'
+            },
+            body:JSON.stringify({
+              name: zoneInput
+            })
+          })
+
+          if(response.status == 200){
+            $('#createZoneModal').modal('hide');
+            $('#successModal').modal('show');
+            setTimeout(() =>{
+              location.reload()
+            },2000)
+          }else{
+            $('#createZoneModal').modal('hide');
+            alert('Nothing')
+          }
+          }catch(error){
+            alert(error.message)
+        }
+      }
+</script>
+  
+
+    <script>
+      async function sendNotification(){
+        try{
+          let response = await fetch('/api/notifications/users',{
+            method:'POST',
+            headers:{
+              'Content-Type': 'application/json; charset=utf-8'
+            },
+            body:JSON.stringify({
+              title: document.getElementById('all-title').value,
+              body: document.getElementById('all-body').value,
+            })
+          })
+
+          if(response.status == 200){
+            $('#successModal').modal('show');
+            setTimeout(() =>{
+              $('#successModal').modal('hide')
+            },1000)
+          }
+
+          console.log(response.body);
+        }catch(error){
+          console.log(error)
+        }
+      }
+
+
+      async function sendNotificationsToZones(){
+        try{
+          let zonesSelectedContainer = document.getElementById('zones-options')
+          let finalSelectedZones = zonesSelectedContainer.getElementsByClassName('selected-option')
+          let toSendZones = []
+          for(let i = 0;i < finalSelectedZones.length;i++){
+            toSendZones.push(finalSelectedZones.item(i).getAttribute('data-value'))
+          }
+
+          
+          let response = await fetch('/api/notifications/zones',{
+            method:'POST',
+            headers:{
+              'Content-Type': 'application/json; charset=utf-8'
+            },
+            body: JSON.stringify({
+              title: document.getElementById('zone-title').value,
+              body: document.getElementById('zone-body').value,
+              zones: toSendZones
+            })
+          })
+
+          if(response.status == 200){
+            $('#successModal').modal('show');
+            setTimeout(() =>{
+              $('#successModal').modal('hide')
+            },1000)
+          }
+        }catch(error){
+          console.log(error)
+        }
+      }
+
+      async function sendNotificationToDevice(){
+        try{
+          let imeisSelectedContainer = document.getElementById('imei-options')
+          let finalSelectedImeis = imeisSelectedContainer.getElementsByClassName('selected-option')
+          let toSendImeis = []
+          for(let i = 0;i < finalSelectedImeis.length;i++){
+            toSendImeis.push(finalSelectedImeis.item(i).textContent)
+          }
+
+          let response = await fetch('/api/notifications/devices',{
+            method:'POST',
+            headers:{
+              'Content-Type': 'application/json; charset=utf-8'
+            },
+            body: JSON.stringify({
+              title: document.getElementById('imei-title').value,
+              body: document.getElementById('imei-body').value,
+              imeis: toSendImeis
+            })
+          })
+
+          if(response.status == 200){
+            $('#successModal').modal('show');
+            setTimeout(() =>{
+              $('#successModal').modal('hide')
+            },1000)
+          }
+        }catch(error){
+          console.log(error)
+        }
+      }
+
+    </script>
     <script>
       async function restartVPS() {
         await fetch('/api/vps/restart').then(() =>{

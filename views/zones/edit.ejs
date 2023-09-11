@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rediger sone</title>
+    <link href="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  </head>
+<body>
+  <%- include('../components/navbar.ejs') %>
+
+    <div class="container">
+        <h1>Rediger sone</h1>
+        <div id="edit-zone-form">
+            <div class="form-group">
+                <label for="zoneName">Sonenavn</label>
+                <input type="text" id="zoneName" name="zoneName" class="form-control" value="<%= zone.name %>" required>
+            </div>
+            <div class="d-flex justify-content-center align-items-center mt-3">
+              <button id="updateButton" class="btn btn-primary btn-sm me-3 ps-3 pe-3">Oppdater</button>
+              <a href="/zones" class="btn btn-secondary btn-sm ps-3 pe-3">Avbryt</a>
+  
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="successModalLabel">Suksess</h5>
+                  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                Endringene er lagret!
+              </div>
+          </div>
+      </div>
+      </div>
+
+      <!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Feil</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Noe gikk galt. Vennligst prøv igjen senere.
+            </div>
+        </div>
+    </div>
+  </div>
+      <script src="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Add any JavaScript for interactivity here -->
+    <script>
+        // JavaScript for handling the update without form submission
+        const updateButton = document.getElementById('updateButton');
+        const zoneId = '<%= zone._id %>';
+
+        updateButton.addEventListener('click', () => {
+            const zoneName = document.getElementById('zoneName').value;
+            
+            // Create a JSON object with the updated data
+            const updatedZone = {
+                name: zoneName
+            };
+
+            // Send a fetch request to update the zone
+            fetch(`/api/zones/${zoneId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedZone)
+            })
+            .then(response => {
+                if (response.ok) {
+                  $('#successModal').modal('show');
+                  setTimeout(() =>{
+                    $('#successModal').modal('hide');
+                  },2000)
+                } else {
+                    $('#errorModal').modal('show');
+                  setTimeout(() =>{
+                    $('#errorModal').modal('hide');
+                  },2000)
+                }
+            })
+            .catch(error => {
+                $('#errorModal').modal('show');
+                  setTimeout(() =>{
+                    $('#errorModal').modal('hide');
+                  },2000)
+            });
+        });
+    </script>
+</body>
+</html>

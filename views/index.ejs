@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Nordic Admin</title>
+    <title>Nordic Test</title>
     <style>
 
 :root {
@@ -95,9 +95,9 @@
         .quick-link-item {
             background-color: #007bff;
             color: white;
-            padding: 15px 30px;
+            padding: 12px;
             border-radius: 8px;
-            margin-right: 10px;
+            margin-right: 8px;
             text-decoration: none;
             font-weight: bold;
             text-transform: uppercase;
@@ -106,6 +106,7 @@
 
         .quick-link-item:hover {
             background-color: #0056b3;
+            color: goldenrod
         }
 
         .stat-card{
@@ -162,18 +163,20 @@
 
 .box-container {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 50px;
+  width: 90%;
+  margin: 0 auto;
 }
 
 .box {
-  height: 130px;
-  width: 230px;
+  height: 120px;
+  width: 200px;
   border-radius: 20px;
   box-shadow: 3px 3px 10px rgba(0, 30, 87, 0.751);
   padding: 20px;
+
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -196,6 +199,10 @@
 .box:nth-child(4) {
   background-color: var(--two-use-color);
 }
+
+.box:nth-child(5){
+    background-color: var(--one-use-color);
+}
  
 .box img {
   height: 50px;
@@ -207,8 +214,8 @@
 .chart-container{
     display: flex;
     justify-content: space-between;
-    margin-top: 40px;
-    margin-bottom: 40px;
+    margin-top: 60px;
+    margin-bottom: 60px;
     align-items: stretch;
     flex-direction: column;
     padding: 8px;
@@ -259,6 +266,7 @@ svg{
         <option value="4">en måned siden</option>
         <option value="5">ett år siden</option>
     </select>
+</div>
 
     <div class="box-container">
  
@@ -304,9 +312,18 @@ svg{
             <img src=
 "/images/accidents.png" alt="published">
         </div>
+
+        <div class="box box5">
+            <div class="text">
+                <h2 class="topic-heading" id="removed-num">-</h2>
+                <h2 class="topic">Fjernet</h2>
+            </div>
+
+            <img src=
+"/images/remains.png" alt="published">
+        </div>
     </div>
 
-</div>
 
     <div class="chart-container">
         <div class="chart-header">
@@ -318,10 +335,9 @@ svg{
 
     <div class="container">
     <div class="quick-links">
-        <a href="/users" class="quick-link-item">Administrer brukere</a>
-        <a href="/groups" class="quick-link-item">Administrer grupper</a>
-        <a href="/fields" class="quick-link-item">Administrer skjema</a>
-        <a href="/pdfs" class="quick-link-item">Se Ferdigskjema</a>
+        <a href="/maps" class="quick-link-item">Kart</a>
+        <a href="/postals" class="quick-link-item">Send per post</a>
+        <a href="/scans" class="quick-link-item">Makulering</a>
         <!-- Add more quick links as needed -->
     </div>
 </div>
@@ -580,6 +596,7 @@ function zoomed(event) {
 
     async function updateCount() {
         const vioHolder = document.getElementById('vio-num');
+        const vioRmHolder = document.getElementById('removed-num');
         const pdfHolder = document.getElementById('pdf-num');
         const userHolder = document.getElementById('user-num');
         const accidentHolder = document.getElementById('accident-num');
@@ -589,7 +606,10 @@ function zoomed(event) {
 
         try {
             let responseData = await fetchData(`/api/violations/${value}`);
+            let responseRmData = await fetchData(`/api/violations/removed/gn/${value}`);
+            console.log(responseRmData);
             vioHolder.textContent = responseData;
+            vioRmHolder.textContent = responseRmData;
         } catch (error) {
             console.error(error);
         }

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rediger kart</title>
+    <link href="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+      .live-preview {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #ccc;
+            margin: 10px 0;
+        }
+
+        #map {
+            width: 100%;
+            height: 450px;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../components/navbar.ejs') %>
+    
+    <div class="container">
+          <h1>Rediger kart</h1>
+          <div id="map"></div>
+
+        <div>
+            <div class="mb-3 mt-3 d-flex justify-content-between align-items-center">
+              <div class="me-2 w-100">
+                <label for="longitude" class="form-label">Lengdegrad</label>
+                <input type="text" class="form-control" id="longitude" name="longitude" value="<%= map.longitude %>" required>
+            </div>
+            <div class="w-100">
+                <label for="latitude" class="form-label">Breddegrad</label>
+                <input type="text" class="form-control" id="latitude" name="latitude" value="<%= map.latitude %>" required>
+            </div>
+            </div>
+            <div class="mb-3">
+                <label for="data" class="form-label">Data <a href="https://geojson.io/" target="_blank">åpne for å redigere</a></label>
+                <textarea class="form-control" id="data" name="data" rows="4" required><%= map.data %></textarea>
+            </div>
+            
+            <div class="mb-3">
+              <label for="zone" class="form-label">Velg Sone</label>
+              <select id="zone" name="zone" class="form-select" required>
+                  <!-- Options will be added dynamically using JavaScript -->
+              </select>
+          </div>
+          <div class="d-flex justify-content-center align-items-center mb-3">
+            <button type="button" class="btn btn-primary btn-sm me-2 ps-3 pe-3" id="updateButton">Lagre endringer</button>
+            <a href="/maps" class="btn btn-secondary btn-sm ps-3 pe-3">Avbryt</a>
+          </div>
+
+        </div>
+    </div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Suksess</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Endringene er lagret!
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Feil</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Noe gikk galt. Vennligst prøv igjen senere.
+            </div>
+        </div>
+    </div>
+  </div>
+
+    <script src="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_RMmoc5iVAGRDfxi8WLjQc27_QocN-eI&libraries=places"></script>
+
+
+    <script>
+const map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: +'<%- map.latitude %>', lng: +'<%- map.longitude %>' }, // Centered on Norway
+        zoom: 14, // Adjust the zoom level as needed
+        mapTypeId: google.maps.MapTypeId.HYBRID
+    });
+
+          // Function to parse and display GeoJSON data on the map
+function displayGeoJSONData(data) {
+    try {
+        const geoJson = JSON.parse(data);
+
+        // Create a Data layer and add it to the map
+        const dataLayer = new google.maps.Data({ map: map });
+
+          dataLayer.addGeoJson(geoJson);        
+        
+
+        // Set the style for the GeoJSON features (customize as needed)
+        dataLayer.setStyle({
+            fillColor: 'blue',
+            strokeColor: 'blue',
+            fillOpacity: 0.35,
+            strokeWeight: 1
+        });
+    } catch (error) {
+        console.error('Error parsing GeoJSON data:', error);
+    }
+}
+
+// Call the function to display GeoJSON data when the page loads
+google.maps.event.addDomListener(window, 'load', () => {
+    displayGeoJSONData(document.getElementById('data').value);
+});
+
+// Call the function whenever the 'data' textarea value changes
+document.getElementById('data').addEventListener('input', () => {
+    const newData = document.getElementById('data').value;
+    displayGeoJSONData(newData);
+});
+
+    </script>
+
+    <script>
+      // Function to populate the zone dropdown with data from /api/zones
+      async function populateZoneDropdown() {
+          try {
+              const zoneDropdown = document.getElementById('zone');
+
+              // Fetch zones data from /api/zones
+              const response = await fetch('/api/zones');
+              const zones = await response.json();
+
+              // Populate the dropdown options
+              zones.forEach((zone) => {
+                  const option = document.createElement('option');
+                  option.value = zone._id;
+                  option.text = zone.name;
+                  zoneDropdown.appendChild(option);
+              });
+          } catch (error) {
+              console.error('Error fetching and populating zones:', error);
+          }
+      }
+
+      // Function to update the map using Fetch
+      async function updateMap() {
+          try {
+              const mapId = '<%= map._id %>';
+              const longitude = document.getElementById('longitude').value;
+              const latitude = document.getElementById('latitude').value;
+              const data = document.getElementById('data').value;
+              const zone = document.getElementById('zone').value;
+
+              const formData = {
+                  longitude,
+                  latitude,
+                  data,
+                  zone
+              };
+
+              const response = await fetch(`/api/maps/${mapId}`, {
+                  method: 'PUT',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(formData)
+              });
+
+              if (response.ok) {
+                $('#successModal').modal('show');
+                    setTimeout(() =>{
+                        $('#successModal').modal('hide');
+                    },2000)
+            } else {
+                $('#errorModal').modal('show');
+                    setTimeout(() =>{
+                        $('#errorModal').modal('hide');
+                    },2000)
+            }
+          } catch (error) {
+            $('#errorModal').modal('show');
+                    setTimeout(() =>{
+                        $('#errorModal').modal('hide');
+                    },2000)
+        }
+      }
+
+      // Invoke the code when the DOM content is loaded
+      document.addEventListener('DOMContentLoaded', () => {
+          // Populate the zone dropdown when the page loads
+          populateZoneDropdown();
+
+          // Add click event listener to the update button
+          const updateButton = document.getElementById('updateButton');
+          updateButton.addEventListener('click', () => {
+              updateMap();
+          });
+      });
+    </script>
+
+    <script src="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

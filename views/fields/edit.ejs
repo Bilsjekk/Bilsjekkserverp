@@ -73,6 +73,36 @@
     </div>
 </div>
 
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Suksess</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Endringene er lagret!
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Feil</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Noe gikk galt. Vennligst prøv igjen senere.
+            </div>
+        </div>
+    </div>
+  </div>
+
 <script>
     function toggleRequiredDescription() {
         const positive = document.getElementById("positive");
@@ -128,24 +158,22 @@
         })
             .then(response => {
                 if (response.status == 200) {
-                    // Show success alert and hide failure alert
-                    document.getElementById('successAlert').style.display = 'block';
-                    document.getElementById('failureAlert').style.display = 'none';
-                    setTimeout(() => {
-                        location.href = '/fields'
-                    }, 3000);
+                    $('#successModal').modal('show');
+            setTimeout(() =>{
+                    $('#successModal').modal('hide');
+                  },2000)
                 } else {
-                    // Show failure alert and hide success alert
-                    document.getElementById('successAlert').style.display = 'none';
-                    document.getElementById('failureAlert').style.display = 'block';
+                    $('#errorModal').modal('show');
+            setTimeout(() =>{
+                    $('#errorModal').modal('hide');
+                  },2000)
                 }
             })
             .catch(error => {
-                // Handle fetch error
-                console.error('Error occurred during fetch:', error);
-                // Show failure alert and hide success alert
-                document.getElementById('successAlert').style.display = 'none';
-                document.getElementById('failureAlert').style.display = 'block';
+                $('#errorModal').modal('show');
+            setTimeout(() =>{
+                    $('#errorModal').modal('hide');
+                  },2000)
             });
     });
 </script>

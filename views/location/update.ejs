@@ -55,13 +55,45 @@
         </div>
     </div>
 </div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Suksess</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Endringene er lagret!
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Feil</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Noe gikk galt. Vennligst prøv igjen senere.
+            </div>
+        </div>
+    </div>
+  </div>
+
 <!-- Add Bootstrap JS and Popper.js scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
     async function updateLocation() {
-        const locationId = '<%= location._id %>';
+        try{
+            const locationId = '<%= location._id %>';
         const location = document.querySelector('#location');
 
         const days = document.querySelectorAll('input[name="days[]"]');
@@ -94,12 +126,22 @@
         })
 
         if (response.status === 200) {
-            document.getElementById('successAlert').style.display = 'block';
-            setTimeout(() => {
-                window.location.href = '/locations'; // Redirect to the location list page
-            }, 3000);
+            
+            $('#successModal').modal('show');
+                    setTimeout(() =>{
+                        $('#successModal').modal('hide');
+                    },2000)
         } else {
-            document.getElementById('failureAlert').style.display = 'block';
+            $('#errorModal').modal('show');
+                    setTimeout(() =>{
+                        $('#errorModal').modal('hide');
+                    },2000)
+        }
+        }catch(error){
+            $('#errorModal').modal('show');
+                    setTimeout(() =>{
+                        $('#errorModal').modal('hide');
+                    },2000)
         }
     }
 </script>

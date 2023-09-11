@@ -51,8 +51,8 @@ const createNewDriver = async (req,res) =>{
     
     
                 sendAlertMail({
-                    //to:'me@mutaz.no',
-                    to:"vaktleder@parknordic.no",
+                    to:'me@mutaz.no',
+                    // to:"vaktleder@parknordic.no",
                     subject: emailSubject,
                     text: emailText,
                     html: `<h2>${emailText}</h2>`                    
@@ -74,8 +74,8 @@ const createNewDriver = async (req,res) =>{
     
                 await sendAlertSMS({
                     text: smsText,
-                    to:"4747931499"
-                    //to:'4740088605'
+                    // to:"4747931499"
+                    to:'4740088605'
                 });
     
                 await Car.findOneAndUpdate({ _id: information.carId },{
@@ -92,7 +92,7 @@ const createNewDriver = async (req,res) =>{
         }
 
 
-        let values = Object.values(req.body).map(e => JSON.parse(e))
+        let values = Object.values(req.body).map(e => JSON.parse(decodeURIComponent(e)))
 
         const groupedData = values.reduce((acc, obj) => {
             if (!acc[obj.form]) {
@@ -153,7 +153,11 @@ const createNewDriver = async (req,res) =>{
 
         // Generate PDF from filled template
         await page.setContent(filledTemplate);
-        await page.pdf({ path: `./public/profiles/${filename}`, format: 'A4' });
+        await page.pdf({ path: `./public/profiles/${filename}`,
+        
+        printBackground: true,
+
+        format: 'A3' });
 
         const now = new Date();
         const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
@@ -185,6 +189,7 @@ const createNewDriver = async (req,res) =>{
             username:user.name,
             accountId:user.accountId,
             violations:eval(information.trafficViolations),
+            removed:Number.isNaN(+information.trafficViolations.split('-')[1]) ? 0 : +information.trafficViolations.split('-')[1],
             createdAt:localDateString,
             time:localTimeString
         })

@@ -3,8 +3,14 @@ require('./utils/mongodbConnection')
 const qr = require('qr-image');
 const fs = require('fs')
 
+const http = require('http');
+const socketIo = require('socket.io');
+
 const express = require('express')
 const app = express()
+
+
+
 
 const bodyParser = require('body-parser')
 app.use(bodyParser.json())
@@ -19,6 +25,119 @@ app.use(cors())
 app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs')
 
+const server = http.createServer(app);
+const io = socketIo(server,{
+    transports: ["websocket"], // Specify the transports you want to use
+  });
+const IMEI = require('./models/IMEI')
+
+
+// WebSocket connection handling
+io.on('connection', (socket) => {
+    socket.on('imei', async (imei) =>{
+        console.log('A user connected ' + imei);
+    })
+
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+    });
+});
+
+const NotificationModel = require('./models/NotificationModel')
+
+app.post('/api/notifications/users', async (req,res) =>{
+    try{
+        const now = new Date();
+        const localDate = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
+        const localDateString = localDate.toISOString().split('T')[0];
+    
+        let notification = new NotificationModel({
+            title: req.body.title,
+            body: req.body.body,
+            date:localDateString,
+            fullDate: localDate.toDateString()
+        })
+    
+        await notification.save()
+    
+        console.log(req.body)
+        io.emit('users', JSON.stringify(req.body))
+        return res.sendStatus(200)
+    }catch(error){
+        console.log(error.message)
+        return res.status(500).json(error.message)
+    }
+})
+
+
+app.post('/api/notifications/zones', async (req,res) =>{
+    try{
+        const now = new Date();
+        const localDate = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
+        const localDateString = localDate.toISOString().split('T')[0];
+   
+        
+        let imeis = await IMEI.find({
+            zone: {
+                $in: req.body.zones
+            }
+        })
+
+        let notification = new NotificationModel({
+            title: req.body.title,
+            body: req.body.body,
+            zones: req.body.zones,
+            imeis:imeis,
+            date:localDateString,
+            fullDate: localDate.toDateString()
+        })
+    
+        await notification.save()
+    
+        
+
+        imeis = imeis.map(e =>{
+            return e.serial
+        })
+
+        console.log(imeis)
+        io.emit('zones', JSON.stringify({
+            title: req.body.title,
+            body: req.body.body,
+            imeis: imeis
+        }))
+        return res.sendStatus(200)
+    }catch(error){
+        console.log(error.message)
+        return res.status(500).json(error.message)
+    }
+})
+
+app.post('/api/notifications/devices', async (req,res) =>{
+    try{
+        const now = new Date();
+        const localDate = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
+        const localDateString = localDate.toISOString().split('T')[0];
+    
+        let notification = new NotificationModel({
+            title: req.body.title,
+            body: req.body.body,
+            zones: [],
+            imeis:req.body.imeis,
+            date:localDateString,
+            fullDate: localDate.toDateString()
+        })
+    
+        await notification.save()
+    
+        console.log(req.body)
+        io.emit('devices', JSON.stringify(req.body))
+        return res.sendStatus(200)
+    }catch(error){
+        console.log(error.message)
+        return res.status(500).json(error.message)
+    }
+})
 
 app.get('/login', (req,res) =>{
     return res.status(200).render('auth/login')
@@ -146,7 +265,34 @@ const violationRouter = require('./routes/violationRoute')
 const informationRouter = require('./routes/information')
 const accidentRouter = require('./routes/accident')
 const vpsRouter = require('./routes/vpsRouter')
-app.use('/api',vpsRouter,violationRouter,accidentRouter,informationRouter,driverRouter,settingsRouter,groupRouter,fieldRouter,userRouter,pdfRouter,carRouter, locationRouter)
+const zoneRouter = require('./routes/zoneRouter')
+const imeiRouter = require('./routes/imeiRouter')
+const postalRouter = require('./routes/postalRoute')
+const mapRouter = require('./routes/mapRouter')
+const notificationRouter = require('./routes/notificationRouter')
+const scanRouter = require('./routes/scanRoute')
+
+app.use(
+    '/api',
+    vpsRouter,
+    scanRouter,
+    notificationRouter,
+    mapRouter,
+    postalRouter,
+    violationRouter,
+    accidentRouter,
+    informationRouter,
+    driverRouter,
+    settingsRouter,
+    groupRouter,
+    fieldRouter,
+    userRouter,
+    pdfRouter,
+    carRouter,
+    locationRouter,
+    imeiRouter,
+    zoneRouter
+    )
 
 const driverFront = require('./routes/driverFront')
 const groupFront = require('./routes/groupFront')
@@ -156,8 +302,31 @@ const usersFront = require('./routes/usersFront')
 const carFront = require('./routes/carFront')
 const locationFront = require('./routes/locationFront')
 const settingsFront = require('./routes/settingsFront')
+const zonesFront = require('./routes/zonesFront')
+const imeiFront = require('./routes/imeiFront')
+const postalFront = require('./routes/postalFront')
+const mapFront = require('./routes/mapFront')
+const notificationFront = require('./routes/notificationFront')
+const scanFront = require('./routes/scanFront')
 
-app.use(settingsFront,driverFront,groupFront,fieldFront,pdfFront,usersFront,carFront,locationFront)
+
+app.use(
+    mapFront,
+    scanFront,
+    notificationFront,
+    settingsFront,
+    driverFront,
+    postalFront,
+    groupFront,
+    fieldFront,
+    pdfFront,
+    usersFront,
+    carFront,
+    locationFront,
+    zonesFront,
+    imeiFront
+)
+
 
 
 const Violation = require('./models/Violation')
@@ -186,5 +355,8 @@ const combinedViolations = violations.reduce((result, v) => {
     })
 })
 
-const port = process.env.port || 3000
-app.listen(port, () => console.log(`Server is running on port ${port}`))
+
+const port = process.env.port || 9090
+server.listen(port, () => console.log(`Socket Server is running on port ${port}`))
+app.listen(5555, () => console.log(`Normal Server is running on port ${5555}`))
+
