@@ -30,12 +30,7 @@ router.get('/postals',async (req,res) =>{
   }
 })
 
-router.post('/postals',(req,res,next) => {
-  res.header("Content-Type", 'application/json');
-  res.header("Access-Control-Allow-Origin", "*");
-
-  return next()
-},upload.single('violation'),async (req,res) =>{
+router.post('/postals',upload.single('violation'),async (req,res) =>{
   
 
   try{
@@ -87,6 +82,8 @@ router.post('/postals',(req,res,next) => {
       link: process.env.BASE_URL + 'postals/' + filename,
       image: process.env.BASE_URL + req.file.path.split('public')[1].replaceAll('\\','/')
     })
+
+    console.log(postal);
 
 
     await postal.save()
