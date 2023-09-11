@@ -43,7 +43,7 @@ router.post('/scans',upload.single('violation'),async (req,res) =>{
     const page = await browser.newPage();
 
     // Load the HTML template
-    const htmlTemplate = fs.readFileSync('templates/postal.html', 'utf8');
+    const htmlTemplate = fs.readFileSync('templates/scan.html', 'utf8');
     
 
 
