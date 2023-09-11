@@ -77,10 +77,6 @@
         <input type="text" class="form-control mr-3" id="searchInput" placeholder="Søk...">
         <input type="date" class="form-control" id="datePicker" placeholder="Velg en dato">
       </div>
-
-      <div class="">
-        <%- scans %>
-      </div>
   
       <div class="card-grid">
         <% scans.forEach(function(postalViolation) { %>
@@ -88,7 +84,7 @@
             <div class="card-body">
               <h5 class="card-title">Overtredelsesnummer: <%= postalViolation.violationNumber %></h5>
               <p class="card-text">PNID: <%= postalViolation.pnid %></p>
-              <p class="card-text">Dato: <%= postalViolation.date %></p>
+              <p class="card-text date"><%= postalViolation.date %></p>
               <div class="d-flex justify-content-end align-items-center">
                 <a href="/scans/<%= postalViolation.id %>" class="btn btn-info btn-sm">See Postal</a>
               </div>
@@ -155,7 +151,7 @@
     const localDateString = localDate.toISOString().split('T')[0];
 
     for (let i = 0; i < cards.length; i++) {
-            const dateInfo = cards[i].querySelector('.card-title').textContent;
+            const dateInfo = cards[i].querySelector('.card-text.date').textContent;
             if (dateInfo == localDateString) {
                 cards[i].style.display = '';
             } else {
@@ -171,7 +167,7 @@
         for (let i = 0; i < cards.length; i++) {
             const cardContent = cards[i].textContent.toLowerCase();
             if (cardContent.includes(filter)) {
-                cards[i].style.display = 'block !important';
+                cards[i].style.display = '';
             } else {
                 cards[i].style.display = 'none !important';
             }
