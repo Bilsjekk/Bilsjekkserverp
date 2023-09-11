@@ -3,8 +3,6 @@ require('./utils/mongodbConnection')
 const qr = require('qr-image');
 const fs = require('fs')
 
-const http = require('http');
-const socketIo = require('socket.io');
 
 const express = require('express')
 const app = express()
@@ -25,23 +23,6 @@ app.use(cors())
 app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs')
 
-const server = http.createServer(app);
-const io = socketIo(server,{
-    transports: ["websocket"], // Specify the transports you want to use
-  });
-const IMEI = require('./models/IMEI')
-
-
-// WebSocket connection handling
-io.on('connection', (socket) => {
-    socket.on('imei', async (imei) =>{
-        console.log('A user connected ' + imei);
-    })
-
-    socket.on('disconnect', () => {
-        console.log('User disconnected');
-    });
-});
 
 const NotificationModel = require('./models/NotificationModel')
 
