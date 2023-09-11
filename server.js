@@ -62,7 +62,7 @@ app.post('/api/notifications/users', async (req,res) =>{
         await notification.save()
     
         console.log(req.body)
-        // io.emit('users', JSON.stringify(req.body))
+        io.emit('users', JSON.stringify(req.body))
         return res.sendStatus(200)
     }catch(error){
         console.log(error.message)
