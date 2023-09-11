@@ -6,7 +6,7 @@
             font-family: Arial, sans-serif;
             margin: 20px;
             padding: 20px;
-            width:100vw;
+            width: 100vw;
             background-color: #eee;
         }
         h2 {
@@ -17,10 +17,11 @@
             margin: 5px 0;
         }
         .reports {
-            width: 40%;
+            width: 90%; /* Set table width to 90% of available width */
             border-collapse: collapse;
             margin-top: 20px;
             border: 2px solid;
+            height: 300px; /* Set table height to 300px */
         }
         .reports th, td {
             border: 2px solid;
@@ -29,19 +30,12 @@
             text-align: left;
             background-color: #f2f2f2;
         }
-
-
-        .reports td[colspan="2"]{
+        .reports td[colspan="2"] {
             text-align: center;
         }
-
         .reports th {
             background-color: #f2f2f2;
         }
-
-
-
-
         img {
             margin-top: 20px;
             max-width: 100%;
@@ -58,49 +52,43 @@
             max-width: 100%;
             height: auto;
         }
-
-        .container{
+        .container {
             width: 80%;
+            display: flex; /* Make the container a flex container */
+            justify-content: space-between; /* Space between image and table */
+            align-items: flex-start;
         }
-
         .svg-container {
             position: fixed;
             top: 0;
             right: 0;
-            pointer-events: none; /* Make the SVG not intercept mouse events */
+            pointer-events: none;
         }
-
-        .headline{
+        .headline {
             display: flex;
             justify-content: space-around;
             align-items: center;
             margin-top: 40px;
         }
-
-        .red{
-            color:red;
+        .red {
+            color: red;
         }
-
-        .green{
-            color:green;
+        .green {
+            color: green;
         }
-
-        .holder{
+        .holder {
             width: 100%;
-            display:flex;
+            display: flex;
             margin-top: 20px;
             justify-content: center;
-            align-items: flex-start
+            align-items: flex-start;
         }
-
-        .table-container,.img-container{
-            width:100%;
-            display:flex;
+        .table-container, .img-container {
+            width: 45%; /* Adjust the width of table and image containers */
+            display: flex;
             justify-content: center;
             align-items: center;
         }
-
-
     </style>
     <meta charset="UTF-8" />
 </head>
@@ -114,10 +102,13 @@
     <div class="tria"></div>
     <div class="headline">
         <img src="https://nordic.bilsjekk.in/images/assets/bil.png" alt="Muesem" width="50px" height="50px">
-        <h2>MAKULERING</h2>
+        <h2>MAKULERIN</h2>
         <div></div>
     </div>
     <hr>
+    <div class="img-container">
+        <img src="{{image}}" alt="{{image}}">
+    </div>
     <div class="table-container">
         <table class="reports">
             <colgroup>
@@ -143,12 +134,6 @@
             </tr>
         </table>
     </div>
-
-
-    <div class="img-container">
-        <img src="{{image}}" alt="{{image}}">
-    </div>
-</div>
 </div>
 </body>
 </html>
