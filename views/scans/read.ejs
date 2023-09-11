@@ -48,17 +48,19 @@
   <%- include('../components/navbar.ejs') %>
 
   <div class="container">
+
+    <div class="row mt-4 mb-3">
+      <div class="col">
+        <h1>Makulering</h1>
+      </div>
+    </div>
     <div class="form-group d-flex justify-content-between mt-3">
       <input type="text" class="form-control mr-2" id="searchInput" placeholder="Søk etter dato, navn, bruker, ID eller lenke">
       <input type="date" class="form-control mr-2" id="datePicker" placeholder="Velg en dato">
       <button class="btn btn-danger btn-sm mr-2" data-toggle="modal" data-target="#deleteAllPostalsModal" style="width: 240px;" >Slett alle</button>
   </div>
 
-    <div class="row mt-4 mb-3">
-      <div class="col">
-        <h1>Post Delete K.S</h1>
-      </div>
-    </div>
+
 
     <table class="table table-striped table-bordered text-center">
       <thead>
