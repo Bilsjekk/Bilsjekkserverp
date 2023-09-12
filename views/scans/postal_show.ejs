@@ -89,6 +89,31 @@
                 width: 100%; /* Set container width to 100% on smaller screens */
             }
         }
+
+        @media print {
+            /* Define print-specific styles here */
+            body {
+                background-color: white; /* Set background color for print */
+            }
+            .pdf-container {
+                display: block; /* Change to block for print */
+                width: 100%; /* Set container width to 100% for print */
+                height: auto; /* Set container height to auto for print */
+                margin: 0; /* Remove margin for print */
+            }
+            .pdf-header, .pdf-toolbar {
+                display: none; /* Hide header and toolbar for print */
+            }
+            .pdf-page {
+                page-break-before: always; /* Add page break before each page for print */
+                background-color: white; /* Set background color for print */
+                border: none; /* Remove border for print */
+                box-shadow: none; /* Remove box shadow for print */
+            }
+            .pageNumber, .toolbarButton {
+                display: none; /* Hide page number and toolbar buttons for print */
+            }
+        }
     </style>
 </head>
 <body>
