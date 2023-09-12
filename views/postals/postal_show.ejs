@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>PDF</title>
+    <title>Slettinger</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf_viewer.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
@@ -46,7 +46,6 @@
             border-bottom: 1px solid #ddd;
         }
 
-
         .pdf-controls a {
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -85,6 +84,11 @@
             cursor: pointer;
         }
 
+        @media (max-width: 768px) {
+            .pdf-container {
+                width: 100%; /* Set container width to 100% on smaller screens */
+            }
+        }
     </style>
 </head>
 <body>
@@ -100,7 +104,8 @@
         </div>
 
         <div>
-            <a href="<%= postal.link %>" download>Nedlasting</a>
+            <a href="<%= postal.link %>" download style="margin-right: 12px;">Nedlasting</a>
+            <a href="<%= postal.link %>" >opprinnelig</a>
         </div>
     </div>
 

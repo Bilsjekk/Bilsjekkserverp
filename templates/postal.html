@@ -17,11 +17,11 @@
             margin: 5px 0;
         }
         .reports {
-            width: 90%; /* Set table width to 90% of available width */
+            width: 700px; /* Set table width to 90% of available width */
             border-collapse: collapse;
-            margin-top: 20px;
             border: 2px solid;
             height: 300px; /* Set table height to 300px */
+            margin-left: 20px;
         }
         .reports th, td {
             border: 2px solid;
@@ -37,9 +37,13 @@
             background-color: #f2f2f2;
         }
         img {
-            margin-top: 20px;
             max-width: 100%;
         }
+
+        .img-container{
+            margin-left: 20px;
+        }
+
         .image-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -83,11 +87,13 @@
             justify-content: center;
             align-items: flex-start;
         }
-        .table-container, .img-container {
-            width: 45%; /* Adjust the width of table and image containers */
+        .wrapper {
             display: flex;
+            margin-top: 60px;
+            margin-left: 20px;
+            padding-left: 20px;
+            width: 100%;
             justify-content: center;
-            align-items: center;
         }
     </style>
     <meta charset="UTF-8" />
@@ -102,37 +108,39 @@
     <div class="tria"></div>
     <div class="headline">
         <img src="https://nordic.bilsjekk.in/images/assets/bil.png" alt="Muesem" width="50px" height="50px">
-        <h2>Send Per Post</h2>
+        <h2>Send per post</h2>
         <div></div>
     </div>
     <hr>
-    <div class="img-container">
-        <img src="{{image}}" alt="{{image}}">
-    </div>
-    <div class="table-container">
-        <table class="reports">
-            <colgroup>
-                <col style="width: auto;">
-                <col style="width: auto;">
-                <col style="width: 100%;">
-            </colgroup>
-            <tr>
-                <td colspan="2">Date</td>
-                <td>{{date}}</td>
-            </tr>
-            <tr>
-                <td colspan="2">Pnid</td>
-                <td>{{pnid}}</td>
-            </tr>
-            <tr>
-                <td colspan="2">Number</td>
-                <td>{{number}}</td>
-            </tr>
-            <tr>
-                <td colspan="2">Reason</td>
-                <td>{{reason}}</td>
-            </tr>
-        </table>
+    <div class="wrapper">
+        <div class="img-container">
+            <img src="{{image}}" alt="{{image}}">
+        </div>
+        <div class="table-container">
+            <table class="reports">
+                <colgroup>
+                    <col style="width: auto;">
+                    <col style="width: auto;">
+                    <col style="width: 100%;">
+                </colgroup>
+                <tr>
+                    <td colspan="2">Date</td>
+                    <td>{{date}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2">Pnid</td>
+                    <td>{{pnid}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2">Number</td>
+                    <td>{{number}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2">Reason</td>
+                    <td>{{reason}}</td>
+                </tr>
+            </table>
+        </div>
     </div>
 </div>
 </body>
