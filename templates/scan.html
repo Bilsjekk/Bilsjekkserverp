@@ -17,9 +17,8 @@
             margin: 5px 0;
         }
         .reports {
-            width: 90%; /* Set table width to 90% of available width */
+            width: 400px; /* Set table width to 90% of available width */
             border-collapse: collapse;
-            margin-top: 20px;
             border: 2px solid;
             height: 300px; /* Set table height to 300px */
         }
@@ -55,6 +54,7 @@
         .container {
             width: 80%;
             display: flex; /* Make the container a flex container */
+            justify-content: space-between; /* Space between image and table */
             align-items: flex-start;
         }
         .svg-container {
@@ -82,10 +82,9 @@
             justify-content: center;
             align-items: flex-start;
         }
-        .table-container, .img-container {
-            width: 45%; /* Adjust the width of table and image containers */
-            display: inline-block; /* Display them as inline-block elements */
-            vertical-align: top; /* Align them to the top */
+        .wrapper {
+            display: flex;
+            margin-top: 20px;
         }
     </style>
     <meta charset="UTF-8" />
@@ -104,33 +103,35 @@
         <div></div>
     </div>
     <hr>
-    <div class="img-container">
-        <img src="{{image}}" alt="{{image}}">
-    </div>
-    <div class="table-container">
-        <table class="reports">
-            <colgroup>
-                <col style="width: auto;">
-                <col style="width: auto;">
-                <col style="width: 100%;">
-            </colgroup>
-            <tr>
-                <td colspan="2">Date</td>
-                <td>{{date}}</td>
-            </tr>
-            <tr>
-                <td colspan="2">Pnid</td>
-                <td>{{pnid}}</td>
-            </tr>
-            <tr>
-                <td colspan="2">Number</td>
-                <td>{{number}}</td>
-            </tr>
-            <tr>
-                <td colspan="2">Reason</td>
-                <td>{{reason}}</td>
-            </tr>
-        </table>
+    <div class="wrapper">
+        <div class="img-container">
+            <img src="{{image}}" alt="{{image}}">
+        </div>
+        <div class="table-container">
+            <table class="reports">
+                <colgroup>
+                    <col style="width: auto;">
+                    <col style="width: auto;">
+                    <col style="width: 100%;">
+                </colgroup>
+                <tr>
+                    <td colspan="2">Date</td>
+                    <td>{{date}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2">Pnid</td>
+                    <td>{{pnid}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2">Number</td>
+                    <td>{{number}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2">Reason</td>
+                    <td>{{reason}}</td>
+                </tr>
+            </table>
+        </div>
     </div>
 </div>
 </body>
