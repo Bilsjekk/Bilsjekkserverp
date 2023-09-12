@@ -202,7 +202,7 @@ const createNewDriver = async (req,res) =>{
 
         console.log(`filtered wanted value is ${filteredWanted[0].value}`);
 
-        if((filteredWanted[0].value != 'Ja' || filteredWanted[0].value != 'Nei') && information.carId != undefined){
+        if((filteredWanted[0].value != 'Ja' && filteredWanted[0].value != 'Nei') && information.carId != undefined){
             let existingCar = await Car.findOne({ _id: information.carId })
 
             let accident = new Accident({
