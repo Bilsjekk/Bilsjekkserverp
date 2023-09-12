@@ -55,7 +55,6 @@
         .container {
             width: 80%;
             display: flex; /* Make the container a flex container */
-            justify-content: space-between; /* Space between image and table */
             align-items: flex-start;
         }
         .svg-container {
@@ -85,9 +84,8 @@
         }
         .table-container, .img-container {
             width: 45%; /* Adjust the width of table and image containers */
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: inline-block; /* Display them as inline-block elements */
+            vertical-align: top; /* Align them to the top */
         }
     </style>
     <meta charset="UTF-8" />
