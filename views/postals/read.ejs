@@ -56,7 +56,7 @@
 
     <div class="row mt-4 mb-3">
       <div class="col">
-        <h1>Postbrudd</h1>
+        <h1>Send per post skjema</h1>
       </div>
     </div>
 
@@ -77,12 +77,12 @@
             <td><%= postalViolation.date %></td>
             <td><%= postalViolation.violationNumber %></td>
             <td><%= postalViolation.pnid %></td>
-            <td><a href="/postals/<%= postalViolation.id %>">Se Postal</a></td>
+            <td><a href="/postals/<%= postalViolation.id %>">Se PDF</a></td>
             <td>
-              <button class="btn btn-info btn-sm show-image" data-image-url="<%= postalViolation.image %>">Show Image</button>
+              <button class="btn btn-info btn-sm show-image" data-image-url="<%= postalViolation.image %>">Vis bilde</button>
             </td>
             <td class="controls">
-              <button class="btn btn-danger btn-sm delete-violation" data-violation-id="<%= postalViolation._id %>">Delete</button>
+              <button class="btn btn-danger btn-sm delete-violation" data-violation-id="<%= postalViolation._id %>">Slett</button>
             </td>
           </tr>
         <% }); %>
@@ -99,7 +99,7 @@
           <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          Er du sikker på at du vil slette dette postbruddet?
+          Er du sikker på at du vil slette dette PDF?
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
