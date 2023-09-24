@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Page</title>
+    <!-- Include Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <%- include('../components/navbar.ejs') %>
+    <div class="container-fluid mt-5">
+        <h3 class="mb-2">Notification Page</h3>
+        <div class="form-group d-flex justify-content-between">
+            <input type="text" class="form-control me-2" id="searchInput" placeholder="Search by title, body, or type">
+            <select class="form-control form-select me-2" id="typeFilter">
+                <option value="">All</option>
+                <option value="activation">Activation</option>
+                <option value="issue">Issue</option>
+            </select>
+            <input type="date" class="form-control" id="datePicker" placeholder="Select a date">
+        </div>
+        <table class="table table-bordered text-center table-hover table-striped table-secondary">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Body</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (issuenotifications.length === 0) { %>
+                    <tr>
+                        <td colspan="4" class="text-center">No notifications to display.</td>
+                    </tr>
+                <% } else { %>
+                    <% issuenotifications.forEach(notification => { %>
+                        <tr>
+                            <td><%= notification.title %></td>
+                            <td><%= notification.body %></td>
+                            <td><%= notification.date %></td>
+                            <td><%= notification.type %></td>
+                        </tr>
+                    <% }); %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Include Bootstrap 5 JS and Popper.js scripts (if needed) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const datePicker = document.getElementById('datePicker');
+        const typeFilter = document.getElementById('typeFilter');
+        const tableRows = document.querySelectorAll('tbody tr');
+
+        searchInput.addEventListener('input', () => {
+            const searchText = searchInput.value.trim().toLowerCase();
+            const selectedDate = datePicker.value;
+            const selectedType = typeFilter.value;
+
+            filterTable(searchText, selectedDate, selectedType);
+        });
+
+        datePicker.addEventListener('input', () => {
+            const selectedDate = datePicker.value;
+            const searchText = searchInput.value.trim().toLowerCase();
+            const selectedType = typeFilter.value;
+
+            filterTable(searchText, selectedDate, selectedType);
+        });
+
+        typeFilter.addEventListener('change', () => {
+            const selectedType = typeFilter.value;
+            const searchText = searchInput.value.trim().toLowerCase();
+            const selectedDate = datePicker.value;
+
+            filterTable(searchText, selectedDate, selectedType);
+        });
+
+        function filterTable(searchText, selectedDate, selectedType) {
+            tableRows.forEach(row => {
+                const title = row.querySelector('td:nth-child(1)').textContent.trim().toLowerCase();
+                const body = row.querySelector('td:nth-child(2)').textContent.trim().toLowerCase();
+                const type = row.querySelector('td:nth-child(4)').textContent.trim().toLowerCase();
+                const date = row.querySelector('td:nth-child(3)').textContent.trim();
+
+                const isTitleMatch = title.includes(searchText);
+                const isBodyMatch = body.includes(searchText);
+                const isTypeMatch = selectedType === '' || selectedType === type;
+                const isDateMatch = selectedDate === '' || selectedDate === date;
+
+                if ((isTitleMatch || isBodyMatch) && isTypeMatch && isDateMatch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        const now = new Date();
+        const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+        const localDateString = localDate.toISOString().split('T')[0];
+
+
+        filterTable('',localDateString,'')
+    </script>
+</body>
+</html>

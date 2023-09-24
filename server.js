@@ -2,14 +2,11 @@ require('dotenv').config()
 require('./utils/mongodbConnection')
 const qr = require('qr-image');
 const fs = require('fs')
+const admin = require('./utils/firebase');
 
 
 const express = require('express')
 const app = express()
-
-const http = require('http');
-const socketIo = require('socket.io');
-
 
 
 const bodyParser = require('body-parser')
@@ -20,29 +17,16 @@ const cookieParser = require('cookie-parser');
 app.use(cookieParser())
 
 const cors = require('cors')
-app.use(cors())
+app.use(cors({
+    origin: '*'
+}))
 
 app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs')
 
 
-const server = http.createServer(app);
-const io = socketIo(server,{
-    transports: ["websocket"], // Specify the transports you want to use
-  });
 const IMEI = require('./models/IMEI')
 
-
-// WebSocket connection handling
-io.on('connection', (socket) => {
-    socket.on('imei', async (imei) =>{
-        console.log('A user connected ' + imei);
-    })
-
-    socket.on('disconnect', () => {
-        console.log('User disconnected');
-    });
-});
 
 const NotificationModel = require('./models/NotificationModel')
 
@@ -51,18 +35,35 @@ app.post('/api/notifications/users', async (req,res) =>{
         const now = new Date();
         const localDate = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
         const localDateString = localDate.toISOString().split('T')[0];
-    
-        let notification = new NotificationModel({
+
+
+        const message = {
+            data: {
             title: req.body.title,
             body: req.body.body,
-            date:localDateString,
-            fullDate: localDate.toDateString()
-        })
-    
-        await notification.save()
-    
-        console.log(req.body)
-        io.emit('users', JSON.stringify(req.body))
+            type: 'users',
+            },
+            topic: 'nordic', // Replace with the topic you want to use
+        };
+        
+        admin
+            .messaging()
+            .send(message)
+            .then(async (response) => {
+            console.log('Message sent:', response);
+            let notification = new NotificationModel({
+                title: req.body.title,
+                body: req.body.body,
+                date:localDateString,
+                fullDate: localDate.toDateString()
+            })
+        
+            await notification.save()
+            })
+            .catch((error) => {
+            console.error('Error sending message:', error);
+            });
+              
         return res.sendStatus(200)
     }catch(error){
         console.log(error.message)
@@ -84,29 +85,41 @@ app.post('/api/notifications/zones', async (req,res) =>{
             }
         })
 
-        let notification = new NotificationModel({
-            title: req.body.title,
-            body: req.body.body,
-            zones: req.body.zones,
-            imeis:imeis,
-            date:localDateString,
-            fullDate: localDate.toDateString()
-        })
-    
-        await notification.save()
-    
-        
-
         imeis = imeis.map(e =>{
             return e.serial
         })
 
-        console.log(imeis)
-        io.emit('zones', JSON.stringify({
-            title: req.body.title,
-            body: req.body.body,
-            imeis: imeis
-        }))
+        const message = {
+            data: {
+              title: req.body.title,
+              body: req.body.body,
+              type: 'zone',
+              imeis: JSON.stringify(imeis)
+            },
+            topic: 'nordic', // Replace with the topic you want to use
+          };
+          
+          admin
+            .messaging()
+            .send(message)
+            .then(async (response) => {
+              console.log('Message sent:', response);
+              let notification = new NotificationModel({
+                title: req.body.title,
+                body: req.body.body,
+                zones: req.body.zones,
+                imeis:imeis,
+                date:localDateString,
+                fullDate: localDate.toDateString()
+            })
+        
+            await notification.save()
+            })
+            .catch((error) => {
+              console.error('Error sending message:', error);
+            });
+          
+    
         return res.sendStatus(200)
     }catch(error){
         console.log(error.message)
@@ -120,19 +133,37 @@ app.post('/api/notifications/devices', async (req,res) =>{
         const localDate = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
         const localDateString = localDate.toISOString().split('T')[0];
     
-        let notification = new NotificationModel({
-            title: req.body.title,
-            body: req.body.body,
-            zones: [],
-            imeis:req.body.imeis,
-            date:localDateString,
-            fullDate: localDate.toDateString()
-        })
+        const message = {
+            data: {
+              title: req.body.title,
+              body: req.body.body,
+              type: 'device',
+              imei:JSON.stringify(req.body.imeis)
+            },
+            topic: 'nordic', // Replace with the topic you want to use
+          };
+          
+          admin
+            .messaging()
+            .send(message)
+            .then(async (response) => {
+              console.log('Message sent:', response);
+              let notification = new NotificationModel({
+                title: req.body.title,
+                body: req.body.body,
+                zones: [],
+                imeis:req.body.imeis,
+                date:localDateString,
+                fullDate: localDate.toDateString()
+            })
+        
+            await notification.save()
+            })
+            .catch((error) => {
+              console.error('Error sending message:', error);
+            });
+          
     
-        await notification.save()
-    
-        console.log(req.body)
-        io.emit('devices', JSON.stringify(req.body))
         return res.sendStatus(200)
     }catch(error){
         console.log(error.message)
@@ -272,10 +303,18 @@ const postalRouter = require('./routes/postalRoute')
 const mapRouter = require('./routes/mapRouter')
 const notificationRouter = require('./routes/notificationRouter')
 const scanRouter = require('./routes/scanRoute')
+const machinesRouter = require('./routes/machinesRoute')
+const issueNotificationRouter = require('./routes/issueNotificationRoute')
+const issuesRouter = require('./routes/issuesRoute')
+const reportRouter = require('./routes/reportRoute')
 
 app.use(
     '/api',
     vpsRouter,
+    reportRouter,
+    issuesRouter,
+    issueNotificationRouter,
+    machinesRouter,
     scanRouter,
     notificationRouter,
     mapRouter,
@@ -309,12 +348,18 @@ const postalFront = require('./routes/postalFront')
 const mapFront = require('./routes/mapFront')
 const notificationFront = require('./routes/notificationFront')
 const scanFront = require('./routes/scanFront')
+const machineFront = require('./routes/machinesFront')
+const issueNotificationFront = require('./routes/issueNotificationFront')
+const issueReportFront = require('./routes/issueReportFront')
 
 
 app.use(
     mapFront,
     scanFront,
+    issueNotificationFront,
     notificationFront,
+    issueReportFront,
+    machineFront,
     settingsFront,
     driverFront,
     postalFront,
@@ -358,6 +403,5 @@ const combinedViolations = violations.reduce((result, v) => {
 
 
 const port = process.env.port || 3000
-server.listen(port, () => console.log(`Socket Server is running on port ${port}`))
-app.listen(6666, () => console.log(`Normal Server is running on port ${6666}`))
+app.listen(port, () => console.log(`Socket Server is running on port ${port}`))
 
