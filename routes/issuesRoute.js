@@ -56,8 +56,8 @@ router.post('/issues', async (req, res) => {
 
         const message = {
             data: {
-                title: `Machine ${machine.zoneLocation} Issue`,
-                body: `Machine Located in zone ${machine.zone.name} in Location ${machine.zoneLocation} reported by client with board number ${boardNumber}`,
+                title: `Fei på ${machine.zoneLocation} Automat`,
+                body: `Automat som ligger på ${machine.zone.name} i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
                 type: 'issue',
                 id:id,
             },
@@ -74,8 +74,8 @@ router.post('/issues', async (req, res) => {
             const localDateString = localDate.toISOString().split('T')[0];
 
             const issueNotification = new IssueNotification({
-                title: `Issue in machine ${machine.zoneLocation}`,
-                body: `Machine Located in zone ${machine.zone.name} in Location ${machine.zoneLocation} reported by client with board number ${boardNumber}`,
+                title: `Fei på ${machine.zoneLocation} Automat`,
+                body: `Automat som ligger på ${machine.zone.name} i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
                 date: localDateString,
                 fullDate: localDate.toDateString(),
                 type: 'issue'
@@ -83,8 +83,8 @@ router.post('/issues', async (req, res) => {
 
             await issueNotification.save()
             const issue = new Issue({
-                title: `Issue in machine ${machine.zoneLocation}`,
-                description: `Machine Located in zone ${machine.zone.name} in Location ${machine.zoneLocation} reported by client with board number ${boardNumber}`,
+                title: `Feil på Automat ${machine.zoneLocation}`,
+                description: `Automat som ligger på ${machine.zone.name} i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
                 notes: notes ?? null,
                 date: localDateString,
                 machine: id ,
