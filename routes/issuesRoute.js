@@ -61,7 +61,7 @@ router.post('/issues', async (req, res) => {
                 type: 'issue',
                 id:id,
             },
-            topic: 'nordic_v', // Replace with the topic you want to use
+            topic: 'nordic', // Replace with the topic you want to use
           };
           
           let response = await admin
