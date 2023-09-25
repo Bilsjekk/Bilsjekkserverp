@@ -98,7 +98,7 @@ router.post('/issues', async (req, res) => {
             await issue.save()
 
                 await sendAlertSMS({
-                    text: `Machine Located in zone ${machine.zone.name} in Location ${machine.zoneLocation} reported by client with board number ${boardNumber}`,
+                    text: `Automat som ligger på ${machine.zone.name} i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
                     to: `4740088605`
                 })
             await Machine.updateOne({
