@@ -151,7 +151,7 @@ router.post('/issues/:id/report', upload.single('report') ,async (req, res) => {
         let image = process.env.BASE_URL + req.file.path.split('public')[1].replaceAll('\\','/')
         let currentIssue = await Issue.findOne({_id: req.params.id})
         const currentUser = await User.findOne({
-            accountId: pnid,
+            accountId: pnid.toUpperCase(),
         })
 
 
