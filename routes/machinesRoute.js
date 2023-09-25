@@ -119,8 +119,8 @@ router.post('/machines/:id/activate', async (req, res) => {
         const localDateString = localDate.toISOString().split('T')[0];
 
         const issueNotification = new IssueNotification({
-            title: `Machine ${machine.serial} status updated`,
-            body: `Machine Located in zone ${machine.zone.name} in Location ${machine.zoneLocation} was fixed`,
+            title: `P-Automat ${machine.serial} i orden`,
+            body: `P-Automat på  ${machine.zone.name} i adressen ${machine.zoneLocation} er i orden`,
             date: localDateString,
             fullDate: localDate.toDateString(),
             type: 'activation'
@@ -130,8 +130,8 @@ router.post('/machines/:id/activate', async (req, res) => {
 
         const message = {
             data: {
-                title: `Machine ${machine.serial} status updated`,
-                body: `Machine located in zone ${machine.zone.name} in Location ${machine.zoneLocation} was fixed`,
+                title: `P-Automat ${machine.serial} i orden`,
+                body: `P-Automat på  ${machine.zone.name} i adressen ${machine.zoneLocation} er i orden`,
                 type: 'issue_closed',
                 id:req.params.id,
             },
