@@ -99,7 +99,7 @@ router.post('/issues', async (req, res) => {
 
                 await sendAlertSMS({
                     text: `Automat som ligger på ${machine.zone.name} i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
-                    to: `4740088605`
+                    to: `4747931499`
                 })
             await Machine.updateOne({
                 _id:id,
@@ -140,9 +140,6 @@ router.post('/issues/:id/report', upload.single('report') ,async (req, res) => {
         const {
             details,
             notes,
-            zone,
-            zoneLocation,
-            serial,
             pnid
         } = req.body
 

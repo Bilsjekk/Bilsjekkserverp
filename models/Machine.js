@@ -24,10 +24,6 @@ const machineSchema = mongoose.Schema({
     zoneLocation:{
       type: String,
       required: true
-    },
-    shiftNumber:{
-      type: String,
-      required: true
     }
   }
 );

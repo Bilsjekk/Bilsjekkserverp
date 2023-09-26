@@ -16,11 +16,6 @@
         </div>
 
         <div class="mb-3">
-            <label for="shiftNumber" class="form-label">Shift Number</label>
-            <input type="text" id="shiftNumber" class="form-control" required>
-        </div>
-
-        <div class="mb-3">
             <label for="zone" class="form-label">Select Zone</label>
             <select id="zone" class="form-select" required>
                 <!-- Options will be added dynamically using JavaScript -->
@@ -46,14 +41,12 @@
         // Function to create a new machine using Fetch API
         async function createMachine() {
             const serial = document.getElementById('serial').value;
-            const shiftNumber = document.getElementById('shiftNumber').value;
             const zone = document.getElementById('zone').value;
             const zoneLocation = document.getElementById('zoneLocation').value;
 
             const machineData = {
                 serial,
                 zone,
-                shiftNumber,
                 zoneLocation
             };
 
