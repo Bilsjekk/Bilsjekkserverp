@@ -56,7 +56,7 @@ router.post('/issues', async (req, res) => {
 
         const message = {
             data: {
-                title: `Fei på ${machine.zoneLocation} Automat`,
+                title: `Feil på ${machine.zoneLocation} Automat`,
                 body: `Automat som ligger på ${machine.zone.name} i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
                 type: 'issue',
                 id:id,
@@ -74,7 +74,7 @@ router.post('/issues', async (req, res) => {
             const localDateString = localDate.toISOString().split('T')[0];
 
             const issueNotification = new IssueNotification({
-                title: `Fei på ${machine.zoneLocation} Automat`,
+                title: `Feil på ${machine.zoneLocation} Automat`,
                 body: `Automat som ligger på ${machine.zone.name} i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
                 date: localDateString,
                 fullDate: localDate.toDateString(),
