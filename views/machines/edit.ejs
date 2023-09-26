@@ -46,6 +46,35 @@
         </div>
     </div>
 
+        <!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Suksess</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Endringene er lagret!
+            </div>
+        </div>
+    </div>
+    </div>
+
+        <!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Feil</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Noe gikk galt. Vennligst prøv igjen senere.
+            </div>
+        </div>
+    </div>
+  </div>
     <script src="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
@@ -75,15 +104,21 @@
                 });
 
                 if (response.ok) {
-                    alert('P-Automat ble oppdatert');
-                    // Redirect or navigate to the machine list page
-                    window.location.href = '/machines';
+                    $('#successModal').modal('show');
+                    setTimeout(() =>{
+                        $('#successModal').modal('hide');
+                    },1500)
                 } else {
-                    const errorData = await response.json();
-                    alert(`Error updating machine: ${errorData.message}`);
+                    $('#errorModal').modal('show');
+                    setTimeout(() =>{
+                        $('#errorModal').modal('hide');
+                    },1500)
                 }
             } catch (error) {
-                console.error('Error updating machine:', error);
+                $('#errorModal').modal('show');
+                    setTimeout(() =>{
+                        $('#errorModal').modal('hide');
+                    },1500)
             }
         }
 
