@@ -57,7 +57,7 @@ router.post('/issues', async (req, res) => {
         const message = {
             data: {
                 title: `Feil på ${machine.zoneLocation} Automat`,
-                body: `Automat som ligger på ${machine.zone.name} i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
+                body: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
                 type: 'issue',
                 id:id,
             },
@@ -75,7 +75,7 @@ router.post('/issues', async (req, res) => {
 
             const issueNotification = new IssueNotification({
                 title: `Feil på ${machine.zoneLocation} Automat`,
-                body: `Automat som ligger på ${machine.zone.name} i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
+                body: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
                 date: localDateString,
                 fullDate: localDate.toDateString(),
                 type: 'issue'
@@ -84,7 +84,7 @@ router.post('/issues', async (req, res) => {
             await issueNotification.save()
             const issue = new Issue({
                 title: `Feil på Automat ${machine.zoneLocation}`,
-                description: `Automat som ligger på ${machine.zone.name} i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
+                description: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
                 notes: notes ?? null,
                 date: localDateString,
                 machine: id ,
@@ -98,8 +98,7 @@ router.post('/issues', async (req, res) => {
             await issue.save()
 
                 await sendAlertSMS({
-                    text: `Automat som ligger på ${machine.zone.name} i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
-                    // to: `4747931499`
+                    text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,                    // to: `4747931499`
                     to: '4740088605'
                 })
             await Machine.updateOne({
