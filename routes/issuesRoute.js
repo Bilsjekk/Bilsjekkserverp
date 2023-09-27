@@ -99,7 +99,8 @@ router.post('/issues', async (req, res) => {
 
                 await sendAlertSMS({
                     text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,                    // to: `4747931499`
-                    to: '4740088605'
+                    // to: '4740088605'
+                    to: `4747931499`
                 })
             await Machine.updateOne({
                 _id:id,
@@ -258,8 +259,8 @@ router.post('/issues/:id/report', upload.single('report') ,async (req, res) => {
 
             await sendAlertSMS({
                 text: `P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentUser.name}`,
-                // to: `4747931499`
-                to: '4740088605'
+                to: `4747931499`
+                // to: '4740088605'
             })
 
 
@@ -289,12 +290,14 @@ Grunn: ${reason}
 
         await sendAlertSMS({
             text: smsMessageFormatted,
-            to: `4740088605`
+            // to: `4740088605`
+            to: `4747931499`
         })
 
         await sendAlertSMS({
             text: smsMessageFormatted,
-            to: `4740088605`
+            // to: `4740088605`
+            to: `4747931499`
         })
 
         return res.status(200).json({message: smsMessageFormatted})
