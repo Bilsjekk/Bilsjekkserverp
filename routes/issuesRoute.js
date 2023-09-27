@@ -97,11 +97,11 @@ router.post('/issues', async (req, res) => {
 
             await issue.save()
 
-                // await sendAlertSMS({
-                //     text: `Automat som ligger på ${machine.zone.name} i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
-                //     // to: `4747931499`
-                //     to: '4740088605'
-                // })
+                await sendAlertSMS({
+                    text: `Automat som ligger på ${machine.zone.name} i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
+                    // to: `4747931499`
+                    to: '4740088605'
+                })
             await Machine.updateOne({
                 _id:id,
             },{ status: 'inactive' })
@@ -214,7 +214,7 @@ router.post('/issues/:id/report', upload.single('report') ,async (req, res) => {
 
         const issueNotification = new IssueNotification({
             title: `P-Autmat ${currentIssue.zoneLocation} er i orden`,
-            body: `P-Automat på  ${currentIssue.zone} i adressen ${currentIssue.zoneLocation} fikset av ${currentUser.name}`,
+            body: ` P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentUser.name}`,
             date: localDateString,
             fullDate: localDate.toDateString(),
             type: 'activation'
@@ -247,7 +247,7 @@ router.post('/issues/:id/report', upload.single('report') ,async (req, res) => {
         const message = {
             data: {
                 title: `P-Autmat ${currentIssue.zoneLocation} er i orden`,
-                body: `P-Automat på  ${currentIssue.zone} i adressen ${currentIssue.zoneLocation} fikset av ${currentUser.name}`,
+                body: ` P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentUser.name}`,
                 type: 'issue_closed',
             },
             topic: 'nordic', // Replace with the topic you want to use
@@ -256,6 +256,12 @@ router.post('/issues/:id/report', upload.single('report') ,async (req, res) => {
           let response = await admin
             .messaging()
             .send(message)
+
+            await sendAlertSMS({
+                text: `Automat som ligger på ${machine.zone.name} i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
+                // to: `4747931499`
+                to: '4740088605'
+            })
 
 
 
@@ -276,13 +282,18 @@ router.post('/issues/:id/external/notify', async (req,res) =>{
         })
 
         let smsMessageFormatted = `
-Feil på P-Automat ${issue.serial} på ${issue.zone} som ligger på ${issue.zoneLocation} ute av drift.
+Feil på P-Automat ${issue.serial}  på ${issue.zoneLocation} ute av drift.
 
 Den trenger teknikker.
 Grunn: ${reason}
         `
 
-        sendAlertSMS({
+        await sendAlertSMS({
+            text: smsMessageFormatted,
+            to: `4740088605`
+        })
+
+        await sendAlertSMS({
             text: smsMessageFormatted,
             to: `4740088605`
         })
