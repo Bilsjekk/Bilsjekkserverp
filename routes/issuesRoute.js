@@ -257,7 +257,7 @@ router.post('/issues/:id/report', upload.single('report') ,async (req, res) => {
             .send(message)
 
             await sendAlertSMS({
-                text: `Automat som ligger på ${machine.zone.name} i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
+                text: `P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentUser.name}`,
                 // to: `4747931499`
                 to: '4740088605'
             })
