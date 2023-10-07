@@ -375,7 +375,7 @@ app.use(
 
 app.use(
     '/admin/api',
-    authorize_admin_api,
+    // authorize_admin_api,
     managerRoute,
     vpsRouter,
     reportRouter,
@@ -426,8 +426,8 @@ const authenticate_front = require('./middlewares/authenticate');
 
 
 app.use(
-    authenticate_front,
-    authorize_front,
+    // authenticate_front,
+    // authorize_front,
     mapFront,
     managerFront,
     scanFront,
