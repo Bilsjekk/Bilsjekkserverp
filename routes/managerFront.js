@@ -25,13 +25,13 @@ router.get('/managers', async (req, res) => {
 })
 
 router.get('/managers/create', async (req, res) => {
-    let jwt_access_token = req.cookies.jwt_token
-    let decoded = jwt.verify(jwt_access_token,process.env.JWT_SECRET_KEY)
-    let manager = await Manager.findOne({ _id: decoded.id })
+    // let jwt_access_token = req.cookies.jwt_token
+    // let decoded = jwt.verify(jwt_access_token,process.env.JWT_SECRET_KEY)
+    // let manager = await Manager.findOne({ _id: decoded.id })
 
     return res.render('managers/create',{
-        isAdmin: decoded.role === 'admin',
-      permissions: manager.permissions
+    //     isAdmin: decoded.role === 'admin',
+    //   permissions: manager.permissions
     })
 })
 

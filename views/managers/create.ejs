@@ -31,11 +31,7 @@
     <body>
         <div class="wrapper">
             <%- include('../components/navbar') %>
-            <% if(isAdmin){ %>
-            <%- include('../components/sidebar') %> 
-        <% } else{%>
-            <%- include('../components/manager_sidebar', { permissions }) %> 
-        <% } %> 
+            
             <div class="content-wrapper">
                 <div class="content">
                     <form class="container-fluid mt-5" id="createStaffForm">
