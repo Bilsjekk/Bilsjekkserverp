@@ -1,260 +1,285 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>PDF Liste</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #f5f5f5;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billiste</title>
 
-        .custom-pdf-container {
-            padding-top: 20px;
-        }
+    <%- include('../components/headers') %>
 
-        .custom-pdf-table {
-            border-radius: 5px;
-            overflow: hidden;
-            text-align: center;
-        }
 
-        .custom-pdf-table th {
-            background-color: #007bff;
-            color: white;
-        }
+  <!-- DataTables -->
+  <link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 
-        .custom-pdf-table td {
-            vertical-align: middle;
-        }
-
-        .custom-pdf-table td a {
-            margin-right: 5px;
-        }
-
-        .custom-pdf-controls > :first-child {
-            flex-grow: 1;
-        }
-
-        .custom-pdf-controls > :last-child {
-            flex-grow: 1;
-        }
-
-        .container{
-            width: 90% !important;
-        }
-
-        /* Media query for screen width less than 980px */
-        @media (max-width: 980px) {
-            .form-group {
-                flex-direction: column;
-                align-items: stretch; /* Align items to stretch the full width */
-            }
-
-            .form-group input,
-            .form-group button {
-                margin-bottom: 10px;
-            }
-
-            .form-group button{
-                width: 100% !important;
-            }
-        }
-    </style>
+  <!-- daterange picker -->
+  <link rel="stylesheet" href="/plugins/daterangepicker/daterangepicker.css">
 </head>
-<body>
-<%- include('../components/navbar') %>
-<div class="mt-4"></div>
-<div class="container custom-pdf-container">
+<body class="hold-transition sidebar-mini">
 
+    <div class="wrapper">
+        <%- include('../components/navbar') %>
+    <% if(isAdmin){ %>
+            <%- include('../components/sidebar') %> 
+        <% } else{%>
+            <%- include('../components/manager_sidebar', { permissions }) %> 
+        <% } %>  
 
-    <div class="form-group d-flex justify-content-between">
-        <input type="text" class="form-control mr-2" id="searchInput" placeholder="Søk etter dato, navn, bruker, ID eller lenke">
-        <input type="date" class="form-control mr-2" id="datePicker" placeholder="Select a date">
-        <button class="btn btn-danger btn-sm mr-2" data-toggle="modal" data-target="#deleteAllPdfModal" style="width: 240px;" >Slett alle</button>
-        <button class="btn btn-info btn-sm" style="width: 240px;" onclick="archieveAll()">Arkiver alt</button>
-    </div>
-    <div class="table-responsive text-center">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                <div class="col-sm-6">
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/">Hjem</a></li>
+                    <li class="breadcrumb-item active">daglige rapporter</li>
+                    </ol>
+                </div><!-- /.col -->
+                </div><!-- /.row -->
 
-        <!-- Success Alert -->
-        <div class="alert alert-success mt-3" id="successAlert" style="display: none;">
-            Ble Slettet!
-        </div>
+            </div><!-- /.container-fluid -->
+            </div>
 
-        <!-- Failure Alert -->
-        <div class="alert alert-danger mt-3" id="failureAlert" style="display: none;">
-            Æsj noe feil.
-        </div>
-        <table class="table table-bordered table-hover table-striped">
-            <thead>
-            <tr>
-                <th>Dato</th>
-                <th>Bruker</th>
-                <th>ID</th>
-                <th>Link</th>
-                <th>Handlinger</th>
-            </tr>
-            </thead>
-            <tbody>
-            <%if(pdfs.length == 0){%>
-                <tr>
-                    <td colspan="6">Ingen pdf-er ennå</td>
-                </tr>
-            <%} else{%>
-                <% pdfs.forEach(pdf => { %>
-                    <tr>
-                        <td><%= pdf.createdAt %></td>
-                        <td><%= pdf.userId?.name ?? 'Fjernet'  %></td>
-                        <td><%= pdf.userId?.accountId ?? "Ukjent"  %></td>
-                        <td><a href="/pdfs/<%= pdf._id %>">Se PDF</a></td>
-                        <td class="d-flex custom-pdf-controls">
-                            <button class="btn btn-danger btn-sm w-100" data-toggle="modal" data-target="#deletePdfModal<%= pdf._id %>">Slett</button>
-                        </td>
-                    </tr>
+            <div class="d-flex justify-content-end align-items-center mb-2 container-fluid">
+                <button onclick="archieveAll()" class="btn btn-info btn-sm mr-1">
+                    <i class="fa fa-save"></i>
+                    <span>Arkiv alle</span>
+                </button>
 
-                    <div class="modal fade" id="deletePdfModal<%= pdf._id %>" tabindex="-1" aria-labelledby="deletePdfModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="deletePdfModalLabel">Slett PDF-bekreftelse</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    Er du sikker på at du vil slette denne PDF-filen?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deletePdf('<%= pdf._id %>')" id="confirmDeleteBtn">Slett</button>
-                                </div>
+                <button data-toggle="modal" data-target="#confirmAllDeleteModal" class="btn btn-danger btn-sm">
+                    <i class="fa fa-trash"></i>
+                    <span>Slett alle</span>
+                </button>
+            </div>
+
+            <div class="row container-fluid">
+                <div class="col-lg-6 col-md-9 col-sm-12">
+                    <div class="form-group">
+                        <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                            <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
+                            <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                             </div>
                         </div>
                     </div>
-                    
+                </div>
 
-                <% }); %>
-            <%}%>
-            </tbody>
-        </table>
+            </div>
+
+            
+            <div class="content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                              <h3 class="card-title d-flex justify-content-between align-items-center">
+                                PDFS Data
+                              </h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                              <table id="example1" class="table table-bordered table-striped text-center">
+                                <thead>
+                                <tr>
+                                    <th>Dato</th>
+                                    <th>Bruker</th>
+                                    <th>ID</th>
+                                    <th>Handlinger</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <%if(pdfs.length == 0){%>
+                                        <tr>
+                                            <td colspan="5">Ingen pdf-er ennå</td>
+                                        </tr>
+                                    <%} else{%>
+                                        <% pdfs.forEach(pdf => { %>
+                                            <tr>
+                                                <td><%= pdf.createdAt %></td>
+                                                <td><%= pdf.userId?.name ?? 'Fjernet'  %></td>
+                                                <td><%= pdf.userId?.accountId ?? "Ukjent"  %></td>
+                                                <td>
+                                                    <a href="/pdfs/<%= pdf._id %>" class="btn btn-info btn-sm">
+                                                        <i class="fa fa-file-pdf"></i>
+                                                    </a>
+
+                                                    <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deletePdfModal<%= pdf._id %>">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                        
+                                            <div class="modal fade" id="deletePdfModal<%= pdf._id %>" tabindex="-1" aria-labelledby="deletePdfModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="deletePdfModalLabel">Slett PDF-bekreftelse</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Er du sikker på at du vil slette denne PDF-filen?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                                                            <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deletePdf('<%= pdf._id %>')" id="confirmDeleteBtn">Slett</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                        
+                                        <% }); %>
+                                    <%}%>
+                                </tbody>
+                              </table>
+                            </div>
+                            <!-- /.card-body -->
+                          </div>
+                    </div>
+                </div>
+            </div>
     </div>
-</div>
-<div class="modal fade" id="deleteAllPdfModal" tabindex="-1" aria-labelledby="deleteAllPdfModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteAllPdfModalLabel">Slett PDF-bekreftelse</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Er du sikker på at du vil slette alle PDF-filer?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deleteAllPdfs()" id="confirmDeleteBtn">Slett</button>
+
+        <%- include('../components/footer') %>
+    </div>
+
+    <div class="modal fade" id="confirmAllDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmAllDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmAllDeleteModalLabel">Delete all pdfs confirmation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Do you want to delete all pdfs?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deleteAllPdfs()" id="confirmAllDeleteBtn">Slett</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+
+<%- include('../components/scripts') %>
+
 <script>
+    //Date picker
+    $('#reservationdate').datetimepicker({
+        format: 'L'
+    })
+
+    $('#reservationdate').on('change.datetimepicker',function(e) {
+        let date =  moment(e.date._d).format('YYYY-MM-DD')
+        console.log(date);
+    })
+</script>
+
+<!-- DataTables  & Plugins -->
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="/plugins/jszip/jszip.min.js"></script>
+<script src="/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+<script src="/plugins/daterangepicker/daterangepicker.js"></script>
 
 
-    const datePicker = document.getElementById('datePicker');
-    const tableRows = document.getElementsByTagName('tr');
+<script>
+    $(function () {
+      $("#example1").DataTable({
+        "responsive": true, "lengthChange": true, "autoWidth": false,
+        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],     
+      }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
 
-    datePicker.addEventListener('change', function () {
-        const selectedDate = datePicker.value;
-        console.log(selectedDate)
+      $('#example1').dataTable({
+        "language": {
+        "emptyTable": "No data available in table",
+        "infoEmpty": "No data available in table Info",
+        "zeroRecords": "Ingen oppføringer å vise"
+        } ,
 
-        for (let i = 1; i < tableRows.length; i++) {
-            const dateCell = tableRows[i].getElementsByTagName('td')[0]; // Adjust the index as per your table structure
-            console.log(dateCell.innerText)
-            if (dateCell && dateCell.innerText == selectedDate) {
-                tableRows[i].style.display = '';
-            } else {
-                tableRows[i].style.display = 'none';
-            }
-        }
+        "bDestroy": true
+       })
     });
-
-    const now = new Date();
-    const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
-    const localDateString = localDate.toISOString().split('T')[0];
-    console.log(localDateString);
-
-    for (let i = 1; i < tableRows.length; i++) {
-            const dateCell = tableRows[i].getElementsByTagName('td')[0]; // Adjust the index as per your table structure
-            console.log(dateCell.innerText)
-            if (dateCell && dateCell.innerText == localDateString) {
-                tableRows[i].style.display = '';
-            } else {
-                tableRows[i].style.display = 'none';
-            }
-        }
-
-
-    const deletePdfModal = document.getElementById('deletePdfModal');
-    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-    const successAlert = document.createElement('div');
-    successAlert.className = 'alert alert-success mt-3';
-    successAlert.innerHTML = 'PDF slettet!';
-
-    const successAllAlert = document.createElement('div');
-    successAllAlert.className = 'alert alert-success mt-3';
-    successAllAlert.innerHTML = 'Alle PDF-filer er slettet!';
-
-    const failureAlert = document.createElement('div');
-    failureAlert.className = 'alert alert-danger mt-3';
-    failureAlert.innerHTML = 'Kunne ikke slette PDF.';
-
-    const failureAllAlert = document.createElement('div');
-    failureAllAlert.className = 'alert alert-danger mt-3';
-    failureAllAlert.innerHTML = 'Kunne ikke slette PDF.';
+  </script>
+<script>
+    var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
 
 
     async function archieveAll(){
         try{
-            let response = await fetch('/api/archieves',{
+            let response = await fetch('/admin/api/archieves',{
                 method:'POST'
             })
 
             if(response.status == 200){
-                alert('alle pdf-er ble arkivert')
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Alle pdf-filer ble arkivert'
+                })
             }else{
-                alert('alle pdf-er ble ikke arkivert')
+                Toast.fire({
+                    icon: 'error',
+                    title: (await response.json()).toString()
+                })
             }
         }catch(error){
-            alert(error)
+            Toast.fire({
+                icon: 'error',
+                title: error.message
+            })
         }
     }
 
     function deletePdf(pdfId) {
-        console.log(pdfId);
-        // Open the Bootstrap modal
-        // deletePdfModal.classList.add('show');
-        // deletePdfModal.style.display = 'block';
 
-        fetch(`/api/pdfs/${pdfId}`, {
+        fetch(`/admin/api/pdfs/${pdfId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'
             },
         })
-            .then(response => {
+            .then(async response => {
                 if (response.status == 200) {
-                    document.querySelector('.custom-pdf-container').prepend(successAlert);
-                    setTimeout(() => location.reload(),2000)
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'pdf ble slettet'
+                    })
+                    setTimeout(() => location.reload(),3000)
                 } else {
-                    // Handle error
-                    deletePdfModal.classList.remove('show'); // Dismiss the modal
-                    document.querySelector('.custom-pdf-container').prepend(failureAlert);
+                    Toast.fire({
+                        icon: 'error',
+                        title: (await response.json()).toString()
+                    })
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                deletePdfModal.classList.remove('show'); // Dismiss the modal
-                document.querySelector('.custom-pdf-container').prepend(failureAlert);
+                Toast.fire({
+                    icon: 'error',
+                    title: error.message
+                })
             });
     }
 
@@ -265,51 +290,58 @@
         deleteAllPdfModal.classList.add('show');
         deleteAllPdfModal.style.display = 'block';
 
-        fetch(`/api/pdfs`, {
+        fetch(`/admin/api/pdfs`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'
             },
         })
-            .then(response => {
+            .then(async response => {
                 if (response.status == 200) {
-                    // Handle success
-                    deleteAllPdfModal.classList.remove('show'); // Dismiss the modal
-                    document.querySelector('.custom-pdf-container').prepend(successAllAlert);
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Alle pdf-er ble slettet'
+                    })
                     setTimeout(() => location.reload(),3000)
                 } else {
-                    // Handle error
-                    deleteAllPdfModal.classList.remove('show'); // Dismiss the modal
-                    document.querySelector('.custom-pdf-container').prepend(failureAllAlert);
+                    Toast.fire({
+                        icon: 'error',
+                        title: (await response.json()).toString(),
+                    })
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                deleteAllPdfModal.classList.remove('show'); // Dismiss the modal
-                document.querySelector('.custom-pdf-container').prepend(failureAllAlert);
+                Toast.fire({
+                    icon: 'error',
+                    title: error.message
+                })
             });
     }
 
-    const searchInput = document.getElementById('searchInput');
+    function filterTableByDate(date) {
+      oTable = $('#example1').dataTable();
+      oTable.fnFilter(date, 0);
+    }
 
-    searchInput.addEventListener('keyup', function () {
-        const filter = searchInput.value.toLowerCase();
+    //Date picker
+    $('#reservationdate').datetimepicker({
+        format: 'L'
+    })
 
-        for (let i = 1; i < tableRows.length; i++) {
-            const columns = tableRows[i].getElementsByTagName('td');
-            let rowContent = "";
-            for (let j = 0; j < columns.length; j++) {
-                rowContent += columns[j].innerText.toLowerCase() + " ";
-            }
+    $('#reservationdate').on('change.datetimepicker',function(e) {
+        let date =  moment(e.date._d).format('YYYY-MM-DD')
+        filterTableByDate(date)
+    })
 
-            if (rowContent.includes(filter)) {
-                tableRows[i].style.display = '';
-            } else {
-                tableRows[i].style.display = 'none';
-            }
-        }
+    $(document).ready(function() {
+      const now = new Date();
+      const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+      const localDateString = localDate.toISOString().split('T')[0];
+      filterTableByDate(localDateString)
     });
-</script>
 
+
+
+</script>
 </body>
 </html>

@@ -142,6 +142,15 @@ router.post('/machines/:id/activate', async (req, res) => {
             .messaging()
             .send(message)
 
+
+
+
+        //    await sendAlertSMS({
+        //         text: smsMessageFormatted,
+        //         to: `4740088605`
+        //         // to: `4747931499`
+        //     })
+
         return res.status(200).json(true)
     }catch(err){
         console.log(err.message)

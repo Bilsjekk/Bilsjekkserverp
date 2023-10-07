@@ -1,9 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const Machine = require('../models/Machine');
+const jwt = require('jsonwebtoken')
+const Manager = require('../models/Manager')
 
 router.get('/machines', async (req, res) => {
     try {
+      let jwt_access_token = req.cookies.jwt_token
+    let decoded = jwt.verify(jwt_access_token,process.env.JWT_SECRET_KEY)
+    let manager = await Manager.findOne({ _id: decoded.id })
+
       let machines = await Machine.find({}).populate({
         path: 'zone',
         ref: 'Zone'
@@ -19,7 +25,11 @@ router.get('/machines', async (req, res) => {
         return 0; // If statuses are the same, maintain the current order
       });
   
-      res.status(200).render('machines/index', { machines: machines });
+      res.status(200).render('machines/index', { 
+        machines: machines,
+        isAdmin: decoded.role === 'admin',
+      permissions: manager.permissions
+       });
     } catch (err) {
       console.log(err.message);
       return res.status(500).json(err.message);
@@ -27,9 +37,16 @@ router.get('/machines', async (req, res) => {
   });
   
 
-router.get('/machines/new', (req, res) => {
+router.get('/machines/create', async (req, res) => {
     try{
-        return res.status(200).render('machines/new');
+      let jwt_access_token = req.cookies.jwt_token
+    let decoded = jwt.verify(jwt_access_token,process.env.JWT_SECRET_KEY)
+    let manager = await Manager.findOne({ _id: decoded.id })
+
+        return res.status(200).render('machines/new',{
+          isAdmin: decoded.role === 'admin',
+      permissions: manager.permissions
+        });
     }catch (err){
         console.log(err.message);
         return res.status(500).json(err.message);
@@ -38,8 +55,16 @@ router.get('/machines/new', (req, res) => {
 
 router.get('/machines/:id/edit', async (req, res) => {
     try{
+      let jwt_access_token = req.cookies.jwt_token
+    let decoded = jwt.verify(jwt_access_token,process.env.JWT_SECRET_KEY)
+    let manager = await Manager.findOne({ _id: decoded.id })
+
         let machine = await Machine.findOne({ _id: req.params.id})
-        return res.status(200).render('machines/edit', { machine });
+        return res.status(200).render('machines/edit', { 
+          machine,
+          isAdmin: decoded.role === 'admin',
+      permissions: manager.permissions
+         });
     }catch(err){
         console.log(err.message);
         return res.status(500).json(err.message);
@@ -48,9 +73,15 @@ router.get('/machines/:id/edit', async (req, res) => {
 
 router.get('/machines/:id/qrcode', async (req,res) =>{
     try{
+      let jwt_access_token = req.cookies.jwt_token
+    let decoded = jwt.verify(jwt_access_token,process.env.JWT_SECRET_KEY)
+    let manager = await Manager.findOne({ _id: decoded.id })
+
       let machine = await Machine.findOne({ _id: req.params.id })
       return res.status(200).render('machines/machine_qrcode_view',{
-        machine
+        machine,
+        isAdmin: decoded.role === 'admin',
+      permissions: manager.permissions
       })
     }catch (error){
       return res.status(500).render('errors/internal',{

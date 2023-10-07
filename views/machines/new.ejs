@@ -3,74 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Machine</title>
-    <link href="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Lag maskin</title>
+    <!-- Add Bootstrap CSS link -->
+    <%- include('../components/headers.ejs') %>
+      <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <!-- Toastr -->
+    <link rel="stylesheet" href="/plugins/toastr/toastr.min.css">
 </head>
-<body>
-    <%- include('../components/navbar.ejs') %>
-    <div class="container">
-        <h1 class="mt-5">Create Machine</h1>
-        <div class="mb-3">
-            <label for="serial" class="form-label">Taskgruppenr:</label>
-            <input type="number" id="serial" class="form-control" required>
-        </div>
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+        <%- include('../components/navbar') %>
+        <% if(isAdmin){ %>
+            <%- include('../components/sidebar') %> 
+        <% } else{%>
+            <%- include('../components/manager_sidebar', { permissions }) %> 
+        <% } %>  
 
-        <div class="mb-3">
-            <label for="zone" class="form-label">Rute</label>
-            <select id="zone" class="form-select" required>
-                <!-- Options will be added dynamically using JavaScript -->
-            </select>
-        </div>
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                <div class="col-sm-6">
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/">Hjem</a></li>
+                    <li class="breadcrumb-item"><a href="/machines">Maskiner</a></li>
+                    <li class="breadcrumb-item active">Skape</li>
+                    </ol>
+                </div><!-- /.col -->
+                </div><!-- /.row -->
 
+            </div><!-- /.container-fluid -->
+            </div>
 
-        <div class="mb-3">
-            <label for="zoneLocation" class="form-label">Adressen</label>
-            <input type="text" id="zoneLocation" class="form-control" required>
-        </div>
+            <div class="content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                              <h3 class="card-title d-flex justify-content-between align-items-center">
+                                Lag maskin
+                              </h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="container-fluid">
+                                    <div id="infoBox" class="alert" role="alert" style="display: none;"></div>
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-9">
+                                            <form class="container-fluid" id="createMachineForm">
+                                                <div class="input-group form-group mb-3">
+                                                    <div class="input-group-prepend">
+                                                      <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                                                    </div>
+                                                    <input type="number" class="form-control" placeholder="serial" name="serial" id="serial">
+                                                  </div>
+                     
+                     
+                                                  <div class="form-group">
+                                                    <label>Rute</label>
+                                                    <select class="custom-select" id="zone" name="zone">
+                                                  
+                                                    </select>
+                                                  </div>
 
-
-        <div class="d-flex justify-content-center align-items-center">
-            <button id="createButton" class="btn btn-info me-3">Lage</button>
-            <a href="/machines" class="btn btn-secondary">Avbryt</a>
-        </div>
+                                                  <div class="input-group form-group mb-3">
+                                                    <div class="input-group-prepend">
+                                                      <span class="input-group-text"><i class="fas fa-location-arrow"></i></span>
+                                                    </div>
+                                                    <input type="text" class="form-control" placeholder="sone plassering" name="zoneLocation" id="zoneLocation">
+                                                  </div>
+                                        
+                                        
+                                                <div class="d-flex justify-content-center align-items-center btn-group">
+                                                    <button type="button" id="createButton" class="btn btn-info me-3" onclick="createMachine()">Lage</button>
+                                                    <a href="/machines" class="btn btn-secondary">Avbryt</a>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>                    
+                            </div>
+                            <!-- /.card-body -->
+                          </div>
+                    </div>
+                </div>
+            </div>
     </div>
 
-    <!-- Success Modal -->
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="successModalLabel">Suksess</h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              Endringene er lagret!
-            </div>
-        </div>
-    </div>
+        <%- include('../components/footer') %>
     </div>
 
-        <!-- Error Modal -->
-<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="errorModalLabel">Feil</h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              Noe gikk galt. Vennligst prøv igjen senere.
-            </div>
-        </div>
-    </div>
-  </div>
+    <%- include('../components/scripts.ejs') %>
+    
+    <script src="/plugins/jquery-validation/jquery.validate.min.js"></script>
+    <script src="/plugins/jquery-validation/additional-methods.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <!-- Toastr -->
+<script src="/plugins/toastr/toastr.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
 
     <script>
-        // Function to create a new machine using Fetch API
-        async function createMachine() {
-            const serial = document.getElementById('serial').value;
+        var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+
+        $('#createMachineForm').validate({
+    rules: {
+      serial: {
+        required: true,
+      },
+      zone: {
+        required: true,
+      },
+      zoneLocation: {
+        required: true
+      },
+    },
+    messages: {
+      serial: {
+        required: "skriv inn serienummer",
+      },
+      zone: {
+        required: "du må velge en sone",
+      },
+      zoneLocation: "Vennligst oppgi soneplassering",
+    },
+    errorElement: 'span',
+    errorPlacement: function (error, element) {
+      error.addClass('invalid-feedback');
+      element.closest('.form-group').append(error);
+    },
+    highlight: function (element, errorClass, validClass) {
+      $(element).addClass('is-invalid');
+    },
+    unhighlight: function (element, errorClass, validClass) {
+      $(element).removeClass('is-invalid');
+    }
+  });
+     
+  // Function to create a new machine using Fetch API
+  async function createMachine() {
+            if($('#createMachineForm').valid()){
+                const serial = document.getElementById('serial').value;
             const zone = document.getElementById('zone').value;
             const zoneLocation = document.getElementById('zoneLocation').value;
 
@@ -81,7 +164,7 @@
             };
 
             try {
-                const response = await fetch('/api/machines', {
+                const response = await fetch('/admin/api/machines', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -89,32 +172,36 @@
                     body: JSON.stringify(machineData)
                 });
 
-                if (response.ok) {
-                    $('#successModal').modal('show');
+                if (response.status == 200) {
+                    Toast.fire({
+                        icon : 'success',
+                        title : "Maskinen ble opprettet"
+                    })
                     setTimeout(() =>{
                         location.href = '/machines'
-                    },1500)
+                    },3000)
                 } else {
-                    $('#errorModal').modal('show');
-                    setTimeout(() =>{
-                        $('#errorModal').modal('hide');
-                    },1500)
+                    Toast.fire({
+                        icon : 'success',
+                        title : (await response.json()).toString()
+                    })
                 }
             } catch (error) {
-                $('#errorModal').modal('show');
-                setTimeout(() =>{
-                    $('#errorModal').modal('hide');
-                },1500)
+                Toast.fire({
+                    icon : 'error',
+                    title : error.message
+                })
             }
         }
+    }
 
-        // Function to populate the zone dropdown with data from /api/zones
+        // Function to populate the zone dropdown with data from /admin/api/zones
         async function populateZoneDropdown() {
             try {
                 const zoneDropdown = document.getElementById('zone');
 
-                // Fetch zones data from /api/zones
-                const response = await fetch('/api/zones');
+                // Fetch zones data from /admin/api/zones
+                const response = await fetch('/admin/api/zones');
                 const zones = await response.json();
 
                 // Populate the dropdown options
@@ -129,15 +216,13 @@
             }
         }
 
-        // Add an event listener to the create button
-        const createButton = document.getElementById('createButton');
-        createButton.addEventListener('click', createMachine);
-
         // Invoke the code when the DOM content is loaded
         document.addEventListener('DOMContentLoaded', () => {
             // Populate the zone dropdown when the page loads
             populateZoneDropdown();
         });
+
     </script>
+
 </body>
 </html>

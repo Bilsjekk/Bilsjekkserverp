@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Send per post</title>
-  <link href="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post</title>
+
+    <%- include('../components/headers') %>
+
+
+  <!-- DataTables -->
+  <link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <!-- Theme style -->
+
   <style>
-    .controls {
-      display: flex;
+    thead input {
+        width: 100%;
     }
 
-    .controls > * {
-      flex-grow: 1;
-    }
-
-    .controls > :first-child {
-      margin-right: 10px;
-    }
+  
 
     /* Custom CSS for overlay */
     .image-overlay {
@@ -44,70 +47,127 @@
     }
   </style>
 </head>
-<body>
-  <%- include('../components/navbar.ejs') %>
+<body class="hold-transition sidebar-mini">
 
-  <div class="container">
-    <div class="form-group d-flex justify-content-between mt-3">
-      <input type="text" class="form-control mr-2" id="searchInput" placeholder="Søk etter dato, navn, bruker, ID eller lenke">
-      <input type="date" class="form-control mr-2" id="datePicker" placeholder="Velg en dato">
-      <button class="btn btn-danger btn-sm mr-2" data-toggle="modal" data-target="#deleteAllPostalsModal" style="width: 240px;" >Slett alle</button>
-  </div>
+    <div class="wrapper">
+        <%- include('../components/navbar') %>
+    <% if(isAdmin){ %>
+            <%- include('../components/sidebar') %> 
+        <% } else{%>
+            <%- include('../components/manager_sidebar', { permissions }) %> 
+        <% } %>  
 
-    <div class="row mt-4 mb-3">
-      <div class="col">
-        <h1>Send per post skjema</h1>
-      </div>
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                <div class="col-sm-6">
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/">Hjem</a></li>
+                    <li class="breadcrumb-item active">Post</li>
+                    </ol>
+                </div><!-- /.col -->
+                </div><!-- /.row -->
+
+            </div><!-- /.container-fluid -->
+            </div>
+
+            <div class="row container-fluid">
+              <div class="col-lg-6 col-md-9 col-sm-12">
+                  <div class="form-group">
+                      <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                          <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
+                          <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                              <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+          </div>
+
+            <div class="d-flex justify-content-end align-items-center mb-2 container-fluid">
+                <button data-toggle="modal" data-target="#deleteAllPostalsModal" class="btn btn-danger btn-sm">
+                    <i class="fa fa-trash"></i>
+                    <span>Slett alle</span>
+                </button>
+            </div>
+
+            <div class="content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                              <h3 class="card-title d-flex justify-content-between align-items-center">
+                                Postdata
+                              </h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                              <table id="example1" class="table table-bordered table-striped text-center">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">Dato</th>
+                                    <th scope="col">Ks.nummer</th>
+                                    <th scope="col">PNID</th>
+                                    <th scope="col">Handlinger</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <% postalViolations.forEach(function(postalViolation) { %>
+                                    <tr>
+                                      <td><%= postalViolation.date %></td>
+                                      <td><%= postalViolation.violationNumber %></td>
+                                      <td><%= postalViolation.pnid %></td>
+                                      <td class="controls">
+                                        <button class="btn btn-info btn-sm show-image" data-image-url="<%= postalViolation.image %>">
+                                          <i class="fa fa-image"></i>
+                                        </button>
+                                        <a href="/postals/<%= postalViolation.id %>" class="btn btn-info btn-sm">
+                                          <i class="fa fa-file-pdf"></i>
+                                        </a>
+                                        <button role="button" class="btn btn-danger btn-sm delete-violation" data-target="#deleteModal<%= postalViolation._id %>" data-toggle="modal">
+                                          <i class="fa fa-trash"></i>
+                                        </button>
+                                      </td>
+                                    </tr>
+
+                                    <div class="modal fade" id="deleteModal<%= postalViolation._id %>" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                      <div class="modal-dialog">
+                                        <div class="modal-content">
+                                          <div class="modal-header">
+                                            <h5 class="modal-title" id="deleteModalLabel">Bekreft sletting</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+                                          </div>
+                                          <div class="modal-body">
+                                            Er du sikker på at du vil slette dette PDF?
+                                          </div>
+                                          <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                                            <button type="button" class="btn btn-danger" id="confirmDelete" data-dismiss="modal" onclick="deletePostal('<%= postalViolation._id %>')">Slett</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  <% }); %>
+                                </tbody>
+                              </table>
+                            </div>
+                            <!-- /.card-body -->
+                          </div>
+                    </div>
+                </div>
+            </div>
     </div>
 
-    <table class="table table-striped table-bordered text-center">
-      <thead>
-        <tr>
-          <th scope="col">Dato</th>
-          <th scope="col">Ks.nummer</th>
-          <th scope="col">PNID</th>
-          <th scope="col">PDF</th>
-          <th scope="col">Bilde</th>
-          <th scope="col">Handlinger</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% postalViolations.forEach(function(postalViolation) { %>
-          <tr>
-            <td><%= postalViolation.date %></td>
-            <td><%= postalViolation.violationNumber %></td>
-            <td><%= postalViolation.pnid %></td>
-            <td><a href="/postals/<%= postalViolation.id %>">Se PDF</a></td>
-            <td>
-              <button class="btn btn-info btn-sm show-image" data-image-url="<%= postalViolation.image %>">Vis bilde</button>
-            </td>
-            <td class="controls">
-              <button class="btn btn-danger btn-sm delete-violation" data-violation-id="<%= postalViolation._id %>">Slett</button>
-            </td>
-          </tr>
-        <% }); %>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Modal for Delete Confirmation -->
-  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="deleteModalLabel">Bekreft sletting</h5>
-          <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          Er du sikker på at du vil slette dette PDF?
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
-          <button type="button" class="btn btn-danger" id="confirmDelete">Slett</button>
-        </div>
-      </div>
+        <%- include('../components/footer') %>
     </div>
-  </div>
+
 
   <!-- Image Overlay and Container -->
   <div class="image-overlay" id="imageOverlay">
@@ -137,99 +197,70 @@
     </div>
 </div>
 
-<!-- Success Modal -->
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="successModalLabel">Suksess</h5>
-              <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            Endringene er lagret!
-          </div>
-      </div>
-  </div>
-  </div>
 
-  <script src="https://unpkg.com/medium-zoom@1.0.8/dist/medium-zoom.js"></script>
- 
-  <script>
-    const searchInput = document.getElementById('searchInput');
-    const tableRows = document.getElementsByTagName('tr');
-    const datePicker = document.getElementById('datePicker');
 
-    datePicker.addEventListener('change', function () {
-        const selectedDate = datePicker.value;
-        console.log(selectedDate)
 
-        for (let i = 1; i < tableRows.length; i++) {
-            const dateCell = tableRows[i].getElementsByTagName('td')[0]; // Adjust the index as per your table structure
-            console.log(dateCell.innerText)
-            if (dateCell && dateCell.innerText == selectedDate) {
-                tableRows[i].style.display = '';
-            } else {
-                tableRows[i].style.display = 'none';
-            }
-        }
+<%- include('../components/scripts') %>
+
+<!-- DataTables  & Plugins -->
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="/plugins/jszip/jszip.min.js"></script>
+<script src="/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+<script>
+    $(function () {
+
+      $("#example1").DataTable({
+        "responsive": true, "lengthChange": true, "autoWidth": false,
+        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+      }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
-
-    const now = new Date();
-    const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
-    const localDateString = localDate.toISOString().split('T')[0];
-    console.log(localDateString);
-
-    for (let i = 1; i < tableRows.length; i++) {
-            const dateCell = tableRows[i].getElementsByTagName('td')[0]; // Adjust the index as per your table structure
-            console.log(dateCell.innerText)
-            if (dateCell && dateCell.innerText == localDateString) {
-                tableRows[i].style.display = '';
-            } else {
-                tableRows[i].style.display = 'none';
-            }
-        }
-
-
-searchInput.addEventListener('keyup', function () {
-    const filter = searchInput.value.toLowerCase();
-
-    for (let i = 1; i < tableRows.length; i++) {
-        const columns = tableRows[i].getElementsByTagName('td');
-        let rowContent = "";
-        for (let j = 0; j < columns.length; j++) {
-            rowContent += columns[j].innerText.toLowerCase() + " ";
-        }
-
-        if (rowContent.includes(filter)) {
-            tableRows[i].style.display = '';
-        } else {
-            tableRows[i].style.display = 'none';
-        }
-    }
-});
   </script>
+<script>
+    var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
 
-  <script>
-    async function deleteAllPostals(){
+        async function deleteAllPostals(){
       try{
-        let response = await fetch('/api/postals',{
+        let response = await fetch('/admin/api/postals',{
           method: 'DELETE',
         })
 
         if(response.status == 200){
-          $('#successModal').modal('show');
+            Toast.fire({
+              icon: 'success',
+              title: 'Alle postene ble slettet'
+            })
           setTimeout(() =>{
             location.reload()
-          },2000)
+          },3000)
         }else{
-          alert(await response.json())
+          Toast.fire({
+            icon: 'error',
+            title: await response.json()
+          })
         }
       }catch(error){
-        alert(error.message)
+        Toast.fire({
+          icon: 'error',
+          title: error.message
+        })
       }
     }
-  </script>
-  <script>
+
     // JavaScript to handle showing the image on top of body elements
     const showImageButtons = document.querySelectorAll('.show-image');
     const imageOverlay = document.getElementById('imageOverlay');
@@ -254,42 +285,57 @@ searchInput.addEventListener('keyup', function () {
       event.stopPropagation();
     });
 
-    // JavaScript to handle delete action
-    const deleteButtons = document.querySelectorAll('.delete-violation');
-    const deleteModal = document.getElementById('deleteModal');
-    const confirmDeleteButton = document.getElementById('confirmDelete');
-
-    let selectedViolationId = null;
-
-    deleteButtons.forEach(button => {
-      button.addEventListener('click', function () {
-        selectedViolationId = this.getAttribute('data-violation-id');
-        $('#deleteModal').modal('show');
-      });
-    });
-
-    confirmDeleteButton.addEventListener('click', function () {
-      if (selectedViolationId) {
-        // Send a DELETE request to the server
-        fetch(`/api/postals/${selectedViolationId}`, {
+    function deletePostal(id){
+      fetch(`/admin/api/postals/${id}`, {
           method: 'DELETE',
         })
-          .then(response => {
-            if (response.ok) {
-              // Reload the page after successful deletion
-              location.reload();
+          .then(async response => {
+            if (response.status == 200) {
+              Toast.fire({
+                icon: 'success',
+                title: 'Posten ble slettet'
+              })
+
+              setTimeout(() =>{
+                location.reload();
+              },3000)
             } else {
-              console.error('Error deleting Postal Violation:', response.statusText);
+              Toast.fire({
+                icon: 'error',
+                title: await response.json()
+              })
             }
           })
           .catch(error => {
-            console.error('Error:', error);
+            Toast.fire({
+              icon: 'error',
+              title: error.message
+            })
           });
-      }
+    }
 
-      // Close the modal
-      $('#deleteModal').modal('hide');
+    function filterTableByDate(date) {
+      oTable = $('#example1').dataTable();
+      oTable.fnFilter(date, 0);
+    }
+
+    //Date picker
+    $('#reservationdate').datetimepicker({
+        format: 'L'
+    })
+
+    $('#reservationdate').on('change.datetimepicker',function(e) {
+        let date =  moment(e.date._d).format('YYYY-MM-DD')
+        filterTableByDate(date)
+    })
+
+    $(document).ready(function() {
+      const now = new Date();
+      const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+      const localDateString = localDate.toISOString().split('T')[0];
+      filterTableByDate(localDateString)
     });
-  </script>
+</script>
 </body>
 </html>
+

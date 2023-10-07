@@ -296,8 +296,8 @@ Grunn: ${reason}
 
         await sendAlertSMS({
             text: smsMessageFormatted,
-            // to: `4740088605`
-            to: `4747931499`
+            to: `4740088605`
+            // to: `4747931499`
         })
 
         return res.status(200).json({message: smsMessageFormatted})

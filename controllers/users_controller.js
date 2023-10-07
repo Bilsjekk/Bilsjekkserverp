@@ -8,16 +8,16 @@ exports.getAllUsers = async (req, res) => {
     const users = await User.find({}, { __v: false });
     return res.status(200).json(users);
   } catch (error) {
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: error.message });
   }
 };
 
 exports.deleteAllUsers = async (req, res) =>{
   try{
     await User.deleteMany({});
-    return res.status(200).send("All Users Were Deleted")
+    return res.status(200).json("All Users Were Deleted")
   }catch (error){
-    return res.status(500).send("Failed To Delete All Users")
+    return res.status(500).json(error.message);
   }
 }
 
@@ -29,7 +29,7 @@ exports.register = async (req, res) => {
     const existingUser = await User.findOne({ accountId: accountId });
 
     if (existingUser) {
-      return res.status(400).send('Email already exists');
+      return res.status(400).json('accountId already exists');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -46,7 +46,7 @@ exports.register = async (req, res) => {
     return res.status(200).json(savedUser);
   } catch (error) {
     console.log(error.message)
-    return res.status(500).send('Internal server error');
+    return res.status(500).json(error.message);
   }
 };
 
@@ -67,7 +67,7 @@ exports.login = async (req, res) => {
     if (isMatch) {
       const token = jwt.sign(
         { userId: user._id, accountId: user.accountId, role: 'user' },
-        'your-secret-key',
+        'your-secret-key'
       );
 
       return res.status(200).json({
@@ -75,11 +75,11 @@ exports.login = async (req, res) => {
         user: user
       });
     } else {
-      return res.status(401).send('Invalid password');
+      return res.status(401).json('Invalid password');
     }
   } catch (error) {
     console.log(error.message)
-    return res.status(500).send('Internal server error');
+    return res.status(500).json(error.message);
   }
 };
 
@@ -96,7 +96,7 @@ exports.getUser = async (req, res) => {
 
     return res.status(200).json(user);
   } catch (error) {
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -113,7 +113,7 @@ exports.deleteUser = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
   } catch (error) {
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: error.message });
   }
 };
 
@@ -126,7 +126,7 @@ exports.updateUser = async (req, res) => {
     const existingUser = await User.findOne({ accountId: accountId });
 
     if (existingUser && existingUser._id.toString() !== userId) {
-      return res.status(400).json({ error: 'Email already exists with another user' });
+      return res.status(400).json('account pnid already exists with another user');
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const updatedUser = await User.findByIdAndUpdate(
@@ -138,10 +138,10 @@ exports.updateUser = async (req, res) => {
     if (updatedUser) {
       return res.status(200).json(updatedUser);
     } else {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json('User not found');
     }
   } catch (error) {
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json(error.message);
   }
 };
 
@@ -150,45 +150,6 @@ const bucket = require('../utils/firebase')
 const uuid = require("uuid");
 
 
-exports.uploadImage = async (req, res) => {
-  try {
-    const userId = req.params.id;
-
-    if (!req.file) {
-      return res.status(400).json({ error: 'No image file provided' });
-    }
-
-    const token = uuid.v4();
-
-    const metadata = {
-      metadata: {
-        // This line is very important. It's to create a download token.
-        firebaseStorageDownloadTokens: token,
-      },
-      contentType: req.file.mimeType,
-      cacheControl: `public, max-age=${Date.now() + 10 * 60 * 60 * 24 * 30 * 365}`,
-    };
-
-    await bucket.upload(`images/${req.file.filename}`, {
-      // Support for HTTP requests made with `Accept-Encoding: gzip`
-      gzip: true,
-      metadata: metadata,
-    });
-
-    const url = `https://firebasestorage.googleapis.com/v0/b/zainfinal-b9de0.appspot.com/o/${req.file.filename}?alt=media&token=${token}5`
-
-
-    let updated = await User.findOneAndUpdate({ _id:userId },{
-      image:url
-    },{ $new:true })
-
-    return res.status(200).json(updated)
-
-  } catch (error) {
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-};
-
 exports.validateToken = (req,res) =>{
   try{
     const { token } = req.headers
@@ -196,12 +157,12 @@ exports.validateToken = (req,res) =>{
 
     },(error,cb) => {
       if(error){
-        return res.status(400).send(error)
+        return res.status(400).json(error)
       }else{
-        return res.status(200).send(cb)
+        return res.status(200).json(cb)
       }
     })
   }catch (error){
-    return res.status(500).send(error.message)
+    return res.status(500).json(error.message)
   }
 }

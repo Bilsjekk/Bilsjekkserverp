@@ -49,4 +49,16 @@ router.put('/maps/:id',async (req,res) =>{
   }
 })
 
+
+router.delete('/maps/:id',async (req,res) =>{
+  try{
+    await Map.deleteOne({ _id: req.params.id})
+    return res.status(200).json('success')
+  }catch(error){
+    console.log(error.message)
+    return res.status(500).json(error.message)
+  }
+})
+
+
 module.exports = router

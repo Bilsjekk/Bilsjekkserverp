@@ -18,7 +18,6 @@ const UserController = require('../controllers/users_controller')
 
 router.get('/users', UserController.getAllUsers);
 
-router.put('/users/:id/uploadImage', upload.single('image'),UserController.uploadImage);
 
 
 router.get('/users/user', UserController.getUser);

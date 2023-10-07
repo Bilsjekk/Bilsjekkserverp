@@ -3,111 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notification Page</title>
-    <!-- Include Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Utsted varsler</title>
+
+    <%- include('../components/headers') %>
+
+
+  <!-- DataTables -->
+  <link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/plugins/daterangepicker/daterangepicker.css">
+
+
+  <style>
+    thead input {
+        width: 100%;
+    }
+  </style>
 </head>
-<body>
-    <%- include('../components/navbar.ejs') %>
-    <div class="container-fluid mt-5">
-        <h3 class="mb-2">Notification Page</h3>
-        <div class="form-group d-flex justify-content-between">
-            <input type="text" class="form-control me-2" id="searchInput" placeholder="Search by title, body, or type">
-            <select class="form-control form-select me-2" id="typeFilter">
-                <option value="">All</option>
-                <option value="activation">Activation</option>
-                <option value="issue">Issue</option>
-            </select>
-            <input type="date" class="form-control" id="datePicker" placeholder="Select a date">
-        </div>
-        <table class="table table-bordered text-center table-hover table-striped table-secondary">
-            <thead>
-                <tr>
-                    <th>Title</th>
-                    <th>Body</th>
-                    <th>Date</th>
-                    <th>Type</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% if (issuenotifications.length === 0) { %>
-                    <tr>
-                        <td colspan="4" class="text-center">No notifications to display.</td>
-                    </tr>
-                <% } else { %>
-                    <% issuenotifications.forEach(notification => { %>
-                        <tr>
-                            <td><%= notification.title %></td>
-                            <td><%= notification.body %></td>
-                            <td><%= notification.date %></td>
-                            <td><%= notification.type %></td>
-                        </tr>
-                    <% }); %>
-                <% } %>
-            </tbody>
-        </table>
+<body class="hold-transition sidebar-mini">
+
+    <div class="wrapper">
+        <%- include('../components/navbar') %>
+    <% if(isAdmin){ %>
+            <%- include('../components/sidebar') %> 
+        <% } else{%>
+            <%- include('../components/manager_sidebar', { permissions }) %> 
+        <% } %>  
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                <div class="col-sm-12">
+                    <ol class="breadcrumb float-sm-left">
+                    <li class="breadcrumb-item"><a href="/">Hjem</a></li>
+                    <li class="breadcrumb-item">Utgave</li>
+                    <li class="breadcrumb-item active">Varsler</li>
+                    </ol>
+                </div><!-- /.col -->
+                </div><!-- /.row -->
+
+            </div><!-- /.container-fluid -->
+            </div>
+
+            <div class="row container-fluid">
+                <div class="col-lg-6 col-md-9 col-sm-12">
+                    <div class="form-group">
+                        <div class="input-group date" id="reservationdate" data-target-input="nearest">
+                            <input type="text" class="form-control datetimepicker-input" data-target="#reservationdate"/>
+                            <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+  
+            </div>
+
+            <div class="content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                              <h3 class="card-title d-flex justify-content-between align-items-center">
+                                Cars Data
+                              </h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                              <table id="example1" class="table table-bordered table-striped text-center">
+                                <thead>
+                                <tr>
+                                    <th>Dato</th>
+                                    <th>Tittel</th>
+                                    <th>Kropp</th>
+                                    <th>Type</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (issuenotifications.length === 0) { %>
+                                        <tr>
+                                            <td colspan="4" class="text-center">Ingen varsler å vise.</td>
+                                        </tr>
+                                    <% } else { %>
+                                        <% issuenotifications.forEach(notification => { %>
+                                            <tr>
+                                                <td><%= notification.date %></td>
+                                                <td><%= notification.title %></td>
+                                                <td><%= notification.body %></td>
+                                                <td><%= notification.type %></td>
+                                            </tr>
+                                        <% }); %>
+                                    <% } %>
+                                </tbody>
+                              </table>
+                            </div>
+                            <!-- /.card-body -->
+                          </div>
+                    </div>
+                </div>
+            </div>
     </div>
 
-    <!-- Include Bootstrap 5 JS and Popper.js scripts (if needed) -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
+        <%- include('../components/footer') %>
+    </div>
 
-    <script>
-        const searchInput = document.getElementById('searchInput');
-        const datePicker = document.getElementById('datePicker');
-        const typeFilter = document.getElementById('typeFilter');
-        const tableRows = document.querySelectorAll('tbody tr');
-
-        searchInput.addEventListener('input', () => {
-            const searchText = searchInput.value.trim().toLowerCase();
-            const selectedDate = datePicker.value;
-            const selectedType = typeFilter.value;
-
-            filterTable(searchText, selectedDate, selectedType);
-        });
-
-        datePicker.addEventListener('input', () => {
-            const selectedDate = datePicker.value;
-            const searchText = searchInput.value.trim().toLowerCase();
-            const selectedType = typeFilter.value;
-
-            filterTable(searchText, selectedDate, selectedType);
-        });
-
-        typeFilter.addEventListener('change', () => {
-            const selectedType = typeFilter.value;
-            const searchText = searchInput.value.trim().toLowerCase();
-            const selectedDate = datePicker.value;
-
-            filterTable(searchText, selectedDate, selectedType);
-        });
-
-        function filterTable(searchText, selectedDate, selectedType) {
-            tableRows.forEach(row => {
-                const title = row.querySelector('td:nth-child(1)').textContent.trim().toLowerCase();
-                const body = row.querySelector('td:nth-child(2)').textContent.trim().toLowerCase();
-                const type = row.querySelector('td:nth-child(4)').textContent.trim().toLowerCase();
-                const date = row.querySelector('td:nth-child(3)').textContent.trim();
-
-                const isTitleMatch = title.includes(searchText);
-                const isBodyMatch = body.includes(searchText);
-                const isTypeMatch = selectedType === '' || selectedType === type;
-                const isDateMatch = selectedDate === '' || selectedDate === date;
-
-                if ((isTitleMatch || isBodyMatch) && isTypeMatch && isDateMatch) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
-
-        const now = new Date();
-        const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
-        const localDateString = localDate.toISOString().split('T')[0];
+    <!-- <div class="modal fade" id="confirmAllDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmAllDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmAllDeleteModalLabel">Slett alle bekreftelser på problemvarsler</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Vil du slette alle problemvarsler?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deleteAllCars()" id="confirmAllDeleteBtn">Slett</button>
+                </div>
+            </div>
+        </div>
+    </div> -->
 
 
-        filterTable('',localDateString,'')
-    </script>
+<%- include('../components/scripts') %>
+
+<!-- DataTables  & Plugins -->
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="/plugins/jszip/jszip.min.js"></script>
+<script src="/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script src="/plugins/daterangepicker/daterangepicker.js"></script>
+
+
+<script>
+    $(function () {
+        
+
+      $("#example1").DataTable({
+        "responsive": true, "lengthChange": true, "autoWidth": false,
+        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+      }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    });
+  </script>
+<script>
+    var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        })
+
+        function filterTableByDate(date) {
+      oTable = $('#example1').dataTable();
+      oTable.fnFilter(date, 0);
+    }
+
+    //Date picker
+    $('#reservationdate').datetimepicker({
+        format: 'L'
+    })
+
+    $('#reservationdate').on('change.datetimepicker',function(e) {
+        let date =  moment(e.date._d).format('YYYY-MM-DD')
+        filterTableByDate(date)
+    })
+
+    $(document).ready(function() {
+      const now = new Date();
+      const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+      const localDateString = localDate.toISOString().split('T')[0];
+      filterTableByDate(localDateString)
+    });
+
+</script>
 </body>
 </html>

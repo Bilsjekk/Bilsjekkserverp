@@ -38,7 +38,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="successModalLabel">Suksess</h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
             </div>
             <div class="modal-body">
               Endringene er lagret!
@@ -53,7 +55,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="errorModalLabel">Feil</h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
             </div>
             <div class="modal-body">
               Noe gikk galt. Vennligst prøv igjen senere.
@@ -77,7 +81,7 @@ let notice = document.querySelector('#notice')
 let text = document.querySelector('#text')
 
 
-let response = await fetch(`/api/groups/${groupId}`, {
+let response = await fetch(`/admin/api/groups/${groupId}`, {
     method: 'PUT',
     headers:{
       'Content-Type':'application/json; charset=utf-8'

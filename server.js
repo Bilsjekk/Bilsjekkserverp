@@ -3,6 +3,10 @@ require('./utils/mongodbConnection')
 const qr = require('qr-image');
 const fs = require('fs')
 const admin = require('./utils/firebase');
+const User = require('./models/usersModel')
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
+const Manager = require('./models/Manager')
 
 
 const express = require('express')
@@ -23,7 +27,6 @@ app.use(cors({
 
 app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs')
-
 
 const IMEI = require('./models/IMEI')
 
@@ -178,65 +181,93 @@ app.get('/login', (req,res) =>{
 const PDFArchieve = require('./models/PdfArchieve')
 
 app.get('/archieve',async (req,res) =>{
+    let jwt_access_token = req.cookies.jwt_token
+    let decoded = jwt.verify(jwt_access_token,process.env.JWT_SECRET_KEY)
+    let manager = await Manager.findOne({ _id: decoded.id })
+
     let archieves = await PDFArchieve.find({})
     return res.status(200).render('pdfArchieve/pdf_list',{
-        pdfs: archieves
+        pdfs: archieves,
+        isAdmin: decoded.role === 'admin',
+      permissions: manager.permissions
     })
 })
 
 const PDF = require('./models/PDF')
 app.post('/api/archieves', async (req,res) =>{
     try{
-        let pdfs = await PDF.find({}).populate({
-            path:'userId',
-            ref:'User'
-        })
+        let pdfs = await PDF.find({})
 
         for(let pdf of pdfs){
-            let isExisting = await PDFArchieve.findOne({
-                accountId: pdf.userId.accountId,
-                link:pdf.link,
-                createdAt:pdf.createdAt
-            })
-
-            if(isExisting){
-                continue;
+            try{
+                let pop = await pdf.populate({
+                    path: 'userId',
+                    ref: 'User'
+                })
+                
+                if(pdf == null){
+                    continue
+                }
+    
+                let isExisting = await PDFArchieve.findOne({
+                    accountId: pdf.userId.accountId,
+                    link:pdf.link,
+                    createdAt:pdf.createdAt
+                })
+    
+                if(!isExisting){
+                    continue;
+                }
+    
+                let archieve = new PDFArchieve({
+                    name:pdf.name,
+                    username:pdf.userId.name,
+                    accountId:pdf.userId.accountId,
+                    link:pdf.link,
+                    createdAt:pdf.createdAt,
+                })
+    
+                await archieve.save()
+            }catch(err){
+                continue
             }
-
-            let archieve = new PDFArchieve({
-                name:pdf.name,
-                username:pdf.userId.name,
-                accountId:pdf.userId.accountId,
-                link:pdf.link,
-                createdAt:pdf.createdAt,
-            })
-
-            await archieve.save()
         }
 
         return res.sendStatus(200) 
     }catch(error){
-        console.log(error.message)
-        return res.status(500).send(error.message)
+        return res.status(500).json(error.message)
     }
 })
 
 // READ - Get a specific PDF by ID
 app.get('/archieves/:id', async (req, res) => {
     try {
+        let jwt_access_token = req.cookies.jwt_token
+    let decoded = jwt.verify(jwt_access_token,process.env.JWT_SECRET_KEY)
+    let manager = await Manager.findOne({ _id: decoded.id })
+
         const pdf = await PDFArchieve.findById(req.params.id);
         if (!pdf) {
             return res.status(404).json({ error: 'PDF not found' });
         }
-        return res.status(200).render('pdfArchieve/pdf_show.ejs', { pdf });
+        let link = pdf.link.split('.in')[1]
+        return res.status(200).render('pdfArchieve/pdf_show.ejs', { 
+            link,
+            isAdmin: decoded.role === 'admin',
+      permissions: manager.permissions
+         });
     } catch (error) {
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
-app.get('/api/logout',(req,res) =>{
+app.get('/admin/api/logout',(req,res) =>{
 
     res.cookie('isLogged',{
+        expires: Date.now()
+    })
+
+    res.cookie('jwt_token',{
         expires: Date.now()
     })
 
@@ -245,44 +276,48 @@ app.get('/api/logout',(req,res) =>{
 
 const path = require('path')
 
-app.post('/api/login', async (req,res) =>{
+app.post('/admin/api/login', async (req,res) =>{
     const { username, password } = req.body
-    const file = fs.readFileSync('data/credentials.json',{
-        encoding:'utf-8'
-    })
+    const manager = await Manager.findOne({ username });
 
-    const json = JSON.parse(file)
+    if (!manager) {
+      return res.status(404).json({ error: 'Manager not found' });
+    }
 
+    const isMatch = await bcrypt.compare(password, manager.password);
 
+    if (isMatch) {
+      const token = jwt.sign(
+        { 
+            id: manager._id,
+            role: manager.role,
+        },
+        process.env.JWT_SECRET_KEY
+      );
 
-    if(username == json.username && password == json.password){
-        res.cookie('isLogged','true',{
-            maxAge: 36000000000000, // Cookie expiration time in milliseconds (1 hour in this case)
+        // Cookie expiration time in milliseconds (3 hours in this case)
+        res.cookie('is_logged','true',{
+            maxAge: 1000 * 60 * 60 * 3, 
             httpOnly: true,
         })
 
-        res.redirect('/')
-    }else{
-        return res.status(500).json({ message: "Error Message"})
-    }
-})
-app.use((req,res,next) =>{
-    if(
-        req.url.includes('/api/')
-        || req.url.includes('/images/')
-        || req.url.includes('/profiles/')
-        || req.url.includes('/css/')
-    ){
-      return next()
-    }else{
-        if(req.cookies.isLogged == "true" && (req.url != "/login" ) ){
-            next();
-        }else{
-            return res.redirect('/login')
-        }
-    }
+        // Cookie expiration time in milliseconds (3 hours in this case)
+        res.cookie('jwt_token', token,{
+            maxAge: 1000 * 60 * 60 * 3,
+            httpOnly: true,
+        })  
 
+        return res.status(200).json({
+            role: manager.role
+        })
+    } else {
+      return res.status(401).json('Invalid password');
+    }
 })
+
+const { authorize_front, authorize_admin_api } = require('./middlewares/authorize');
+
+
 
 const driverRouter = require('./routes/driverRoute')
 const groupRouter = require('./routes/groupRoute')
@@ -308,8 +343,40 @@ const issueNotificationRouter = require('./routes/issueNotificationRoute')
 const issuesRouter = require('./routes/issuesRoute')
 const reportRouter = require('./routes/reportRoute')
 
+
 app.use(
     '/api',
+    vpsRouter,
+    reportRouter,
+    issuesRouter,
+    issueNotificationRouter,
+    machinesRouter,
+    scanRouter,
+    notificationRouter,
+    mapRouter,
+    postalRouter,
+    violationRouter,
+    accidentRouter,
+    informationRouter,
+    driverRouter,
+    settingsRouter,
+    groupRouter,
+    fieldRouter,
+    userRouter,
+    pdfRouter,
+    carRouter,
+    locationRouter,
+    imeiRouter,
+    zoneRouter
+    )
+    
+
+    const managerRoute = require('./routes/managerRoute')
+
+app.use(
+    '/admin/api',
+    authorize_admin_api,
+    managerRoute,
     vpsRouter,
     reportRouter,
     issuesRouter,
@@ -351,10 +418,18 @@ const scanFront = require('./routes/scanFront')
 const machineFront = require('./routes/machinesFront')
 const issueNotificationFront = require('./routes/issueNotificationFront')
 const issueReportFront = require('./routes/issueReportFront')
+const managerFront = require('./routes/managerFront')
+
+
+const authenticate_front = require('./middlewares/authenticate');
+
 
 
 app.use(
+    authenticate_front,
+    authorize_front,
     mapFront,
+    managerFront,
     scanFront,
     issueNotificationFront,
     notificationFront,
@@ -375,7 +450,7 @@ app.use(
 
 
 
-const Violation = require('./models/Violation')
+const Violation = require('./models/Violation');
 app.get('/',async (req,res) =>{
     let violations = await Violation.find({});
 
@@ -403,5 +478,5 @@ const combinedViolations = violations.reduce((result, v) => {
 
 
 const port = process.env.port || 3000
-app.listen(port, () => console.log(`Socket Server is running on port ${port}`))
+app.listen(port, () => console.log(`Server is running on port ${port}`))
 

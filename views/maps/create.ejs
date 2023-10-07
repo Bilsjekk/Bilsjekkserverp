@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lag kart</title>
-    <link href="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Add Bootstrap CSS link -->
+    <%- include('../components/headers.ejs') %>
+      <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <!-- Toastr -->
+    <link rel="stylesheet" href="/plugins/toastr/toastr.min.css">
+
     <style>
         .live-preview {
             width: 50px;
@@ -19,50 +25,160 @@
         }
     </style>
 </head>
-<body>
-<%- include('../components/navbar.ejs') %>
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+        <%- include('../components/navbar') %>
+        <% if(isAdmin){ %>
+            <%- include('../components/sidebar') %> 
+        <% } else{%>
+            <%- include('../components/manager_sidebar', { permissions }) %> 
+        <% } %>  
 
-<div class="container">
-    <h1 class="mt-4">Lag kart</h1>
-    <div>
-      <div id="map"></div>
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                <div class="col-sm-6">
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/">Hjem</a></li>
+                    <li class="breadcrumb-item"><a href="/maps">Kart</a></li>
+                    <li class="breadcrumb-item active">Skape</li>
+                    </ol>
+                </div><!-- /.col -->
+                </div><!-- /.row -->
 
-        <div class="mb-3">
-          <label for="initialCoordinates" class="form-label">Startkoordinater (breddegrad, lengdegrad)</label>
-          <div class="d-flex justify-content-between align-items-center">
-            <input type="text" id="lati" name="lati" class="form-control me-2" required placeholder="Breddegrad">
-            <input type="text" id="long" name="long" class="form-control" required placeholder="Lengdegrad">
-          </div>
-      </div>
+            </div><!-- /.container-fluid -->
+            </div>
 
-      <div class="mb-3">
-        <label for="zone" class="form-label">Velg Sone</label>
-        <select id="zone" name="zone" class="form-select" required>
-            <!-- Options will be added dynamically using JavaScript -->
-        </select>
+            <div class="content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                              <h3 class="card-title d-flex justify-content-between align-items-center">
+                                Lag kart
+                              </h3>
+                            </div>
+
+                            
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="container-fluid">
+                                    <form id="createMapForm">
+                                        <div id="map"></div>
+                                  
+                                          <div class="mb-3 form-group">
+                                            <label for="initialCoordinates" class="form-label">breddegrad</label>
+                                              <input type="text" id="lati" name="lati" class="form-control mr-2" placeholder="Breddegrad">
+                                        </div>
+
+                                          <div class="mb-3 form-group">
+                                            <label for="initialCoordinates" class="form-label">lengdegrad</label>
+                                            <input type="text" id="long" name="long" class="form-control" placeholder="Lengdegrad">
+                                        </div>
+
+
+                                  
+                                        <div class="mb-3 form-group">
+                                          <label for="zone" class="form-label">Velg Sone</label>
+                                          <select id="zone" name="zone" class="form-select custom-select">
+                                              <!-- Options will be added dynamically using JavaScript -->
+                                          </select>
+                                      </div>
+                                  
+                                          <div class="mb-3 form-group">
+                                              <label for="data" class="form-label">GeoJSON Data <a href="https://geojson.io/" target="_blank">åpen for å lage</a></label>
+                                              <textarea id="data" name="data" class="form-control" rows="5"  placeholder="Enter area json data"></textarea>
+                                          </div>
+                                          <div class="d-flex justify-content-center align-items-center mt-3 mb-3 btn-group">
+                                              <button class="btn btn-info me-3 ps-3 pe-3" id="createButton" type="button" onclick="createMap()">Skape</button>
+                                              <a href="/maps" class="btn btn-secondary ps-3 pe-3">Avbryt</a>
+                                          </div>
+                                      </form>
+                                </div>                    
+                            </div>
+                            <!-- /.card-body -->
+                          </div>
+                    </div>
+                </div>
+            </div>
     </div>
 
-        <div class="mb-3">
-            <label for="data" class="form-label">GeoJSON Data <a href="https://geojson.io/" target="_blank">open to create</a></label>
-            <textarea id="data" name="data" class="form-control" rows="5" required placeholder="Enter area json data"></textarea>
-        </div>
-        <div class="d-flex justify-content-center align-items-center mt-3 mb-3">
-            <button class="btn btn-primary me-3 ps-3 pe-3" id="createButton">Skape</button>
-            <a href="/maps" class="btn btn-secondary ps-3 pe-3">Avbryt</a>
-        </div>
+        <%- include('../components/footer') %>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <%- include('../components/scripts.ejs') %>
+    
+    <script src="/plugins/jquery-validation/jquery.validate.min.js"></script>
+    <script src="/plugins/jquery-validation/additional-methods.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <!-- Toastr -->
+<script src="/plugins/toastr/toastr.min.js"></script>
+<script src="/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_RMmoc5iVAGRDfxi8WLjQc27_QocN-eI&libraries=places"></script>
-<script>
-  // Function to populate the zone dropdown with data from /api/zones
-async function populateZoneDropdown() {
+
+
+
+    <script>
+        var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+
+        $('#createMapForm').validate({
+    rules: {
+      lati: {
+        required: true,
+      },
+      long: {
+        required: true,
+      },
+      zone: {
+        required: true
+      },
+      data:{
+        required: true,
+      }
+    },
+    messages: {
+      lati: {
+        required: "breddegrad er nødvendig",
+      },
+      long: {
+        required: "lengdegrad er nødvendig",
+      },
+      zone: {
+        required:"velg sone"
+      },
+      data:{
+        required: "du må legge inn kartdata"
+      }
+    },
+    errorElement: 'span',
+    errorPlacement: function (error, element) {
+      error.addClass('invalid-feedback');
+      element.closest('.form-group').append(error);
+    },
+    highlight: function (element, errorClass, validClass) {
+      $(element).addClass('is-invalid');
+    },
+    unhighlight: function (element, errorClass, validClass) {
+      $(element).removeClass('is-invalid');
+    }
+  });
+  async function populateZoneDropdown() {
             try {
                 const zoneDropdown = document.getElementById('zone');
 
-                // Fetch zones data from /api/zones
-                const response = await fetch('/api/zones');
+                // Fetch zones data from /admin/api/zones
+                const response = await fetch('/admin/api/zones');
                 const zones = await response.json();
 
                 // Populate the dropdown options
@@ -82,9 +198,7 @@ async function populateZoneDropdown() {
             // Populate the zone dropdown when the page loads
             populateZoneDropdown();
         });
-</script>
 
-<script>
     // Google Maps
     const map = new google.maps.Map(document.getElementById('map'), {
         center: { lat: 59.911491, lng: 10.757933 }, // Centered on Norway
@@ -93,11 +207,9 @@ async function populateZoneDropdown() {
     });
 
 
-    // Create map
-    const createButton = document.getElementById('createButton');
-
-    createButton.addEventListener('click', () => {
-        const data = document.getElementById('data').value;
+    async function createMap(){
+        if($('#createMapForm').valid()){
+            const data = document.getElementById('data').value;
         const latitude = document.getElementById('lati').value
         const longitude = document.getElementById('long').value
         const zone = document.getElementById('zone').value
@@ -111,29 +223,38 @@ async function populateZoneDropdown() {
         };
 
         // Send a fetch request to create the map
-        fetch('/api/maps', {
+        fetch('/admin/api/maps', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(newMap)
         })
-        .then(response => {
-            if (response.ok) {
-                // Redirect to the maps page after successful creation
-                location.href = '/maps';
-            } else {
-                console.error('Error creating map:', response.statusText);
-                // Handle errors here, e.g., display an error message
-                alert('Kunne ikke opprette kartet. Vær så snill, prøv på nytt.');
+        .then(async response => {
+            if (response.status == 200) {
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Kartet ble opprettet'
+                })
+
+                setTimeout(() =>{
+                    location.href = '/maps';
+                },3000)
+            } else { 
+                Toast.fire({
+                    icon: 'error',
+                    title: (await response.json().toString())
+                })
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            // Display an error message to the user
-            alert('Det oppsto en feil under oppretting av kartet. Prøv igjen senere.');
+            Toast.fire({
+                icon: 'error',
+                title: error.message
+            })
         });
-    });
+        }
+    }
 
     // Function to parse and display GeoJSON data on the map
 function displayGeoJSONData(data) {
@@ -159,9 +280,9 @@ function displayGeoJSONData(data) {
 }
 
 // Call the function to display GeoJSON data when the page loads
-google.maps.event.addDomListener(window, 'load', () => {
-    displayGeoJSONData(document.getElementById('data').value);
-});
+// google.maps.event.addDomListener(window, 'load', () => {
+//     displayGeoJSONData(document.getElementById('data').value);
+// });
 
 // Call the function whenever the 'data' textarea value changes
 document.getElementById('data').addEventListener('input', () => {
@@ -169,6 +290,9 @@ document.getElementById('data').addEventListener('input', () => {
     displayGeoJSONData(newData);
 });
 
-</script>
+    </script>
+
 </body>
 </html>
+
+

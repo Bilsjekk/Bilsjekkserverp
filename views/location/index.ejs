@@ -4,195 +4,258 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ruteliste</title>
-    <!-- Add Bootstrap CSS link -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- Custom CSS -->
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="/dist/css/adminlte.min.css">
 
-        .controls{
-            display: flex;
-        }
-
-        .controls > *{
-            flex-grow: 1;
-        }
-
-        .controls > :first-child{
-            margin-right: 10px;
-        }
-
-    </style>
+  <!-- DataTables -->
+  <link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+        <!-- SweetAlert2 -->
+        <link rel="stylesheet" href="/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+        <!-- Toastr -->
+        <link rel="stylesheet" href="/plugins/toastr/toastr.min.css">
+  <!-- Theme style -->
 </head>
-<body>
-<%- include('../components/navbar') %>
-<div class="mt-4"></div>
+<body class="hold-transition sidebar-mini">
 
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center">
-        <h1>Rute List</h1>
-        <div class="d-flex">
-            <a href="/locations/create" class="btn btn-info mr-2">legge Rute</a>
-            <button class="btn btn-danger" data-toggle="modal" data-target="#confirmAllDeleteModal">Slett alle</button>
-        </div>
-    </div>
-    <div class="row justify-content-center">
-        <div class="alert alert-success" id="successAlert" style="display: none;">
-            Rute ble slettet.
-        </div>
-        <!-- Failure Alert Box -->
-        <div class="alert alert-danger" id="failureAlert" style="display: none;">
-            Æsj noe feil!. Prøver igjen!.
-        </div>
+    <div class="wrapper">
+        <%- include('../components/navbar') %>
+    <% if(isAdmin){ %>
+            <%- include('../components/sidebar') %> 
+        <% } else{%>
+            <%- include('../components/manager_sidebar', { permissions }) %> 
+        <% } %>  
 
-        <div class="alert alert-success" id="successAllAlert" style="display: none;">
-            Alle Rute ble slettet.
-        </div>
-        <!-- Failure Alert Box -->
-        <div class="alert alert-danger" id="failureAllAlert" style="display: none;">
-            Æsj noe feil!. Prøver igjen!.
-        </div>
-        <table class="table table-striped table-bordered text-center">
-            <thead>
-            <tr>
-                <th>Rute</th>
-                <th>Dag</th>
-                <th>Vakt</th>
-                <th>Handlinger</th>
-            </tr>
-            </thead>
-            <tbody id="locationTableBody">
-            <!-- Location data will be inserted here -->
-            <% if (locations.length === 0) { %>
-                <tr>
-                    <td colspan="4" class="text-center">Ingen steder funnet.</td>
-                </tr>
-            <% } else { %>
-                <% locations.forEach(location => { %>
-                    <tr>
-                        <td><%= location.location %></td>
-                        <td><%= location.days.join(', ') %></td>
-                        <td><%= location.shifts.join(', ') %></td>
-                        <td class="controls">
-                            <a href="/locations/<%= location._id %>/update" class="btn btn-sm btn-primary">Edit</a>
-                            <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#confirmDeleteModal" data-id="<%= location._id %>">Slett</button>
-                        </td>
-                    </tr>
-                <% }); %>
-            <% } %>
-            </tbody>
-        </table>
-    </div>
-</div>
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                <div class="col-sm-6">
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/">Hjem</a></li>
+                    <li class="breadcrumb-item active">Routes</li>
+                    </ol>
+                </div><!-- /.col -->
+                </div><!-- /.row -->
 
-<!-- Confirm Delete Modal -->
-<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="confirmDeleteModalLabel">Bekreft sletting</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+            </div><!-- /.container-fluid -->
+            </div>
+
+            <div class="d-flex justify-content-end align-items-center mb-2 container-fluid">
+                <a href="/locations/create" class="btn btn-info btn-sm mr-1">
+                    <i class="fa fa-plus"></i>
+                    <span>Skape</span>
+                </a>
+                <button data-toggle="modal" data-target="#confirmAllDeleteModal" class="btn btn-danger btn-sm">
+                    <i class="fa fa-trash"></i>
+                    <span>Slette alle</span>
                 </button>
             </div>
-            <div class="modal-body">
-                Er du sikker på at du vil slette denne ruten?
+
+            <div class="content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                              <h3 class="card-title d-flex justify-content-between align-items-center">
+                                Routes Data
+                              </h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                              <table id="example1" class="table table-bordered table-striped text-center">
+                                <thead>
+                                <tr>
+                                    <th>Rute</th>
+                                    <th>Dag</th>
+                                    <th>Vakt</th>
+                                    <th>Handlinger</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (locations.length === 0) { %>
+                                        <tr>
+                                            <td colspan="4" class="text-center">Ingen steder funnet.</td>
+                                        </tr>
+                                    <% } else { %>
+                                        <% locations.forEach(location => { %>
+                                            <tr>
+                                                <td><%= location.location %></td>
+                                                <td><%= location.days.join(', ') %></td>
+                                                <td><%= location.shifts.join(', ') %></td>
+                                                <td class="controls">
+                                                    <a href="/locations/<%= location._id %>/update" class="btn btn-sm btn-info">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#confirmDeleteModal<%= location._id %>">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+
+                                            <div class="modal fade" id="confirmDeleteModal<%= location._id %>" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="confirmDeleteModalLabel">Slett bekreftelse</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Ønsker du å slette plassering <%= location.location %>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                                                            <button type="button" class="btn btn-danger" data-dismiss="modal" id="confirmDeleteBtn" onclick="deleteLocation('<%= location._id %>')">Slett</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% }); %>
+                                    <% } %>
+                                </tbody>
+                              </table>
+                            </div>
+                            <!-- /.card-body -->
+                          </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal" id="confirmDeleteBtn">Slett</button>
-            </div>
-        </div>
     </div>
-</div>
+
+        <%- include('../components/footer') %>
+    </div>
+
 
 <div class="modal fade" id="confirmAllDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmAllDeleteModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="confirmAllDeleteModalLabel">Bekreft sletting</h5>
+                <h5 class="modal-title" id="confirmAllDeleteModalLabel">Slett alle plasseringsbekreftelser</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                Er du sikker på at du vil slette denne ruten?
+                Vil du slette alle plasseringer?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deleteAllLocations()" id="confirmDeleteBtn">Slett</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deleteAllLocations()" id="confirmAllDeleteBtn">Slett</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Add Bootstrap JS and Popper.js scripts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+
+<!-- jQuery -->
+<script src="/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables  & Plugins -->
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="/plugins/jszip/jszip.min.js"></script>
+<script src="/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/dist/js/adminlte.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <!-- Toastr -->
+<script src="/plugins/toastr/toastr.min.js"></script>
 
 <script>
-    let locationToDeleteId = null;
-
-    $('#confirmDeleteModal').on('show.bs.modal', function (event) {
-        const button = $(event.relatedTarget);
-        locationToDeleteId = button.data('id');
+    $(function () {
+      $("#example1").DataTable({
+        "responsive": true, "lengthChange": true, "autoWidth": false,
+        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+      }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
+  </script>
 
-    $('#confirmDeleteBtn').click(function () {
-        deleteLocation(locationToDeleteId);
-    });
+<script>
+    var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
     function deleteAllLocations() {
-        fetch(`/api/locations`, {
+        fetch(`/admin/api/locations`, {
             method: 'DELETE',
         })
-            .then(response => {
+            .then(async response => {
                 if (response.status === 200) {
-                    $('#successAllAlert').show();
+                    Toast.fire({
+                        icon: 'success',
+                        title: "Alle plasseringer ble slettet"
+                    })
                     setTimeout(() => {
-                        $('#successAllAlert').hide();
                         window.location.reload(); // Redirect to the location list page
                     }, 3000);
                 } else {
-                    $('#failureAllAlert').show();
+                    Toast.fire({
+                    icon: 'error',
+                    title: (await response.json()).toString()
+                })
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                $('#failureAllAlert').show();
+                Toast.fire({
+                    icon: 'error',
+                    title: error.message
+                })
             });
     }
 
 
     function deleteLocation(id) {
-        fetch(`/api/locations/${id}`, {
+        fetch(`/admin/api/locations/${id}`, {
             method: 'DELETE',
         })
-            .then(response => {
+            .then(async response => {
                 if (response.status === 200) {
-                    $('#confirmDeleteModal').modal('hide');
-                    $('#successAlert').show();
+                    Toast.fire({
+                    icon: 'success',
+                    title: 'Plassering ble slettet'
+                })
                     setTimeout(() => {
-                        $('#successAlert').hide();
                         window.location.reload()
                     }, 3000);
                 } else {
-                    $('#confirmDeleteModal').modal('hide');
-                    $('#failureAlert').show();
+                    Toast.fire({
+                    icon: 'error',
+                    title: (await response.json()).toString()
+                })
+
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                $('#confirmDeleteModal').modal('hide');
-                $('#failureAlert').show();
+                Toast.fire({
+                    icon: 'error',
+                    title: error.message
+                })
             });
     }
 </script>
 </body>
 </html>
+

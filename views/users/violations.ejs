@@ -3,58 +3,48 @@
 <head>
     <title>K.S (Kjøring Skade) History</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        .violation-card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            background-color: #f5f5f5;
-        }
-
-        .violation-date {
-            font-weight: bold;
-            color: #007bff;
-        }
-
-        .violation-description {
-            margin-top: 10px;
-        }
-
-        #violationsFilter {
-            width: 100%;
-            border: 1px solid #ccc;
-            padding: 8px;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-    </style>
+    <%- include('../components/headers') %>
 </head>
-<body>
-<%- include('../components/navbar') %>
-<div class="mt-4"></div>
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        
-        <input type="text" class="form-control mr-2" id="searchInput" placeholder="Søk etter dato, navn, bruker, ID eller lenke">
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+    <%- include('../components/navbar') %>
+    <% if(isAdmin){ %>
+            <%- include('../components/sidebar') %> 
+        <% } else{%>
+            <%- include('../components/manager_sidebar', { permissions }) %> 
+        <% } %> 
 
-        <select name="violationsFilter" id="violationsFilter" class="mr-3">
-            <option value="0">Hele tiden</option>
-            <option value="6">I går</option>
-            <option value="1">I dag</option>
-            <option value="2">3 dager siden</option>
-            <option value="3">en uke siden</option>
-            <option value="4">en måned siden</option>
-            <option value="5">ett år siden</option>
-        </select>
-
-        <div id="vio-num" class="font-weight-bold"></div>
+    <div class="content-wrapper">
+        <div class="content">
+            <div class="container-fluid  mt-3">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    
+                    <input type="text" class="form-control mr-2" id="searchInput" placeholder="Søk etter dato, navn, bruker, ID eller lenke">
+            
+                    <select name="violationsFilter" id="violationsFilter" class="mr-3 custom-select">
+                        <option value="0">Hele tiden</option>
+                        <option value="6">I går</option>
+                        <option value="1">I dag</option>
+                        <option value="2">3 dager siden</option>
+                        <option value="3">en uke siden</option>
+                        <option value="4">en måned siden</option>
+                        <option value="5">ett år siden</option>
+                    </select>
+            
+                    <div id="vio-num" class="font-weight-bold"></div>
+                </div>
+            
+                <div id="violations" class="row">
+                    
+                </div>
+            </div>
+        </div>
     </div>
+    <%- include('../components/footer') %>
 
-    <div id="violations" class="row">
-        <!-- Violation cards will be dynamically added here using JavaScript -->
-    </div>
 </div>
+
+<%- include('../components/scripts') %>
 
 <script>
     // Your existing code here
@@ -99,36 +89,36 @@ function filterViolations() {
     // Function to display violations
     async function displayViolations() {
     
-        let response = await fetch(`/api/violations/user/${'<%- accountId %>'}`)
+        let response = await fetch(`/admin/api/violations/user/${'<%- accountId %>'}`)
         let violationsData = await response.json()
 
 
         const violationsContainer = document.getElementById('violations');
 
         violationsData.forEach(violation => {
-            const violationCard = document.createElement('div');
-            violationCard.classList.add('col-lg-4', 'col-md-6', 'col-sm-12'); // Specify the column sizes
+            violationsContainer.innerHTML += 
+`
+<div class="card bg-light d-flex flex-fill violation-card col-4">
+                <div class="card-header text-muted border-bottom-0">
+                  ${violation.createdAt}
+                </div>
+                <div class="card-body pt-0">
+                  <div class="row">
+                    <div class="col-5">
+                      <h2 class="lead"><b>Violations</b></h2>
+                      <p class="text-muted text-sm">${violation.violations}</p>
+                      
+                    </div>
+                    <div class="col-6 text-center">
+                        <h2 class="lead"><b>Removed</b></h2>
+                      <p class="text-muted text-sm">${violation.removed ?? '---'}</p>
+                    </div>
+                  </div>
+                </div>
 
-            const violationCardInner = document.createElement('div');
-            violationCardInner.classList.add('violation-card');
+              </div>
+`
 
-            const violationDate = document.createElement('p');
-            violationDate.classList.add('violation-date');
-            violationDate.textContent = `Date: ${violation.createdAt}`;
-
-            const violationsTotal = document.createElement('p');
-            violationsTotal.classList.add('violation-description');
-            violationsTotal.textContent = `Total: ${violation.violations}`;
-
-            const violationsRemoved = document.createElement('p');
-            violationsRemoved.classList.add('violation-description');
-            violationsRemoved.textContent = `Removed: ${violation.removed}`;
-
-            violationCardInner.appendChild(violationDate);
-            violationCardInner.appendChild(violationsTotal);
-            violationCardInner.appendChild(violationsRemoved);
-            violationCard.appendChild(violationCardInner);
-            violationsContainer.appendChild(violationCard);
         });
     }
 
@@ -160,7 +150,7 @@ function filterViolations() {
         const value = selectVio.value;
 
         try {
-            let responseData = await fetchData(`/api/violations/removed/${value}`);
+            let responseData = await fetchData(`/admin/api/violations/removed/${value}`);
             vioHolder.textContent = responseData;
         } catch (error) {
             console.error(error);

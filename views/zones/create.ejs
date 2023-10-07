@@ -4,48 +4,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Opprett sone</title>
-    <link href="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Add Bootstrap CSS link -->
+    <%- include('../components/headers.ejs') %>
+      <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <!-- Toastr -->
+    <link rel="stylesheet" href="/plugins/toastr/toastr.min.css">
 </head>
-<body>
-  <%- include('../components/navbar.ejs') %>
-    <div class="container">
-        <h1 class="mt-4">Opprett sone</h1>
-        <div>
-            <div class="mb-3">
-                <label for="zoneName" class="form-label">Sonenavn</label>
-                <input type="text" id="zoneName" name="name" class="form-control" required>
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+        <%- include('../components/navbar') %>
+        <% if(isAdmin){ %>
+            <%- include('../components/sidebar') %> 
+        <% } else{%>
+            <%- include('../components/manager_sidebar', { permissions }) %> 
+        <% } %>  
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                <div class="col-sm-6">
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/">Hjem</a></li>
+                    <li class="breadcrumb-item"><a href="/zones">Sone</a></li>
+                    <li class="breadcrumb-item active">Skape</li>
+                    </ol>
+                </div><!-- /.col -->
+                </div><!-- /.row -->
+
+            </div><!-- /.container-fluid -->
             </div>
-            <div class="d-flex justify-content-center align-items-center mt-3">
-              <button class="btn btn-primary me-3 ps-3 pe-3" onclick="createZone()">Skape</button>
-            <a href="/zones" class="btn btn-secondary ps-3 pe-3">Avbryt</a>
+
+            <div class="content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                              <h3 class="card-title d-flex justify-content-between align-items-center">
+                                Opprett sone
+                              </h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="container-fluid">
+                                    <div id="infoBox" class="alert" role="alert" style="display: none;"></div>
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-9">
+                                          <form class="container-fluid" id="createZoneForm">
+                                            <div>
+                                                <div class="mb-3 form-group">
+                                                    <label for="zoneName" class="form-label">Sonenavn</label>
+                                                    <input type="text" id="zoneName" name="name" class="form-control" required>
+                                                </div>
+                                                <div class="d-flex justify-content-center align-items-center mt-3 btn-group">
+                                                  <button type="button" class="btn btn-info me-3 ps-3 pe-3" onclick="createZone()">Skape</button>
+                                                <a href="/zones" class="btn btn-secondary ps-3 pe-3">Avbryt</a>
+                                                </div>
+                                              </div>
+                                        </form>
+                                        </div>
+                                    </div>
+                                </div>                    
+                            </div>
+                            <!-- /.card-body -->
+                          </div>
+                    </div>
+                </div>
             </div>
-          </div>
     </div>
 
-    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-              <div class="modal-header">
-                  <h5 class="modal-title" id="successModalLabel">Suksess</h5>
-                  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                Endringene er lagret!
-              </div>
-          </div>
-      </div>
-      </div>
-      <script src="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <%- include('../components/footer') %>
+    </div>
+
+    <%- include('../components/scripts.ejs') %>
+    
+    <script src="/plugins/jquery-validation/jquery.validate.min.js"></script>
+    <script src="/plugins/jquery-validation/additional-methods.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <!-- Toastr -->
+<script src="/plugins/toastr/toastr.min.js"></script>
 
 
-    <!-- Add any JavaScript for interactivity here -->
+
     <script>
-      async function createZone(){
-        try{
+        var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+
+        $('#createZoneForm').validate({
+    rules: {
+      name: {
+        required: true,
+      },
+    },
+    messages: {
+      name: {
+        required: "skriv inn sonenavn",
+      },
+    },
+    errorElement: 'span',
+    errorPlacement: function (error, element) {
+      error.addClass('invalid-feedback');
+      element.closest('.form-group').append(error);
+    },
+    highlight: function (element, errorClass, validClass) {
+      $(element).addClass('is-invalid');
+    },
+    unhighlight: function (element, errorClass, validClass) {
+      $(element).removeClass('is-invalid');
+    }
+  });
+
+  async function createZone(){
+        if($('#createZoneForm').valid()){
+          try{
           // Retrieve data from input fields
           const zoneInput = document.getElementById('zoneName').value;
 
-          let response = await fetch('/api/zones',{
+          let response = await fetch('/admin/api/zones',{
             method: 'POST',
             headers:{
               'Content-Type': 'application/json; charset=utf-8'
@@ -56,17 +140,30 @@
           })
 
           if(response.status == 200){
-            $('#successModal').modal('show');
+            Toast.fire({
+              icon: 'success',
+              title: 'Sonen ble opprettet'
+            })
             setTimeout(() =>{
               location.href = '/zones'
-            },2000)
+            },3000)
           }else{
-            alert('Nothing')
+            Toast.fire({
+              icon: 'error',
+              title: (await response.json())
+            })
           }
           }catch(error){
-            alert(error.message)
+            Toast.fire({
+              icon: 'error',
+              title: error.message
+            })
+        }
         }
       }
-    </script> <!-- Add your custom JavaScript file here -->
+
+
+    </script>
+
 </body>
 </html>

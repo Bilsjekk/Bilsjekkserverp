@@ -3,83 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Machine</title>
-    <link href="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Oppdater maskin</title>
+    <%- include('../components/headers.ejs') %> 
+      <!-- SweetAlert2 -->
+      <link rel="stylesheet" href="/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+      <!-- Toastr -->
+      <link rel="stylesheet" href="/plugins/toastr/toastr.min.css">
 </head>
 <body>
-    <%- include('../components/navbar.ejs') %>
-    <div class="container">
-        <h1 class="mt-5">Rediger P-Automat</h1>
-        
-        <div class="mb-3">
-            <label for="serial" class="form-label">Gruppe nr:</label>
-            <input type="number" id="serial" class="form-control" value="<%= machine.serial %>" required>
-        </div>
+    <div class="wrapper">
+        <%- include('../components/navbar') %>
+        <% if(isAdmin){ %>
+            <%- include('../components/sidebar') %> 
+        <% } else{%>
+            <%- include('../components/manager_sidebar', { permissions }) %> 
+        <% } %>  
 
-        <div class="mb-3">
-            <label class="form-label">Status:</label>
-            <div class="form-check form-check-inline">
-                <input type="radio" id="active" name="status" class="form-check-input" value="active" <%= machine.status == 'active' ? 'checked' : '' %>>
-                <label for="active" class="form-check-label">Aktive</label>
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                <div class="col-sm-6">
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/">Hjem</a></li>
+                    <li class="breadcrumb-item"><a href="/cars">Maskiner</a></li>
+                    <li class="breadcrumb-item"><a href="/cars"><%= machine.serial %></a></li>
+                    <li class="breadcrumb-item active">Oppdater</li>
+                    </ol>
+                </div><!-- /.col -->
+                </div><!-- /.row -->
+
+            </div><!-- /.container-fluid -->
             </div>
-            <div class="form-check form-check-inline">
-                <input type="radio" id="inactive" name="status" class="form-check-input" value="inactive" <%= machine.status == 'inactive' ? 'checked' : '' %>>
-                <label for="inactive" class="form-check-label">Inaktiv</label>
+
+            <div class="content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                              <h3 class="card-title d-flex justify-content-between align-items-center">
+                                Oppdater maskin
+                              </h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="container-fluid">
+                                    <div id="infoBox" class="alert" role="alert" style="display: none;"></div>
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-9">
+                                            <form class="container-fluid" id="updateMachineForm">
+                                                
+                                                <div class="mb-3">
+                                                    <label for="serial" class="form-label">Gruppe nr:</label>
+                                                    <input type="number" id="serial" class="form-control" value="<%= machine.serial %>" required>
+                                                </div>
+                                        
+                                                <div class="mb-3">
+                                                    <div class="custom-control custom-radio">
+                                                        <input class="custom-control-input" type="radio" id="active" name="status" value="active" <%= machine.status == 'active' ? 'checked' : '' %>>
+                                                        <label for="active" class="custom-control-label">Aktiv</label>
+                                                    </div>
+                                                    <div class="custom-control custom-radio">
+                                                        <input class="custom-control-input custom-control-input-danger" type="radio" id="inactive" name="status" value="inactive" <%= machine.status == 'inactive' ? 'checked' : '' %>>
+                                                        <label for="inactive" class="custom-control-label">Inaktiv</label>
+                                                    </div>
+                                                      
+                                                
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Route</label>
+                                                    <select class="custom-select" id="zone">
+                                                    
+                                                    </select>
+                                                  </div>
+                                    
+                                        
+                                                <div class="mb-3">
+                                                    <label for="zoneLocation" class="form-label">hvor?</label>
+                                                    <input type="text" id="zoneLocation" class="form-control" value="<%= machine.zoneLocation %>" required>
+                                                </div>
+                                        
+                                                <div class="d-flex justify-content-center align-items-center btn-group">
+                                                    <button id="updateButton" type="button" class="btn btn-primary me-3" onclick="updateMachine()">Oppdater</button>
+                                                    <a href="/machines" class="btn btn-secondary">Avbryt</a>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>                    
+                            </div>
+                            <!-- /.card-body -->
+                          </div>
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <div class="mb-3">
-            <label for="zone" class="form-label">Rute:</label>
-            <select id="zone" class="form-select">
-                <!-- Options will be added dynamically using JavaScript -->
-            </select>
-        </div>
-
-        <div class="mb-3">
-            <label for="zoneLocation" class="form-label">hvor?</label>
-            <input type="text" id="zoneLocation" class="form-control" value="<%= machine.zoneLocation %>" required>
-        </div>
-
-        <div class="d-flex justify-content-center align-items-center">
-            <button id="updateButton" class="btn btn-primary me-3">Oppdater</button>
-            <a href="/machines" class="btn btn-secondary">Tilbake</a>
-        </div>
     </div>
 
-        <!-- Success Modal -->
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="successModalLabel">Suksess</h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              Endringene er lagret!
-            </div>
-        </div>
-    </div>
+        <%- include('../components/footer') %>
     </div>
 
-        <!-- Error Modal -->
-<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="errorModalLabel">Feil</h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              Noe gikk galt. Vennligst prøv igjen senere.
-            </div>
-        </div>
-    </div>
-  </div>
-    <script src="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-        // Function to update the machine using Fetch API
-        async function updateMachine() {
+    <%- include('../components/scripts.ejs') %>
+    <script src="/plugins/jquery-validation/jquery.validate.min.js"></script>
+    <script src="/plugins/jquery-validation/additional-methods.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <!-- Toastr -->
+<script src="/plugins/toastr/toastr.min.js"></script>
+
+<script>
+
+var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+
+        $('#createMachineForm').validate({
+    rules: {
+      serial: {
+        required: true,
+      },
+      zone: {
+        required: true,
+      },
+      zoneLocation: {
+        required: true
+      },
+    },
+    messages: {
+      serial: {
+        required: "skriv inn serienummer",
+      },
+      zone: {
+        required: "du må velge en sone",
+      },
+      zoneLocation: "Vennligst oppgi soneplassering",
+    },
+    errorElement: 'span',
+    errorPlacement: function (error, element) {
+      error.addClass('invalid-feedback');
+      element.closest('.form-group').append(error);
+    },
+    highlight: function (element, errorClass, validClass) {
+      $(element).addClass('is-invalid');
+    },
+    unhighlight: function (element, errorClass, validClass) {
+      $(element).removeClass('is-invalid');
+    }
+  });
+
+  async function updateMachine() {
             const machineId = '<%= machine._id %>';
             const serial = document.getElementById('serial').value;
             const statusActive = document.getElementById('active').checked;
@@ -95,7 +173,7 @@
             };
 
             try {
-                const response = await fetch(`/api/machines/${machineId}`, {
+                const response = await fetch(`/admin/api/machines/${machineId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
@@ -103,32 +181,32 @@
                     body: JSON.stringify(machineData)
                 });
 
-                if (response.ok) {
-                    $('#successModal').modal('show');
-                    setTimeout(() =>{
-                        $('#successModal').modal('hide');
-                    },1500)
+                if (response.status == 200) {
+                    Toast.fire({
+                        icon : 'success',
+                        title : "Maskindata ble oppdatert"
+                    })
                 } else {
-                    $('#errorModal').modal('show');
-                    setTimeout(() =>{
-                        $('#errorModal').modal('hide');
-                    },1500)
+                    Toast.fire({
+                        icon : 'error',
+                        title: (await response.json()).toString(),
+                    })
                 }
             } catch (error) {
-                $('#errorModal').modal('show');
-                    setTimeout(() =>{
-                        $('#errorModal').modal('hide');
-                    },1500)
+                Toast.fire({
+                    icon : 'error',
+                    title: error.message
+                })
             }
         }
 
-        // Function to populate the zone dropdown with data from /api/zones
+        // Function to populate the zone dropdown with data from /admin/api/zones
         async function populateZoneDropdown() {
             try {
                 const zoneDropdown = document.getElementById('zone');
 
-                // Fetch zones data from /api/zones
-                const response = await fetch('/api/zones');
+                // Fetch zones data from /admin/api/zones
+                const response = await fetch('/admin/api/zones');
                 const zones = await response.json();
 
                 // Populate the dropdown options
@@ -147,15 +225,14 @@
             }
         }
 
-        // Add an event listener to the update button
-        const updateButton = document.getElementById('updateButton');
-        updateButton.addEventListener('click', updateMachine);
-
         // Invoke the code when the DOM content is loaded
         document.addEventListener('DOMContentLoaded', () => {
             // Populate the zone dropdown when the page loads
             populateZoneDropdown();
         });
-    </script>
+     
+  
+</script>
 </body>
 </html>
+

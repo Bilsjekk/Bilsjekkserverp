@@ -42,11 +42,9 @@ const createNewCar = async (req,res) =>{
         });
 
 
-        await Car.findOneAndUpdate({ _id: car._id },{
+        await Car.updateOne({ _id: car._id },{
             qrcode: process.env.BASE_URL  + `qrcodes/${filename}`
-        },{ $new:true }
-        
-        )
+        })
 
 
         return res.status(200).send("Car Was Created")
@@ -124,10 +122,10 @@ const deleteAllCars = async (req,res) =>{
 const resetCarKilometers = async (req,res) =>{
     try{
         const { id } = req.params
-        await Car.findOneAndUpdate({ _id:id },{
+        await Car.updateOne({ _id:id },{
             currentKilometers:0,
             kilometers:0
-        },{ $new: true })
+        })
 
         return res.sendStatus(200)
     }catch(error){

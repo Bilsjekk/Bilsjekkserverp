@@ -78,10 +78,10 @@ const createNewDriver = async (req,res) =>{
                     // to:'4740088605'
                 });
     
-                await Car.findOneAndUpdate({ _id: information.carId },{
+                await Car.updateOne({ _id: information.carId },{
                     kilometers:0,
                     currentKilometers:0
-                },{ $new: true })
+                })
             }
                 else{
                     console.log(information)

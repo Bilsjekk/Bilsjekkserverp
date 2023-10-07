@@ -2,8 +2,15 @@ const express = require('express')
 const router = express.Router()
 const fs = require('fs')
 const path = require('path')
+const jwt = require('jsonwebtoken')
+const Manager = require('../models/Manager')
 
-router.get('/settings',(req,res) =>{
+
+router.get('/settings',async (req,res) =>{
+  let jwt_access_token = req.cookies.jwt_token
+    let decoded = jwt.verify(jwt_access_token,process.env.JWT_SECRET_KEY)
+    let manager = await Manager.findOne({ _id: decoded.id })
+
   let emailData = fs.readFileSync(path.join(__dirname,'../data/email.json'),{ 
     encoding: 'utf8',
     flag: 'r'
@@ -43,7 +50,8 @@ router.get('/settings',(req,res) =>{
     kilometer: applicationJson.kilometer,
     car: applicationJson.car,
     shift: applicationJson.shift,
-
+    isAdmin: decoded.role === 'admin',
+      permissions: manager.permissions
   })
 })
 

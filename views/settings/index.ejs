@@ -3,48 +3,11 @@
 <head>
     <title>Innstillinger</title>
     <!-- Include Bootstrap CSS -->
+ 
+
+    <%- include('../components/headers') %>
     <style>
-      .tab {
-  overflow: hidden;
-  border: 1px solid #ccc;
-  background-color: #f1f1f1;
-  position: sticky;
-  z-index: 99999999;
-  top: 0;
-}
-
-
-/* Style the buttons inside the tab */
-.tab button {
-  background-color: inherit;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 14px 16px;
-  transition: 0.3s;
-  font-size: 17px;
-}
-
-.tab button:hover {
-  background-color: #ddd;
-}
-
-/* Create an active/current tablink class */
-.tab button.active {
-  background-color: #ccc;
-}
-
-/* Style the tab content */
-.tabcontent {
-  display: none;
-}
-
-textarea{
-  white-space: pre-wrap;
-}
-
-.wrap-options{
+      .wrap-options{
   display: flex;
   flex-wrap: wrap;
 }
@@ -64,326 +27,366 @@ textarea{
 .selected-option{
   background-color: steelblue !important;
 }
-
-#zonesModal,#imeisModal{
-  z-index: 999999999
-}
     </style>
-    <link href="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <%- include('../components/navbar.ejs') %>
-    <div class="tab">
-      <button class="tablinks" onclick="openSection(event, 'general')">Generell</button>
-      <button class="tablinks" onclick="openSection(event, 'application')">Applikasjon</button>
-      <button class="tablinks" onclick="openSection(event, 'vps')">VPS</button>
-      <button class="tablinks" onclick="openSection(event, 'notifications')">Varsler</button>
-    </div>
+<body class="hold-transition sidebar-mini">
+  <div class="wrapper">
+    <%- include('../components/navbar') %>
+    <% if(isAdmin){ %>
+            <%- include('../components/sidebar') %> 
+        <% } else{%>
+            <%- include('../components/manager_sidebar', { permissions }) %> 
+        <% } %> 
 
-    <div class="mt-4"></div>
-    <div class="container tabcontent" id="general">        
-        <div class="card mb-4">
-            <div class="card-body">
-                <h2 class="card-title">Administratorlegitimasjon</h2>
-                <div>
-                    <div class="mb-3">
-                        <label for="adminUsername" class="form-label">Brukernavn</label>
-                        <input type="text" id="username" name="adminUsername" class="form-control" value="<%= username %>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="adminPassword" class="form-label">Passord</label>
-                        <input type="password" id="password" name="adminPassword" class="form-control" value="<%= password %>" required>
-                    </div>
-                    <div class="d-flex justify-content-end align-items-center">
-                      <button type="submit" class="btn btn-info" onclick="updateEmailAndPassword()">Lagre</button>
-                    </div>
-                  </div>
-            </div>
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-left">
+                <li class="breadcrumb-item"><a href="/">Hjem</a></li>
+                <li class="breadcrumb-item active">Innstillinger</li>
+                </ol>
+            </div><!-- /.col -->
+            </div><!-- /.row -->
+
+        </div><!-- /.container-fluid -->
         </div>
 
-        <div class="card mb-4">
-            <div class="card-body">
-                <h2 class="card-title">E-postmal</h2>
-                <p class="card-text">Bruk plassholdere for dynamisk innhold: {private}, {board}, {kilometers}, {pnid}</p>
-
-                <div>
-                    <div class="mb-3">
-                        <label for="emailSubject" class="form-label">Emne</label>
-                        <input type="text" id="emailSubject" name="emailSubject" class="form-control" value="<%= email_subject %>" required>
+        <div class="content">
+          <div class="row">
+              <div class="col-lg-12">
+                <div class="card card-primary card-tabs">
+                  <div class="card-header p-0 pt-1">
+                    <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+                      <li class="nav-item">
+                        <a class="nav-link active" id="custom-tabs-one-Hjem-tab" data-toggle="pill" href="#custom-tabs-one-Hjem" role="tab" aria-controls="custom-tabs-one-Hjem" aria-selected="true">Generell</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-one-profile-tab" data-toggle="pill" href="#custom-tabs-one-profile" role="tab" aria-controls="custom-tabs-one-profile" aria-selected="false">applikasjon</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-one-messages-tab" data-toggle="pill" href="#custom-tabs-one-messages" role="tab" aria-controls="custom-tabs-one-messages" aria-selected="false">VPS</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" id="custom-tabs-one-settings-tab" data-toggle="pill" href="#custom-tabs-one-settings" role="tab" aria-controls="custom-tabs-one-settings" aria-selected="false">Varsler</a>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="card-body">
+                    <div class="tab-content" id="custom-tabs-one-tabContent">
+                      <div class="tab-pane fade show active" id="custom-tabs-one-Hjem" role="tabpanel" aria-labelledby="custom-tabs-one-Hjem-tab">
+                        <div class="container tabcontent" id="general">        
+                  
+                          <div class="card mb-4">
+                              <div class="card-body">
+                                  <h2 class="card-title">E-postmal</h2>
+                                  <p class="card-text">Bruk plassholdere for dynamisk innhold: {private}, {board}, {kilometers}, {pnid}</p>
+                  
+                                  <div>
+                                      <div class="mb-3">
+                                          <label for="emailSubject" class="form-label">Emne</label>
+                                          <input type="text" id="emailSubject" name="emailSubject" class="form-control" value="<%= email_subject %>" required>
+                                      </div>
+                                      <div class="mb-3">
+                                          <label for="emailText" class="form-label" id="emailSubject">Tekst</label>
+                                          <textarea id="emailText" name="emailText" class="form-control" rows="6" required><%= email_template %></textarea>
+                                      </div>
+                                    </div>
+                                  <div class="preview mt-3">
+                                      <h4 class="card-title email-preview-subject"></h4>
+                                      <p class="card-text email-preview-text"></p>
+                                  </div>
+                  
+                                  <div class="d-flex justify-content-end align-items-center">
+                                    <button type="submit" class="btn btn-info btn-sm" onclick="updateEmailTemplate()">Lagre</button>
+                                  </div>
+                              </div>
+                          </div>
+                  
+                          <div class="card">
+                              <div class="card-body">
+                                  <h2 class="card-title">SMS-mal</h2>
+                                  <p class="card-text">Bruk plassholdere for dynamisk innhold: {private}, {board}, {kilometers}, {pnid}</p>
+                                  <div>
+                                      <div class="mb-3">
+                                          <label for="smsText" class="form-label">Tekst</label>
+                                          <textarea id="smsText" name="smsText" class="form-control" rows="6" required><%= sms_template %></textarea>
+                                      </div>  
+                                  </div>
+                                  <div class="preview mt-3">
+                                      <p class="card-text sms-template-preview"></p>
+                                  </div>
+                  
+                                  <div class="d-flex justify-content-end align-items-center">
+                                    <button type="submit" class="btn btn-info btn-sm" onclick="updateSmsTemplate()">Lagre</button>
+                                  </div>
+                              </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="tab-pane fade" id="custom-tabs-one-profile" role="tabpanel" aria-labelledby="custom-tabs-one-profile-tab">
+                        <div class="container tabcontent" id="application">
+                          <div class="card mb-4">
+                              <div class="card-body">
+                                  <h2 class="card-title">Skift Velg Informasjon</h2>
+                                  <div>
+                                      <div class="mb-3">
+                                          <label for="shiftSelectText" class="form-label">Tekst</label>
+                                          <textarea id="shiftSelectText" name="shiftSelectText" class="form-control" rows="6" required><%= shift %></textarea>
+                                      </div>
+                                  </div>
+                                  <div class="d-flex justify-content-end align-items-center">
+                                      <button type="submit" class="btn btn-info btn-sm" onclick="updateShiftSelectText()">Lagre</button>
+                                  </div>
+                              </div>
+                          </div>
+                      
+                          <div class="card mb-4">
+                              <div class="card-body">
+                                  <h2 class="card-title">Informasjon om bilvalg</h2>
+                                  <div>
+                                      <div class="mb-3">
+                                          <label for="carSelectText" class="form-label">Tekst</label>
+                                          <textarea id="carSelectText" name="carSelectText" class="form-control" rows="6" required><%= car %></textarea>
+                                      </div>
+                                  </div>
+                                  <div class="d-flex justify-content-end align-items-center">
+                                      <button type="submit" class="btn btn-info btn-sm" onclick="updateCarSelectText()">Lagre</button>
+                                  </div>
+                              </div>
+                          </div>
+                      
+                          <div class="card mb-4">
+                              <div class="card-body">
+                                  <h2 class="card-title">Service Kilometer Beskrivelse</h2>
+                                  <div>
+                                      <div class="mb-3">
+                                          <label for="serviceKilometersText" class="form-label">Tekst</label>
+                                          <textarea id="serviceKilometersText" name="serviceKilometersText" class="form-control" rows="6"><%= kilometer %></textarea>
+                                      </div>
+                                  </div>
+                                  <div class="d-flex justify-content-end align-items-center">
+                                      <button type="submit" class="btn btn-info btn-sm" onclick="updateServiceKilometersText()">Lagre</button>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      </div>
+                      <div class="tab-pane fade" id="custom-tabs-one-messages" role="tabpanel" aria-labelledby="custom-tabs-one-messages-tab">
+                        <div class="container tabcontent" id="vps">
+                          <div class="card mb-4 p-2">
+                            <div class="card-title">
+                              VPS ledelse
+                            </div>
+                            <div class="card-body d-flex align-items-center justify-content-end">
+                              <button class="btn btn-info btn-sm mr-2" onclick="updateNordic()">
+                                Oppdater Nordic
+                              </button>  
+                              
+                              <button class="btn btn-info btn-sm" onclick="restartVPS()">
+                                Start VPS på nytt
+                              </button>
+                            </div>
+                        </div>
+                      
+                        <div class="card mb-4 p-2">
+                          <div class="card-title">
+                            Sikkerhetskopiering av data
+                          </div>
+                          <div class="card-body d-flex align-items-center justify-content-end">
+                            <button onclick="prepareBackup()" class="btn btn-info btn-sm">Forbered sikkerhetskopiering</button>
+                          </div>
+                        </div>
+                        </div>
+                      </div>
+                      <div class="tab-pane fade" id="custom-tabs-one-settings" role="tabpanel" aria-labelledby="custom-tabs-one-settings-tab">
+                        <div class="container tabcontent">
+                          <div class="d-flex justify-content-end p-2 mb-2 btn-group">
+                            <button data-toggle="modal" data-target="#createIMEIModal" class="btn btn-info me-2 btn-sm">
+                              <i class="fa fa-plus"></i>
+                              <span>Ny IMEI</span>
+                            </button>
+                            <button data-toggle="modal" data-target="#createZoneModal" class="btn btn-info me-2 btn-sm">
+                              <i class="fa fa-plus"></i>
+                              <span>Ny sone</span>
+                            </button>
+                            <a class="btn btn-dark me-2 btn-sm" href="/zones">
+                              <i class="fa fa-info"></i>
+                              <span>Administrer soner</span>
+                            </a>
+                            <a class="btn btn-dark btn-sm" href="/imeis">
+                              <i class="fa fa-info"></i>
+                              <span>Administrer IMEIS</span>
+                            </a>
+                          </div>
+                      
+                          <div class="card p-4 mb-2">
+                            <div class="card-title">
+                              Send varsler for alle brukere/enheter
+                            </div>
+                            <div class="form-group mb-2">
+                              <label for="all-title">Enter Title</label>
+                              <input type="text" placeholder="Title" id="all-title" class="form-control"/>
+                            </div>
+                            <div class="form-group mb-2">
+                              <label for="all-body">Skriv inn innhold</label>
+                              <input type="text" placeholder="Innhold" id="all-body" class="form-control"/>
+                            </div>
+                            <div class="card-body d-flex justify-content-end ">
+                              <button onclick="sendNotification()" class="btn btn-sm btn-info">Send varsler</button>
+                            </div>
+                          </div>
+                      
+                          <div class="card p-2 mb-2">
+                            <div class="card-body">
+                              <div class="card-title">Velg Enhet for å sende varsel</div>
+                              <div class="form-group mb-2">
+                                <label for="imei-title">Skriv inn tittel</label>
+                                <input type="text" placeholder="Tittel" id="imei-title" class="form-control"/>
+                              </div>
+                              <div class="form-group mb-2">
+                                <label for="imei-body">Skriv inn innhold</label>
+                                <input type="text" placeholder="Innhold" id="imei-body" class="form-control"/>
+                              </div>
+                              <div class="wrap-options" id="imei-options">
+                                  
+                              </div>
+                              <div class="d-flex justify-content-end">
+                                <button onclick="sendNotificationToDevice()" class="btn btn-sm btn-info">Send varsler</button>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div class="card p-2 mb-2">
+                            <div class="card-body">
+                              <div class="card-title">Velg Sone for å sende varsler</div>
+                              <div class="form-group mb-2">
+                                <label for="zone-title">Skriv inn tittel</label>
+                                <input type="text" placeholder="Tittel" id="zone-title" class="form-control"/>
+                              </div>
+                              <div class="form-group mb-2">
+                                <label for="zone-body">Skriv inn innhold</label>
+                                <input type="text" placeholder="Innhold" id="zone-body" class="form-control"/>
+                              </div>
+                              <div class="form-group">
+                                <label for="zoneSelect">Velg Sone</label>
+                                <div class="wrap-options" id="zones-options">
+                                  
+                                </div>
+                              </div>
+                              <div class="d-flex justify-content-end">
+                                <button onclick="sendNotificationsToZones()" class="btn btn-sm btn-info">Send varsler</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="emailText" class="form-label" id="emailSubject">Tekst</label>
-                        <textarea id="emailText" name="emailText" class="form-control" rows="6" required><%= email_template %></textarea>
-                    </div>
                   </div>
-                <div class="preview mt-3">
-                    <h4 class="card-title email-preview-subject"></h4>
-                    <p class="card-text email-preview-text"></p>
+                  <!-- /.card -->
                 </div>
-
-                <div class="d-flex justify-content-end align-items-center">
-                  <button type="submit" class="btn btn-info" onclick="updateEmailTemplate()">Lagre</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
-                <h2 class="card-title">SMS-mal</h2>
-                <p class="card-text">Bruk plassholdere for dynamisk innhold: {private}, {board}, {kilometers}, {pnid}</p>
-                <div>
-                    <div class="mb-3">
-                        <label for="smsText" class="form-label">Tekst</label>
-                        <textarea id="smsText" name="smsText" class="form-control" rows="6" required><%= sms_template %></textarea>
-                    </div>  
-                </div>
-                <div class="preview mt-3">
-                    <p class="card-text sms-template-preview"></p>
-                </div>
-
-                <div class="d-flex justify-content-end align-items-center">
-                  <button type="submit" class="btn btn-info" onclick="updateSmsTemplate()">Lagre</button>
-                </div>
-            </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="container tabcontent" id="application">
-      <div class="card mb-4">
-          <div class="card-body">
-              <h2 class="card-title">Skift Velg Informasjon</h2>
-              <div>
-                  <div class="mb-3">
-                      <label for="shiftSelectText" class="form-label">Tekst</label>
-                      <textarea id="shiftSelectText" name="shiftSelectText" class="form-control" rows="6" required><%= shift %></textarea>
-                  </div>
-              </div>
-              <div class="d-flex justify-content-end align-items-center">
-                  <button type="submit" class="btn btn-info" onclick="updateShiftSelectText()">Lagre</button>
-              </div>
-          </div>
-      </div>
-  
-      <div class="card mb-4">
-          <div class="card-body">
-              <h2 class="card-title">Informasjon om bilvalg</h2>
-              <div>
-                  <div class="mb-3">
-                      <label for="carSelectText" class="form-label">Tekst</label>
-                      <textarea id="carSelectText" name="carSelectText" class="form-control" rows="6" required><%= car %></textarea>
-                  </div>
-              </div>
-              <div class="d-flex justify-content-end align-items-center">
-                  <button type="submit" class="btn btn-info" onclick="updateCarSelectText()">Lagre</button>
-              </div>
-          </div>
-      </div>
-  
-      <div class="card mb-4">
-          <div class="card-body">
-              <h2 class="card-title">Service Kilometer Beskrivelse</h2>
-              <div>
-                  <div class="mb-3">
-                      <label for="serviceKilometersText" class="form-label">Tekst</label>
-                      <textarea id="serviceKilometersText" name="serviceKilometersText" class="form-control" rows="6"><%= kilometer %></textarea>
-                  </div>
-              </div>
-              <div class="d-flex justify-content-end align-items-center">
-                  <button type="submit" class="btn btn-info" onclick="updateServiceKilometersText()">Lagre</button>
-              </div>
-          </div>
-      </div>
-  </div>
-
-  <div class="container tabcontent" id="vps">
-    <div class="card mb-4 p-2">
-      <div class="card-title">
-        VPS ledelse
-      </div>
-      <div class="card-body d-flex align-items-center justify-content-end">
-        <button class="btn btn-info me-2" onclick="updateNordic()">
-          Oppdater Nordic
-        </button>  
-        
-        <button class="btn btn-info" onclick="restartVPS()">
-          Start VPS på nytt
+                    
+              
+              
+              
+               
+              
+                  <!-- Create IMEI Modal -->
+              <div class="modal fade" id="createIMEIModal" tabindex="-1" aria-labelledby="createIMEIModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="createIMEIModalLabel">Opprett IMEI</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
         </button>
-      </div>
-  </div>
-
-  <div class="card mb-4 p-2">
-    <div class="card-title">
-      Sikkerhetskopiering av data
-    </div>
-    <div class="card-body d-flex align-items-center justify-content-end">
-      <button onclick="prepareBackup()" class="btn btn-info">Forbered sikkerhetskopiering</button>
-    </div>
-  </div>
-  </div>
-
-  <div class="container tabcontent" id="notifications">
-    <div class="d-flex justify-content-end p-2 mb-2">
-      <button data-toggle="modal" data-target="#createIMEIModal" class="btn btn-info me-2">Ny IMEI</button>
-      <button data-toggle="modal" data-target="#createZoneModal" class="btn btn-info me-2">Ny sone</button>
-      <a class="btn btn-dark me-2" href="/zones">Administrer soner</a>
-      <a class="btn btn-dark" href="/imeis">Administrer IMEIS</a>
-    </div>
-
-    <div class="card p-4 mb-2">
-      <div class="card-title">
-        Send varsler for alle brukere/enheter
-      </div>
-      <div class="form-group mb-2">
-        <label for="all-title">Enter Title</label>
-        <input type="text" placeholder="Title" id="all-title" class="form-control"/>
-      </div>
-      <div class="form-group mb-2">
-        <label for="all-body">Skriv inn innhold</label>
-        <input type="text" placeholder="Innhold" id="all-body" class="form-control"/>
-      </div>
-      <div class="card-body d-flex justify-content-end">
-        <button onclick="sendNotification()" class="btn btn-info">Send varsler</button>
-      </div>
-    </div>
-
-    <div class="card p-2 mb-2">
-      <div class="card-body">
-        <div class="card-title">Velg Enhet for å sende varsel</div>
-        <div class="form-group mb-2">
-          <label for="imei-title">Skriv inn tittel</label>
-          <input type="text" placeholder="Tittel" id="imei-title" class="form-control"/>
-        </div>
-        <div class="form-group mb-2">
-          <label for="imei-body">Skriv inn innhold</label>
-          <input type="text" placeholder="Innhold" id="imei-body" class="form-control"/>
-        </div>
-        <div class="wrap-options" id="imei-options">
-            
-        </div>
-        <div class="d-flex justify-content-end">
-          <button onclick="sendNotificationToDevice()" class="btn btn-info">Send varsler</button>
-        </div>
-      </div>
-    </div>
-    
-    <div class="card p-2 mb-2">
-      <div class="card-body">
-        <div class="card-title">Velg Sone for å sende varsler</div>
-        <div class="form-group mb-2">
-          <label for="zone-title">Skriv inn tittel</label>
-          <input type="text" placeholder="Tittel" id="zone-title" class="form-control"/>
-        </div>
-        <div class="form-group mb-2">
-          <label for="zone-body">Skriv inn innhold</label>
-          <input type="text" placeholder="Innhold" id="zone-body" class="form-control"/>
-        </div>
-        <div class="form-group">
-          <label for="zoneSelect">Velg Sone</label>
-          <div class="wrap-options" id="zones-options">
-            
-          </div>
-        </div>
-        <div class="d-flex justify-content-end">
-          <button onclick="sendNotificationsToZones()" class="btn btn-info">Send varsler</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-<!-- Success Modal -->
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="successModalLabel">Suksess</h5>
-              <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            Endringene er lagret!
-          </div>
-      </div>
-  </div>
-  </div>
-
-    <br>
-    <br>
-
-    <!-- Create IMEI Modal -->
-<div class="modal fade" id="createIMEIModal" tabindex="-1" aria-labelledby="createIMEIModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="createIMEIModalLabel">Opprett IMEI</h5>
-              <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              <form>
-                  <div class="mb-3">
-                      <label for="imeiInput" class="form-label">IMEI-nummer</label>
-                      <input type="text" class="form-control" id="imeiInput" placeholder="Skriv inn IMEI-nummer" required>
-                  </div>
-
-                  <div class="mb-3">
-                    <label for="imeiName" class="form-label">IMEI-navn</label>
-                    <input type="text" class="form-control" id="imeiName" placeholder="Skriv inn IMEI-navn" required>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="mb-3">
+                                    <label for="imeiInput" class="form-label">IMEI-nummer</label>
+                                    <input type="text" class="form-control" id="imeiInput" placeholder="Skriv inn IMEI-nummer" required>
+                                </div>
+              
+                                <div class="mb-3">
+                                  <label for="imeiName" class="form-label">IMEI-navn</label>
+                                  <input type="text" class="form-control" id="imeiName" placeholder="Skriv inn IMEI-navn" required>
+                              </div>
+              
+                                <div class="mb-3">
+                                  <label for="zone" class="form-label">Velg Sone</label>
+                                  <select id="zone" name="zone" class="form-select custom-select" required>
+                                      <!-- Options will be added dynamically using JavaScript -->
+                                  </select>
+                              </div>
+                                <!-- Add more input fields for other IMEI-related data as needed -->
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Lukk</button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveIMEIData()">Lagre</button>
+                        </div>
+                    </div>
                 </div>
-
-                  <div class="mb-3">
-                    <label for="zone" class="form-label">Velg Sone</label>
-                    <select id="zone" name="zone" class="form-select" required>
-                        <!-- Options will be added dynamically using JavaScript -->
-                    </select>
+              </div>
+              
+              <!-- Create Zone Modal -->
+              <div class="modal fade" id="createZoneModal" tabindex="-1" aria-labelledby="createZoneModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="createZoneModalLabel">Opprett sone</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="mb-3">
+                                    <label for="zoneNameInput" class="form-label">Sonenavn</label>
+                                    <input type="text" class="form-control" id="zoneNameInput" placeholder="Enter zone name" required>
+                                </div>
+                                <!-- Add more input fields for other zone-related data as needed -->
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Lukk</button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveZoneData()">Lagre</button>
+                        </div>
+                    </div>
                 </div>
-                  <!-- Add more input fields for other IMEI-related data as needed -->
-              </form>
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Lukk</button>
-              <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveIMEIData()">Lagre</button>
+              </div>
+              </div>
           </div>
       </div>
-  </div>
-</div>
+    </div>
+    <%- include('../components/footer') %>
 
-<!-- Create Zone Modal -->
-<div class="modal fade" id="createZoneModal" tabindex="-1" aria-labelledby="createZoneModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="createZoneModalLabel">Opprett sone</h5>
-              <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              <form>
-                  <div class="mb-3">
-                      <label for="zoneNameInput" class="form-label">Sonenavn:</label>
-                      <input type="text" class="form-control" id="zoneNameInput" placeholder="Enter zone name" required>
-                  </div>
-                  <!-- Add more input fields for other zone-related data as needed -->
-              </form>
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Lukk</button>
-              <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveZoneData()">Lagre</button>
-          </div>
-      </div>
   </div>
-</div>
+
 
 
     
-    <!-- Include Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.xyz/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <%- include('../components/scripts') %>
 
+  <script>
+    var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+  </script>
     <script>
-      // Function to populate the zone dropdown with data from /api/zones
+      // Function to populate the zone dropdown with data from /admin/api/zones
 async function populateZoneDropdown() {
             try {
                 const zoneDropdown = document.getElementById('zone');
 
-                // Fetch zones data from /api/zones
-                const response = await fetch('/api/zones');
+                // Fetch zones data from /admin/api/zones
+                const response = await fetch('/admin/api/zones');
                 const zones = await response.json();
 
                 // Populate the dropdown options
@@ -411,8 +414,8 @@ async function populateZoneDropdown() {
     let zonesOptions = document.getElementById('zones-options')
     let imeiOptions = document.getElementById('imei-options')
   
-    let zones = await (await fetch('/api/zones')).json()
-    let imeis = await (await fetch('/api/imeis')).json()
+    let zones = await (await fetch('/admin/api/zones')).json()
+    let imeis = await (await fetch('/admin/api/imeis')).json()
 
   console.log(zones);
   console.log(imeis);
@@ -471,7 +474,7 @@ const imeiInput = document.getElementById('imeiInput').value;
 const zone = document.getElementById('zone').value;
 
 
-let response = await fetch('/api/imeis',{
+let response = await fetch('/admin/api/imeis',{
   method: 'POST',
   headers:{
     'Content-Type': 'application/json; charset=utf-8'
@@ -483,17 +486,24 @@ let response = await fetch('/api/imeis',{
 })
 
 if(response.status == 200){
-  $('#createIMEIModal').modal('hide');
-  $('#successModal').modal('show');
+  Toast.fire({
+    icon: 'success',
+    title: 'Imei ble reddet'
+  })
   setTimeout(() =>{
     location.reload()
-  },2000)
+  },3000)
 }else{
-  $('#createIMEIModal').modal('hide');
-  alert('Nothing')
+  Toast.fire({
+    icon: 'error',
+    title: await response.json()
+  })
 }
         }catch(error){
-          alert(error.message)          
+          Toast.fire({
+            icon: 'error',
+            title: error.message
+          })        
         }
       }
   
@@ -502,7 +512,7 @@ if(response.status == 200){
           // Retrieve data from input fields
           const zoneInput = document.getElementById('zoneNameInput').value;
 
-          let response = await fetch('/api/zones',{
+          let response = await fetch('/admin/api/zones',{
             method: 'POST',
             headers:{
               'Content-Type': 'application/json; charset=utf-8'
@@ -513,17 +523,24 @@ if(response.status == 200){
           })
 
           if(response.status == 200){
-            $('#createZoneModal').modal('hide');
-            $('#successModal').modal('show');
+            Toast.fire({
+              icon: 'success',
+              title: 'sonen ble lagret'
+            })
             setTimeout(() =>{
               location.reload()
-            },2000)
+            },3000)
           }else{
-            $('#createZoneModal').modal('hide');
-            alert('Nothing')
+            Toast.fire({
+              icon: 'error',
+              title: await response.json()
+            })
           }
           }catch(error){
-            alert(error.message)
+            Toast.fire({
+              icon: 'error',
+              title: error.message
+            })
         }
       }
 </script>
@@ -532,7 +549,7 @@ if(response.status == 200){
     <script>
       async function sendNotification(){
         try{
-          let response = await fetch('/api/notifications/users',{
+          let response = await fetch('/admin/api/notifications/users',{
             method:'POST',
             headers:{
               'Content-Type': 'application/json; charset=utf-8'
@@ -544,15 +561,16 @@ if(response.status == 200){
           })
 
           if(response.status == 200){
-            $('#successModal').modal('show');
-            setTimeout(() =>{
-              $('#successModal').modal('hide')
-            },1000)
+            Toast.fire({
+              icon: 'success',
+              title: 'varsel ble sendt til alle enheter og brukere'
+            })
           }
-
-          console.log(response.body);
         }catch(error){
-          console.log(error)
+          Toast.fire({
+            icon: 'error',
+            title: error.message
+          })
         }
       }
 
@@ -567,7 +585,7 @@ if(response.status == 200){
           }
 
           
-          let response = await fetch('/api/notifications/zones',{
+          let response = await fetch('/admin/api/notifications/zones',{
             method:'POST',
             headers:{
               'Content-Type': 'application/json; charset=utf-8'
@@ -580,13 +598,16 @@ if(response.status == 200){
           })
 
           if(response.status == 200){
-            $('#successModal').modal('show');
-            setTimeout(() =>{
-              $('#successModal').modal('hide')
-            },1000)
+            Toast.fire({
+              icon: 'success',
+              title: 'varsel ble sendt til alle valgte soner'
+            })
           }
         }catch(error){
-          console.log(error)
+          Toast.fire({
+              icon: 'error',
+              title: error.message
+            })
         }
       }
 
@@ -599,7 +620,7 @@ if(response.status == 200){
             toSendImeis.push(finalSelectedImeis.item(i).textContent)
           }
 
-          let response = await fetch('/api/notifications/devices',{
+          let response = await fetch('/admin/api/notifications/devices',{
             method:'POST',
             headers:{
               'Content-Type': 'application/json; charset=utf-8'
@@ -612,37 +633,61 @@ if(response.status == 200){
           })
 
           if(response.status == 200){
-            $('#successModal').modal('show');
-            setTimeout(() =>{
-              $('#successModal').modal('hide')
-            },1000)
+            Toast.fire({
+              icon: 'success',
+              title: 'varselet ble sendt til alle valgte enheter'
+            })
           }
         }catch(error){
-          console.log(error)
+          Toast.fire({
+            icon: 'error',
+            title: error.message
+          })
         }
       }
 
     </script>
     <script>
       async function restartVPS() {
-        await fetch('/api/vps/restart').then(() =>{
-          $('#successModal').modal('show');
-            setTimeout(() => location.reload(), 3000);
-        }).catch(err => console.log(err))
+        await fetch('/admin/api/vps/restart').then(() =>{
+          Toast.fire({
+            icon: 'success',
+            title: 'vps-maskinen ble startet på nytt'
+          })
+        }).catch(err => {
+          Toast.fire({
+              icon: 'error',
+              title: err.message
+            })
+        })
       }
 
       async function updateNordic() {
-        await fetch('/api/vps/update').then(() =>{
-          $('#successModal').modal('show');
-            setTimeout(() => location.reload(), 3000);
-        }).catch(err => console.log(err))
+        await fetch('/admin/api/vps/update').then(() =>{
+          Toast.fire({
+            icon: 'success',
+            title: 'Kontrollpanelet ble oppdatert'
+          })
+        }).catch(err => {
+          Toast.fire({
+              icon: 'error',
+              title: err.message
+            })
+        })
       }
 
       async function prepareBackup(){
-        await fetch('/api/vps/backup/prepare').then(() =>{
-          $('#successModal').modal('show');
-            setTimeout(() => location.reload(), 3000);
-        }).catch(err => console.log(err))
+        await fetch('/admin/api/vps/backup/prepare').then(() =>{
+          Toast.fire({
+            icon: 'success',
+            title: 'Backup is done'
+          })
+        }).catch(err =>{
+          Toast.fire({
+              icon: 'error',
+              title: err.message
+            })
+        })
       }
 
     </script>
@@ -650,7 +695,7 @@ if(response.status == 200){
       async function updateShiftSelectText(){
         try{
           let shiftText = document.getElementById('shiftSelectText').value
-          let response = await fetch('/api/settings/shift',{
+          let response = await fetch('/admin/api/settings/shift',{
             method:'PUT',
             body:JSON.stringify({
               shift: shiftText
@@ -661,20 +706,23 @@ if(response.status == 200){
           })
 
           if(response.status == 200){
-            $('#successModal').modal('show');
-            setTimeout(() => location.reload(), 2000);
-          }else{
-            alert('something went wrong')
+            Toast.fire({
+              icon: 'success',
+              title: 'skiftinformasjon oppdatert'
+            })
           }
         }catch(error){
-          alert(error.message)
+          Toast.fire({
+              icon: 'error',
+              title: error.message
+            })
         }
       }
 
       async function updateCarSelectText(){
         try{
           let carText = document.getElementById('carSelectText').value
-          let response = await fetch('/api/settings/car',{
+          let response = await fetch('/admin/api/settings/car',{
             method:'PUT',
             body:JSON.stringify({
               car: carText
@@ -685,20 +733,23 @@ if(response.status == 200){
           })
 
           if(response.status == 200){
-            $('#successModal').modal('show');
-            setTimeout(() => location.reload(), 2000);
-          }else{
-            alert('something went wrong')
+            Toast.fire({
+              icon: 'success',
+              title: 'Bilinformasjonen ble oppdatert'
+            })
           }
         }catch(error){
-          alert(error.message)
+          Toast.fire({
+              icon: 'error',
+              title: error.message
+            })
         }
       }
 
       async function updateServiceKilometersText(){
         try{
           let serviceKilometerText = document.getElementById('serviceKilometersText').value
-          let response = await fetch('/api/settings/kilometer',{
+          let response = await fetch('/admin/api/settings/kilometer',{
             method:'PUT',
             body:JSON.stringify({
               kilometer: serviceKilometerText
@@ -709,13 +760,16 @@ if(response.status == 200){
           })
 
           if(response.status == 200){
-            $('#successModal').modal('show');
-            setTimeout(() => location.reload(), 2000);
-          }else{
-            alert('something went wrong')
+            Toast.fire({
+              icon: 'success',
+              title: 'Service Kilometer informasjon ble oppdatert'
+            })
           }
         }catch(error){
-          alert(error.message)
+          Toast.fire({
+              icon: 'error',
+              title: error.message
+            })
         }
       }
 
@@ -725,23 +779,6 @@ if(response.status == 200){
     <script>
 
 
-
-document.getElementById('general').style.display = "block";
-document.getElementById('general').className += " active";
-
-function openSection(evt, cityName) {
-  var i, tabcontent, tablinks;
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
-  document.getElementById(cityName).style.display = "block";
-  evt.currentTarget.className += " active";
-}
 
 
       const emailText = document.getElementById('emailText');
@@ -807,30 +844,9 @@ function openSection(evt, cityName) {
       });
 
 
-      async function updateEmailAndPassword(){
-        let username = document.getElementById('username')
-        let password = document.getElementById('password')
-
-        let response = await fetch('/api/settings/credentials',{
-          method:'PUT',
-          headers:{
-            'Content-Type': 'application/json; charset=utf-8'
-          },
-          body:JSON.stringify({
-            username: username.value,
-            password: password.value
-          })
-        })
-
-        if(response.status == 200){
-          $('#successModal').modal('show');
-                setTimeout(() => location.reload(), 2000);
-        }
-      }
-
       async function updateEmailTemplate(){
 
-        let response = await fetch('/api/settings/emailTemplate',{
+        let response = await fetch('/admin/api/settings/emailTemplate',{
           method:'PUT',
           headers:{
             'Content-Type': 'application/json; charset=utf-8'
@@ -842,15 +858,17 @@ function openSection(evt, cityName) {
         })
 
         if(response.status == 200){
-          $('#successModal').modal('show');
-                setTimeout(() => location.reload(), 2000);
+          Toast.fire({
+            icon: 'success',
+            title: 'E-postmalen ble oppdatert'
+          })
         }
       }
 
       async function updateSmsTemplate(){
         let text = document.querySelector('.sms-template-preview')
 
-        let response = await fetch('/api/settings/smsTemplate',{
+        let response = await fetch('/admin/api/settings/smsTemplate',{
           method:'PUT',
           headers:{
             'Content-Type': 'application/json; charset=utf-8'
@@ -861,8 +879,10 @@ function openSection(evt, cityName) {
         })
 
         if(response.status == 200){
-          $('#successModal').modal('show');
-                setTimeout(() => location.reload(), 2000);
+          Toast.fire({
+            icon: 'success',
+            title: 'SMS-malen ble oppdatert'
+          })
         }
       }
   </script>

@@ -1,195 +1,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Slettinger</title>
+    <title>Skanner</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf_viewer.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-
+    <%- include('../components/headers') %>
     <style>
-        body {
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 0;
-        }
-
-        .pdf-container {
-            display: flex;
-            flex-direction: column;
+        body{
+            width: 100vw;
             height: 100vh;
-        }
-
-        .pdf-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-        }
-
-        .pdf-viewer {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
-
-        .pdf-page {
-            display: flex;
-            width: 100%;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            background-color: white;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .pdf-controls a {
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 500;
-        }
-
-        .pdf-toolbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px;
-            background-color: #f5f5f5;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .pdf-toolbar > :last-child{
-            flex-grow: 1;
-            display: flex;
-            justify-content: end;
-            align-items: center;
-        }
-
-        .pdf-toolbar > :first-child{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-grow: 1;
-        }
-
-        .toolbarButton {
-            width: 30px;
-            height: 30px;
-            background-color: transparent;
-            border: none;
-            outline: none;
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            .pdf-container {
-                width: 100%; /* Set container width to 100% on smaller screens */
-            }
-        }
-
-        @media print {
-            /* Define print-specific styles here */
-            body {
-                background-color: white; /* Set background color for print */
-            }
-            .pdf-container {
-                display: block; /* Change to block for print */
-                width: 100%; /* Set container width to 100% for print */
-                margin: 0; /* Remove margin for print */
-            }
-            .pdf-header, .pdf-toolbar {
-                display: none; /* Hide header and toolbar for print */
-            }
-            .pdf-page {
-                background-color: white; /* Set background color for print */
-                border: none; /* Remove border for print */
-                box-shadow: none; /* Remove box shadow for print */
-            }
-            .pageNumber, .toolbarButton {
-                display: none; /* Hide page number and toolbar buttons for print */
-            }
         }
     </style>
 </head>
-<body>
-<%- include('../components/navbar.ejs') %>
-<div class="pdf-container">
-    <div class="pdf-toolbar">
-        <div>
-            <button id="previous" class="toolbarButton pageUp">Tidligere</button>
-            <div class="pageNumber">
-                Side <span id="pageNumber">1</span> av <span id="numPages">-</span>
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+        <% if(isAdmin){ %>
+            <%- include('../components/sidebar') %> 
+        <% } else{%>
+            <%- include('../components/manager_sidebar', { permissions }) %> 
+        <% } %> 
+
+        <div class="content-wrapper">
+            <div class="content" style="height: 100vh;">
+            <iframe src="/plugins/pdfjs/web/viewer.html?file=<%= link %>" frameborder="0" style="overflow:hidden;height:100%;width:100%" height="100%" width="100%"></iframe>
             </div>
-            <button id="next" class="toolbarButton pageDown">Neste</button>
         </div>
 
-        <div>
-            <a href="<%= scan.link %>" download style="margin-right: 12px;">Nedlasting</a>
-            <a href="<%= scan.link %>" >Skrive ut</a>
-        </div>
+        <%- include('../components/footer') %>
     </div>
-
-    <div class="pdf-viewer" id="pdf-container">
-
-    </div>
-</div>
-<script>
-    const pdfUrl = "<%= scan.link %>"; // Replace with the actual PDF URL
-    const pdfContainer = document.getElementById('pdf-container');
-    let pageNum = 1;
-    let pdfDoc;
-
-    pdfjsLib.getDocument(pdfUrl).promise.then(doc => {
-        pdfDoc = doc;
-        const numPages = pdfDoc.numPages;
-        document.querySelector('#numPages').textContent = numPages;
-        renderPage(pageNum);
-    });
-
-    const previousButton = document.getElementById('previous');
-    const nextButton = document.getElementById('next');
-    const pageNumberSpan = document.getElementById('pageNumber');
-    const numPagesSpan = document.getElementById('numPages');
-
-    previousButton.addEventListener('click', showPreviousPage);
-    nextButton.addEventListener('click', showNextPage);
-
-    function showPreviousPage() {
-        if (pageNum <= 1) return;
-        pageNum--;
-        renderPage(pageNum);
-    }
-
-    function showNextPage() {
-        if (pageNum >= pdfDoc.numPages) return;
-        pageNum++;
-        renderPage(pageNum);
-    }
-
-    function renderPage(pageNumber) {
-        pdfContainer.innerHTML = '';
-        pdfDoc.getPage(pageNumber).then(page => {
-            const viewport = page.getViewport({ scale: 0.4 });
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-
-            const renderTask = page.render({ canvasContext: context, viewport });
-            renderTask.promise.then(() => {
-                const pageDiv = document.createElement('div');
-                pageDiv.className = 'pdf-page';
-                pageDiv.appendChild(canvas);
-                pdfContainer.appendChild(pageDiv);
-
-                console.log(`Side ${pageNumber} gjengitt`);
-                pageNumberSpan.textContent = pageNumber;
-            });
-        });
-    }
-</script>
+    
+    <%- include('../components/scripts.ejs') %>
 </body>
 </html>

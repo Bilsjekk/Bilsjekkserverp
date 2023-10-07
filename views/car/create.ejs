@@ -5,44 +5,158 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Legg ny bil</title>
     <!-- Add Bootstrap CSS link -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <%- include('../components/headers.ejs') %>
+      <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <!-- Toastr -->
+    <link rel="stylesheet" href="/plugins/toastr/toastr.min.css">
 </head>
-<body>
-<%- include('../components/navbar') %>
-<div class="mt-4"></div>
-<div class="container mt-5">
-    <h1 class="text-center">Legg ny bil</h1>
-    <div id="infoBox" class="alert" role="alert" style="display: none;"></div>
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <form id="createCarForm">
-                <div class="mb-3">
-                    <input type="text" class="form-control" id="boardNumber" name="boardNumber" placeholder="Regnr." required>
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+        <%- include('../components/navbar') %>
+        <% if(isAdmin){ %>
+            <%- include('../components/sidebar') %> 
+        <% } else{%>
+            <%- include('../components/manager_sidebar', { permissions }) %> 
+        <% } %>  
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                <div class="col-sm-6">
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/">Hjem</a></li>
+                    <li class="breadcrumb-item"><a href="/cars">Biler</a></li>
+                    <li class="breadcrumb-item active">Skape</li>
+                    </ol>
+                </div><!-- /.col -->
+                </div><!-- /.row -->
+
+            </div><!-- /.container-fluid -->
+            </div>
+
+            <div class="content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                              <h3 class="card-title d-flex justify-content-between align-items-center">
+                                Lag bil
+                              </h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                                <div class="container-fluid">
+                                    <div id="infoBox" class="alert" role="alert" style="display: none;"></div>
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-9">
+                                            <form id="createCarForm">
+                                                <div class="input-group form-group mb-3">
+                                                    <div class="input-group-prepend">
+                                                      <span class="input-group-text"><i class="fa fa-car"></i></span>
+                                                    </div>
+                                                    <input type="text" class="form-control" placeholder="Styrenummer" name="boardNumber" id="boardNumber">
+                                                  </div>
+
+
+                                                  <div class="input-group form-group mb-3">
+                                                    <div class="input-group-prepend">
+                                                      <span class="input-group-text"><i class="fa fa-key"></i></span>
+                                                    </div>
+                                                    <input type="text" class="form-control" placeholder="Privat nummer" name="privateNumber" id="privateNumber">
+                                                  </div>
+
+                                                  <div class="input-group form-group mb-3">
+                                                    <div class="input-group-prepend">
+                                                      <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                                                    </div>
+                                                    <input type="number" class="form-control" placeholder="kilometer" name="kilometers" id="kilometers">
+                                                  </div>
+
+                                                  <div class="btn-group d-flex justify-content-center align-items-center">
+                                                    <button type="button" onclick="createCar()" class="btn btn-info">Skape</button>
+                                                    <a href="/cars" class="btn btn-secondary" >Avbryt</a>
+                                                </div>
+                                                
+                                                
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>                    
+                            </div>
+                            <!-- /.card-body -->
+                          </div>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="privateNumber" class="form-label"></label>
-                    <input type="text" class="form-control" id="privateNumber" name="privateNumber" placeholder="Tjenstebilnr." required>
-                </div>
-                <div class="mb-3">
-                    <label for="kilometers" class="form-label">Kilometers</label>
-                    <input type="number" class="form-control" id="kilometers" name="kilometers" required>
-                </div>
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-primary me-3" onclick="submitForm()">legge til</button>
-                    &nbsp;
-                    &nbsp;
-                    <a href="/cars" class="btn btn-secondary">Avbryt</a>
-                </div>
-            </form>
-        </div>
+            </div>
     </div>
-</div>
-<!-- Add Bootstrap JS and Popper.js scripts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.5.0/js/bootstrap.min.js"></script>
-<script>
-    async function submitForm() {
-        const boardNumber = document.getElementById('boardNumber').value;
+
+        <%- include('../components/footer') %>
+    </div>
+
+    <%- include('../components/scripts.ejs') %>
+    
+    <script src="/plugins/jquery-validation/jquery.validate.min.js"></script>
+    <script src="/plugins/jquery-validation/additional-methods.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <!-- Toastr -->
+<script src="/plugins/toastr/toastr.min.js"></script>
+
+
+
+    <script>
+        var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+
+        $('#createCarForm').validate({
+    rules: {
+      boardNumber: {
+        required: true,
+      },
+      privateNumber: {
+        required: true,
+      },
+      kilometers: {
+        required: true
+      },
+    },
+    messages: {
+      boardNumber: {
+        required: "skriv inn et tavlenummer",
+      },
+      privateNumber: {
+        required: "skriv inn et privat nummer",
+      },
+      kilometers: {
+        required: "skriv inn kilometer"
+      },
+    },
+    errorElement: 'span',
+    errorPlacement: function (error, element) {
+      error.addClass('invalid-feedback');
+      element.closest('.form-group').append(error);
+    },
+    highlight: function (element, errorClass, validClass) {
+      $(element).addClass('is-invalid');
+    },
+    unhighlight: function (element, errorClass, validClass) {
+      $(element).removeClass('is-invalid');
+    }
+  });
+        
+        async function createCar(){
+
+            if($('#createCarForm').valid()){
+                const boardNumber = document.getElementById('boardNumber').value;
         const privateNumber = document.getElementById('privateNumber').value;
         const kilometers = document.getElementById('kilometers').value;
 
@@ -52,7 +166,7 @@
             kilometers: kilometers
         };
 
-        let response = await fetch('/api/cars', {
+        let response = await fetch('/admin/api/cars', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -62,32 +176,22 @@
 
         if (response.status == 200) {
             // Car created successfully, show success message and navigate back after 3 seconds
-            showInfoBox('Bil opprettet vellykket!', 'success', true);
+            Toast.fire({
+                    icon: 'success',
+                    title: 'Bil opprettet vellykket!'
+                })
             setTimeout(() => {
                 window.location.href = '/cars'; // Redirect to the car list page
             }, 3000);
         } else {
-            // Handle the failure case
-            showInfoBox('Kunne ikke opprette bilen. Vær så snill, prøv på nytt.', 'danger', false);
+            Toast.fire({
+                    icon: 'error',
+                    title: response.json().toString()
+                })
         }
-
-    }
-
-    function showInfoBox(message, type, autoHide) {
-        const infoBox = document.getElementById('infoBox');
-        infoBox.innerHTML = message;
-        infoBox.classList.add(`alert-${type}`);
-        infoBox.style.display = 'block';
-
-        if (autoHide) {
-            setTimeout(() => {
-                infoBox.style.display = 'none';
-                infoBox.innerHTML = '';
-                infoBox.classList.remove(`alert-${type}`);
-            }, 3000);
+            }
         }
-    }
-</script>
+    </script>
 
 </body>
 </html>

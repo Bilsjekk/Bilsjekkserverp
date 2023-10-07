@@ -5,20 +5,10 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Nordic Test</title>
+    <title>Nordic Dashboard</title>
     <style>
 
-:root {
-  --background-color1: #fafaff;
-  --background-color2: #ffffff;
-  --background-color3: #ededed;
-  --background-color4: #cad7fda4;
-  --primary-color: #4b49ac;
-  --secondary-color: #0c007d;
-  --Border-color: #3f0097;
-  --one-use-color: #3f0097;
-  --two-use-color: #5500cb;
-}
+
 
         body {
             font-family: Arial, sans-serif;
@@ -27,561 +17,238 @@
             padding: 0;
         }
 
-        header {
-            background-color: #007bff;
-            color: white;
-            padding: 8px;
-            text-align: center;
-        }
 
-
-        .welcome-message {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .statistics {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background-color: #209873;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            padding: 20px;
-            flex: 1;
-        }
-
-        
-
-
-        .notifications {
-            background-color: #f5f5f5;
-            border-radius: 8px;
-            padding: 20px;
-            height: 250px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .notification-item {
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: white;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .notification-item img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-
-        .quick-links {
-            display: flex;
-            justify-content: center;
-            margin-top: 30px;
-        }
-
-        .quick-link-item {
-            background-color: #007bff;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin-right: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            text-transform: uppercase;
-            transition: background-color 0.2s;
-        }
-
-        .quick-link-item:hover {
-            background-color: #0056b3;
-            color: goldenrod
-        }
-
-        .stat-card{
-            background-color: #5601cc;
-            color: white;
-            font-size: 24px;
-        }
-
-
-        .ks{
-            display: flex;
-        }
-
-        #violationsFilter {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            margin-bottom: 12px;
-        }
-
-        .ks i{
-            font-size: 40px !important;
-        }
-
-        .ks > *{
-            flex-grow: 1;
-        }
-
-        .ks > :first-child{
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .ks > :last-child{
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .topic {
-  font-size: 13px;
-  font-weight: 400;
-  letter-spacing: 1px;
-}
- 
-.topic-heading {
-  font-size: 30px;
-  letter-spacing: 3px;
-}
-
-.box-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  width: 90%;
-  margin: 0 auto;
-}
-
-.box {
-  height: 120px;
-  width: 200px;
-  border-radius: 20px;
-  box-shadow: 3px 3px 10px rgba(0, 30, 87, 0.751);
-  padding: 20px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  cursor: pointer;
-  transition: transform 0.3s ease-in-out;
-}
-.box:hover {
-  transform: scale(1.08);
-}
- 
-.box:nth-child(1) {
-  background-color: var(--one-use-color);
-}
-.box:nth-child(2) {
-  background-color: var(--two-use-color);
-}
-.box:nth-child(3) {
-  background-color: var(--one-use-color);
-}
-.box:nth-child(4) {
-  background-color: var(--two-use-color);
-}
-
-.box:nth-child(5){
-    background-color: var(--one-use-color);
-}
- 
-.box img {
-  height: 50px;
-}
-.box .text {
-  color: white;
-}
-
-.chart-container{
-    display: flex;
-    justify-content: space-between;
-    margin-top: 60px;
-    margin-bottom: 60px;
-    align-items: stretch;
-    flex-direction: column;
-    padding: 8px;
-    width: 100% !important;
-}
-
-#chart{
-    width:100% !important
-}
-
-svg{
-    width: 100% !important;
-}
-
-.chart-header{
-    display: flex;
-    align-items: center;
-    color: black;
-}
-
-
-.tick{
-    color:black
-}
-.wrapper{
-    width:100% !important;
-    padding: 12px;
-}
 
     </style>
+
+    <%- include('./components/headers') %>
 
 <script src="https://d3js.org/d3.v6.js"></script>
 
 </head>
-<body>
-<%- include('./components/navbar') %>
-<div class="mt-4"></div>
+<body class="hold-transition sidebar-mini">
 <div class="wrapper">
-    <div class="container">
-    <div class="welcome-message">Hei, Admin!</div>
-
-    <select name="violationsFilter" id="violationsFilter">
-        <option value="0">Hele tiden</option>
-        <option value="6">I går</option>
-        <option value="1">I dag</option>
-        <option value="2">3 dager siden</option>
-        <option value="3">en uke siden</option>
-        <option value="4">en måned siden</option>
-        <option value="5">ett år siden</option>
-    </select>
-</div>
-
-    <div class="box-container">
- 
-        <div class="box box1">
-            <div class="text">
-                <h2 class="topic-heading" id="vio-num">-</h2>
-                <h2 class="topic">Total K.S</h2>
-            </div>
-
-            <img src=
-"/images/violations.png"
-                alt="Views">
+    <%- include('./components/navbar') %>
+    <%- include('./components/sidebar') %>
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Nordic Dashbord</h1>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="/">Hjem</a></li>
+                <li class="breadcrumb-item active">Dashbord</li>
+                </ol>
+            </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
         </div>
+        <!-- /.content-header -->
 
-        <div class="box box2">
-            <div class="text">
-                <h2 class="topic-heading" id="pdf-num">-</h2>
-                <h2 class="topic">Pdf-er</h2>
+        <!-- Main content -->
+        <div class="content">
+            <!-- Info boxes -->
+
+            <div class="welcome-message">Hei, Admin!</div>
+
+          <div class="row">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <select id="violationsFilter" class="form-control select2 select2-danger" data-dropdown-css-class="select2-danger">
+                        <option value="0">Hele tiden</option>
+                        <option value="6">I går</option>
+                        <option value="1">I dag</option>
+                        <option value="2">3 dager siden</option>
+                        <option value="3">en uke siden</option>
+                        <option value="4">en måned siden</option>
+                        <option value="5">ett år siden</option>
+                    </select>
+                </div>
+                <!-- /.form-group -->
+              </div>
+          </div>
+
+        <div class="row">
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box">
+                <span class="info-box-icon bg-info elevation-1"><i class="fa-solid fa-triangle-exclamation"></i></span>
+  
+                <div class="info-box-content">
+                  <span class="info-box-text">Total K.S</span>
+                  <span class="info-box-number" id="vio-num">
+                    -
+                  </span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
             </div>
-
-            <img src=
-"/images/pdfs.png"
-                 alt="likes">
-        </div>
-
-        <div class="box box3">
-            <div class="text">
-                <h2 class="topic-heading" id="user-num">-</h2>
-                <h2 class="topic">Brukere</h2>
+            <!-- /.col -->
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box mb-3">
+                <span class="info-box-icon bg-danger elevation-1"><i class="fa-regular fa-file-pdf"></i></span>
+  
+                <div class="info-box-content">
+                  <span class="info-box-text">Pdfs</span>
+                  <span class="info-box-number" id="pdf-num">-</span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
             </div>
-
-            <img src=
-"/images/users.png"
-                alt="comments">
-        </div>
-
-        <div class="box box4">
-            <div class="text">
-                <h2 class="topic-heading" id="accident-num">-</h2>
-                <h2 class="topic">Ulykker</h2>
+            <!-- /.col -->
+  
+            <!-- fix for small devices only -->
+            <div class="clearfix hidden-md-up"></div>
+  
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box mb-3">
+                <span class="info-box-icon bg-success elevation-1">
+                    <i class="fa-regular fa-user"></i>
+                </span>
+  
+                <div class="info-box-content">
+                  <span class="info-box-text">Brukere</span>
+                  <span class="info-box-number" id="user-num">-</span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
             </div>
-
-            <img src=
-"/images/accidents.png" alt="published">
-        </div>
-
-        <div class="box box5">
-            <div class="text">
-                <h2 class="topic-heading" id="removed-num">-</h2>
-                <h2 class="topic">Fjernet</h2>
+            <!-- /.col -->
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box mb-3">
+                <span class="info-box-icon bg-warning elevation-1">
+                    <i class="fa-solid fa-car-burst"></i>
+                </span>
+  
+                <div class="info-box-content">
+                  <span class="info-box-text">Ulykker</span>
+                  <span class="info-box-number" id="accident-num">-</span>
+                </div>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
             </div>
+            <!-- /.col -->
+            <!-- /.col -->
+            <div class="col-12 col-sm-6 col-md-3">
+                <div class="info-box mb-3">
+                  <span class="info-box-icon bg-secondary elevation-1">
+                    <i class="fa-solid fa-trash"></i>
+                  </span>
+    
+                  <div class="info-box-content">
+                    <span class="info-box-text">Fjernet</span>
+                    <span class="info-box-number" id="removed-num">-</span>
+                  </div>
+                  <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+              </div>
+          </div>
 
-            <img src=
-"/images/remains.png" alt="published">
+          <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-info">
+                    <div class="card-header">
+                      <h3 class="card-title">Linjediagram</h3>
+      
+                      <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                          <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <div class="chart">
+                        <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                      </div>
+                    </div>
+                    <!-- /.card-body -->
+                  </div>
+            </div>
+          </div>
+        <!-- /.container-fluid -->
         </div>
+        <!-- /.content -->
     </div>
 
-
-    <div class="chart-container">
-        <div class="chart-header">
-            <img src="/images/calendar.png" alt="Calendar">
-            <h3>Nordic K.S Diagram</h3>
-        </div>
-        <div id="chart"></div>
-    </div>
-
-    <div class="container">
-    <div class="quick-links">
-        <a href="/maps" class="quick-link-item">Kart</a>
-        <a href="/postals" class="quick-link-item">Send per post</a>
-        <a href="/scans" class="quick-link-item">Makulering</a>
-        <!-- Add more quick links as needed -->
-    </div>
+    <%- include('./components/footer') %>
 </div>
-</div>
-<script src="https://kit.fontawesome.com/7d365a7c21.js" crossorigin="anonymous"></script>
+<%- include('./components/scripts') %>
+<script src="/plugins/chart.js/Chart.min.js"></script>
+
 
 <script>
-// Sample data (replace this with your actual data)
-// const generateRandomData = () => {
-//             const startDate = new Date('2023-08-01');
-//             const endDate = new Date('2023-11-01');
-//             const data = [];
+    const data = <%- violations %>;
+    const dates = [];
+    const values = [];
 
-//             for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-//                 data.push({
-//                     date: d.toISOString().split('T')[0],
-//                     value: Math.floor(Math.random() * 50) + 10
-//                 });
-//             }
-
-//             return data;
-//         };
-
-// const data = generateRandomData();
-
-        const data = <%- violations %>;
-        console.log(data);
-
-// Set up the dimensions of the chart
-const margin = { top: 20, right: 30, bottom: 30, left: 40 };
-const width = 1100 ;
-const height = 450;
-
-// Parse the date format
-const parseDate = d3.utcParse('%Y-%m-%d');
-
-// Get the width of the chart container
-const chartContainer = document.getElementById('chart');
-const containerWidth = chartContainer.clientWidth;
-
-// Set up the scales
-const x = d3.scaleUtc()
-  .domain(d3.extent(data, d => parseDate(d.date)))
-  .range([0, containerWidth - margin.right - 40]);
-
-const y = d3.scaleLinear()
-  .domain([0, d3.max(data, d => d.value)])
-  .nice()
-  .range([height, 0]);
-
-// Create the line
-const line = d3.line()
-  .x(d => x(parseDate(d.date)))
-  .y(d => y(d.value))
-  .curve(d3.curveMonotoneX);
-
-// Create the SVG element
-
-// Create the SVG element with dynamic width
-const svg = d3.select('#chart').append('svg')
-            .attr('width', '100%')
-            .attr('height', height + margin.top + margin.bottom)
-            .append('g')
-            .attr('transform', `translate(${margin.left},${margin.top})`);
+    data.forEach(item => {
+        dates.push(item.date);
+        values.push(item.value);
+    });
 
 
-            // This allows to find the closest X index of the mouse:
-  var bisect = d3.bisector(function(d) { return d.x; }).left;
-
-// Create the circle that travels along the curve of chart
-var focus = svg
-  .append('g')
-  .append('circle')
-    .style("fill", "steelblue")
-    .attr("stroke", "black")
-    .attr('r', 8.5)
-    .style("opacity", 0)
-
-// Create the text that travels along the curve of chart
-var focusText = svg
-  .append('g')
-  .append('text')
-  .attr('fill', 'black') // Set the fill attribute to white
-    .style("opacity", 0)
-    .attr('fill', 'black') // Set the fill attribute to white
-    .attr("text-anchor", "left")
-    .attr("alignment-baseline", "middle")
-
-        // Add the line to the chart with dynamic width
-        svg.append('path')
-            .datum(data)
-            .attr('fill', 'none')
-            .attr('stroke', 'steelblue')
-            .attr('stroke-width', 2)
-            .attr('d', line)
-            .attr('class', 'line'); // Add a class for the line
-
-            // Create a rect on top of the svg area: this rectangle recovers mouse position
-  svg
-    .append('rect')
-    .style("fill", "none")
-    .style("pointer-events", "all")
-    .attr('width', width)
-    .attr('height', height)
-    .on('mouseover', mouseover)
-    .on('mousemove', mousemove)
-    .on('mouseout', mouseout);
-
-
-  // What happens when the mouse move -> show the annotations at the right positions.
-  function mouseover() {
-    focus.style("opacity", 1)
-    focusText.style("opacity",1)
-  }
-
-  function mousemove(e) {
-    const xCoord = d3.pointer(e)[0];
-const clampedX = Math.max(0, Math.min(width, xCoord)); // Clamp to the range [0, width]
-
-const xScale = d3.zoomTransform(svg.node()).rescaleX(x);
-
-
-// Get the corresponding date using the clamped x-coordinate
-const x0 = xScale.invert(clampedX);
-
-// Convert x0 to ISO string format
-const x0ISOString = x0.toISOString().split('T')[0];
-
-// Create a bisector using a comparator function for the date property
-const bisect = d3.bisector(d => d.date).left;
-
-// Find the index of the data point corresponding to the given date
-const i = bisect(data, x0ISOString);
-
-const lastIndex = data.length - 1;
-const index = i === lastIndex ? lastIndex - 1 : i;
-
-selectedData = data[index];
-    
-    focus
-  .attr("cx", xScale(parseDate(selectedData.date)))
-  .attr("cy", y(selectedData.value));
-
-focusText
-  .html(selectedData.value)
-  .attr("x", xScale(parseDate(selectedData.date)) - 8)
-  .attr("y", y(selectedData.value) - 15);
+    var areaChartData = {
+      labels  : dates,
+      datasets: [
+        {
+          label               : 'K.S',
+          backgroundColor     : 'rgba(60,141,188,0.9)',
+          borderColor         : 'rgba(60,141,188,0.8)',
+          pointRadius          : true,
+          pointStrokeColor    : 'rgba(60,141,188,1)',
+          pointHighlightFill  : '#fff',
+          pointHighlightStroke: 'rgba(60,141,188,1)',
+          data                : values
+        }
+      ]
     }
-  function mouseout() {
-    focus.style("opacity", 0)
-    focusText.style("opacity", 0)
-  }
 
-        // Add the X axis with dynamic width
-        svg.append('g')
-            .attr('class', 'x-axis') // Add a class for the X axis
-            .attr('transform', `translate(0,${height})`)
-            .call(d3.axisBottom(x));
+    var areaChartOptions = {
+      maintainAspectRatio : false,
+      responsive : true,
+      legend: {
+        display: false
+      },
+      scales: {
+        xAxes: [{
+          gridLines : {
+            display : false,
+          }
+        }],
+        yAxes: [{
+          gridLines : {
+            display : false,
+          }
+        }]
+      }
+    }
 
-        // Add the Y axis
-        svg.append('g')
-            .call(d3.axisLeft(y));
+    //-------------
+    //- LINE CHART -
+    //--------------
+    var lineChartCanvas = $('#lineChart').get(0).getContext('2d')
+    var lineChartOptions = $.extend(true, {}, areaChartOptions)
+    var lineChartData = $.extend(true, {}, areaChartData)
+    lineChartData.datasets[0].fill = true;
+    lineChartOptions.datasetFill = true
 
-        
-
-        const pointLabels = svg.selectAll('.point-label')
-  .data([data[data.length - 1]])
-  .enter()
-  .append('text')
-  .attr('class', 'point-label')
-  .attr('x', d => x(parseDate(d.date)))
-  .attr('y', d => y(d.value) - 10) // Adjust the y position above the point
-  .attr('text-anchor', 'middle')
-  .attr('font-size', '12px')
-  .attr('fill', 'black') // Set the fill attribute to white
-  .attr('font-weight', 'bold')
-  .text(d => d.value);
-
-
-// Create a zoom behavior
-const zoom = d3.zoom()
-    .scaleExtent([1, 8]) // Define the zoom extent
-    .translateExtent([[0, 0], [containerWidth - margin.right + 12, height]])
-    .on('zoom', zoomed);
-
-// Apply zoom behavior to the SVG
-svg.call(zoom);
-
-  // Define the zoomed function
-function zoomed(event) {
-    const newX = event.transform.rescaleX(x);
-    svg.select('.line').attr('d', line.x(d => newX(parseDate(d.date))));
-    svg.select('.x-axis').call(d3.axisBottom(newX));
-    svg.selectAll('.point')
-        .attr('cx', d => newX(parseDate(d.date)))
-        .attr('cy', d => y(d.value));
-    pointLabels.attr('x', d => newX(parseDate(d.date))).attr('y', d => y(d.value) - 10);
-}
-
-
-
-        const tooltip = svg.append('g')
-            .attr('class', 'tooltip')
-            .style('display', 'none');
-
-        tooltip.append('rect')
-            .attr('width', 60)
-            .attr('height', 30)
-            .attr('fill', 'white')
-            .style('opacity', 0.8);
-
-        tooltip.append('text')
-            .attr('x', 30)
-            .attr('dy', '1.2em')
-            .style('text-anchor', 'middle')
-            .attr('font-size', '12px')
-            .attr('font-weight', 'bold');
-        
-        function showTooltip(event, d) {
-            tooltip.style('display', 'block');
-            tooltip.attr('transform', `translate(${x(parseDate(d.date))},${y(d.value)})`);
-            tooltip.select('text').text(d.value);
-        }
-
-        function hideTooltip() {
-            tooltip.style('display', 'none');
-        }
-
-        svg.selectAll('.point')
-  .data([data[0],data[data.length - 1]])
-  .enter()
-  .append('circle')
-  .attr('class', 'point')
-  .attr('cx', d => x(parseDate(d.date)))
-  .attr('cy', d => y(d.value))
-  .attr('r', 5) // Radius of the circle
-  .attr('fill', 'steelblue')
-  .on('mouseover', (event, d) => showTooltip(event, d))
-  .on('mouseout', hideTooltip);
-
-  
-
+    var lineChart = new Chart(lineChartCanvas, {
+      type: 'line',
+      data: lineChartData,
+      options: lineChartOptions
+    })
 </script>
-
 
 
 <script>
@@ -605,8 +272,8 @@ function zoomed(event) {
         const value = selectVio.value;
 
         try {
-            let responseData = await fetchData(`/api/violations/${value}`);
-            let responseRmData = await fetchData(`/api/violations/removed/gn/${value}`);
+            let responseData = await fetchData(`/admin/api/violations/${value}`);
+            let responseRmData = await fetchData(`/admin/api/violations/removed/gn/${value}`);
             console.log(responseRmData);
             vioHolder.textContent = responseData;
             vioRmHolder.textContent = responseRmData;
@@ -616,21 +283,21 @@ function zoomed(event) {
 
 
         try{
-            let responseData = await fetchData(`/api/info/pdfs`);
+            let responseData = await fetchData(`/admin/api/info/pdfs`);
             pdfHolder.textContent = responseData;
         }catch(error){
             console.log(error)
         }
 
         try{
-            let responseData = await fetchData(`/api/info/users`);
+            let responseData = await fetchData(`/admin/api/info/users`);
             userHolder.textContent = responseData;
         }catch(error){
             console.log(error)
         }
 
         try{
-            let responseData = await fetchData(`/api/info/accidents`);
+            let responseData = await fetchData(`/admin/api/info/accidents`);
             accidentHolder.textContent = responseData;
         }catch(error){
             console.log(error)

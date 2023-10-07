@@ -1,297 +1,262 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Skjema List</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #f5f5f5;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enger</title>
 
-        .table th {
-            text-align: center;
-        }
+    <%- include('../components/headers') %>
 
-        .table td {
-            vertical-align: middle;
-            text-align: center;
-        }
 
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
+  <!-- DataTables -->
+  <link rel="stylesheet" href="/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+  <!-- Theme style -->
 
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
-        }
-
-        .btn-danger {
-            background-color: #dc3545;
-            border-color: #dc3545;
-        }
-
-        .btn-danger:hover {
-            background-color: #b02a37;
-            border-color: #b02a37;
-        }
-
-        .form-control {
-            border-radius: 5px;
-        }
-
-        .btn-sm {
-            font-size: 12px;
-            padding: 5px 10px;
-        }
-
-        .btn-edit {
-            background-color: #28a745;
-            border-color: #28a745;
-        }
-
-        .controls {
-            display: flex;
-            align-items: center;
-        }
-
-        .controls > * {
-            flex-grow: 1;
-        }
-
-        .controls > :first-child {
-            margin-right: 8px;
-        }
-
-        .btn-edit:hover {
-            background-color: #1e7e34;
-            border-color: #1e7e34;
-        }
-
-        .search-container {
-            margin-bottom: 20px;
-        }
-
-        .search-container input {
-            width: 100%;
-            padding: 8px;
-            border-radius: 5px;
-            outline: none;
-        }
-    </style>
+  <style>
+    thead input {
+        width: 100%;
+    }
+  </style>
 </head>
-<body>
-<%- include('../components/navbar') %>
-<div class="mt-4"></div>
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center">
-            <h1>Skjema List</h1>
-        <div class="d-flex align-items-center">
-            <a href="/fields/create" class="btn btn-info mr-2">Opprett nytt skjemafelt</a>
-            <button type="button" class="btn btn-danger" onclick="confirmAllDeleteField()">Slett alle</button>
-        </div>
-    </div>
-    <br>
+<body class="hold-transition sidebar-mini">
 
-    <!-- Search Filter -->
-    <div class="search-container">
-        <input type="text" id="searchInput" class="form-control" placeholder="Søk på title">
-    </div>
+    <div class="wrapper">
+        <%- include('../components/navbar') %>
+    <% if(isAdmin){ %>
+            <%- include('../components/sidebar') %> 
+        <% } else{%>
+            <%- include('../components/manager_sidebar', { permissions }) %> 
+        <% } %>     
 
-    <div class="alert alert-success" id="successAlert" style="display: none;">
-      Ble slettet!.
-    </div>
-    <!-- Failure Alert Box -->
-    <div class="alert alert-danger" id="failureAlert" style="display: none;">
-        Æsj noe feil, prøv igjen.
-    </div>
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                <div class="col-sm-6">
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/">Hjem</a></li>
+                    <li class="breadcrumb-item active">Enger</li>
+                    </ol>
+                </div><!-- /.col -->
+                </div><!-- /.row -->
 
-    <div class="alert alert-success" id="successAllAlert" style="display: none;">
-        Ble slettet!
-    </div>
-    <!-- Failure Alert Box -->
-    <div class="alert alert-danger" id="failureAllAlert" style="display: none;">
-        Æsj noe feil, prøv igjen.
-    </div>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover mt-3" id="formFieldsTable">
-            <thead>
-            <tr>
-                <th>Tittel</th>
-                <th>Type</th>
-                <th>Har beskrivelse</th>
-                <th>Beskrivelse</th>
-                <th>når du skal få</th>
-                <th>Handlinger</th>
-            </tr>
-            </thead>
-            <tbody>
-            <%if(formFields.length == 0){%>
-                <tr>
-                    <td colspan="6">No Fields Yet</td>
-                </tr>
-            <%} else{%>
-                <% formFields.forEach(formField => { %>
-                    <tr>
-                        <td><%= formField.title %></td>
-                        <td><%= formField.answerDataType %></td>
-                        <td><%= formField.hasRequiredDescription ? 'Ja' : 'Nei' %></td>
-                        <td><%= formField.requiredDescription %></td>
-                        <td><%= formField.whenToGetDescription ? 'Ja' : 'Nei' %></td>
-                        <td class="controls">
-                            <a href="/fields/<%= formField._id %>/update" class="btn btn-info btn-sm btn-edit">Rediger</a>
-                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmDeleteField('<%= formField._id %>')">Slett</button>
-                        </td>
-                    </tr>
-                <% }); %>
-            <%}%>
-            </tbody>
-        </table>
-    </div>
-</div>
+            </div><!-- /.container-fluid -->
+            </div>
 
-<!-- Confirmation Modal -->
-<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
-    <div class="modal-dialog " role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" data-dismiss="modal" aria-label="Close" id="deleteConfirmationModalLabel">Er du sikker?</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+            <div class="d-flex justify-content-end align-items-center mb-2 container-fluid">
+                <a href="/fields/create" class="btn btn-info btn-sm mr-1">
+                    <i class="fa fa-plus"></i>
+                    <span>Skape</span>
+                </a>
+                <button data-toggle="modal" data-target="#confirmAllDeleteModal" class="btn btn-danger btn-sm">
+                    <i class="fa fa-trash"></i>
+                    <span>Slett Alle</span>
                 </button>
             </div>
-            <div class="modal-body">
-                Er du sikker vil du slette alle?
+
+            <div class="content">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-header">
+                              <h3 class="card-title d-flex justify-content-between align-items-center">
+                                Skjemafeltdata
+                              </h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <div class="card-body">
+                              <table id="example1" class="table table-bordered table-striped text-center">
+                                <thead>
+                                    <tr>
+                                        <th>Tittel</th>
+                                        <th>Type</th>
+                                        <th>Har beskrivelse</th>
+                                        <th>Beskrivelse</th>
+                                        <th>når du skal få</th>
+                                        <th>Handlinger</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <%if(formFields.length == 0){%>
+                                        <tr>
+                                            <td colspan="6">Ingen felt ennå</td>
+                                        </tr>
+                                    <%} else{%>
+                                        <% formFields.forEach(formField => { %>
+                                            <tr>
+                                                <td><%= formField.title %></td>
+                                                <td><%= formField.answerDataType %></td>
+                                                <td><%= formField.hasRequiredDescription ? 'Ja' : 'Nei' %></td>
+                                                <td><%= formField.requiredDescription %></td>
+                                                <td><%= formField.whenToGetDescription ? 'Ja' : 'Nei' %></td>
+                                                <td class="controls">
+                                                    <a href="/fields/<%= formField._id %>/update" class="btn btn-info btn-sm btn-edit">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+                                                    <button type="button" class="btn btn-danger btn-sm" data-target="#deleteConfirmationModal<%= formField._id %>" data-toggle="modal">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+
+                                            <div class="modal fade" id="deleteConfirmationModal<%= formField._id %>" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog " role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" data-dismiss="modal" aria-label="Close" id="deleteConfirmationModalLabel">Er du sikker?</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            Vil du slette dette feltet?
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbrytt</button>
+                                                            <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deleteField('<%= formField._id %>')">Slett</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% }); %>
+                                    <%}%>
+                                    </tbody>
+                              </table>
+                            </div>
+                            <!-- /.card-body -->
+                          </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbrytt</button>
-                <button type="button" class="btn btn-danger" onclick="deleteFieldConfirmed()">Slett</button>
+    </div>
+
+        <%- include('../components/footer') %>
+    </div>
+
+    <div class="modal fade" id="confirmAllDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmAllDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmAllDeleteModalLabel">Slett alle feltbekreftelse</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Vil du slette alle feltene?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deleteAllFields()" id="confirmAllDeleteBtn">Slett</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Confirmation Modal -->
-<div class="modal fade" id="deleteAllConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteAllConfirmationModalLabel" aria-hidden="true">
-    <div class="modal-dialog " role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteAllConfirmationModalLabel">Bekreft sletting</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                Er du sikker på at du vil slette alle feltene?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close" onclick="deleteAllFieldConfirmed()">Slett</button>
-            </div>
-        </div>
-    </div>
-</div>
+
+
+
+<%- include('../components/scripts') %>
+
+<!-- DataTables  & Plugins -->
+<script src="/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="/plugins/jszip/jszip.min.js"></script>
+<script src="/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 
 <script>
-    let fieldToDeleteId;
+    $(function () {
 
-    function confirmDeleteField(id) {
-        fieldToDeleteId = id;
-        $('#deleteConfirmationModal').modal('show');
-    }
 
-    function showSuccessAlert() {
-        const successAlert = document.getElementById('successAlert');
-        successAlert.style.display = 'block';
-        setTimeout(function() {
-            successAlert.style.display = 'none';
-            location.reload(); // Reload the page
-        }, 3000);
-    }
-
-    function showFailureAlert() {
-        const failureAlert = document.getElementById('failureAlert');
-        failureAlert.style.display = 'block';
-    }
-
-    function confirmAllDeleteField() {
-        $('#deleteAllConfirmationModal').modal('show');
-    }
-
-    function showAllSuccessAlert() {
-        const successAlert = document.getElementById('successAllAlert');
-        successAlert.style.display = 'block';
-        setTimeout(function() {
-            successAlert.style.display = 'none';
-            location.reload(); // Reload the page
-        }, 3000);
-    }
-
-    function showAllFailureAlert() {
-        const failureAlert = document.getElementById('failureAllAlert');
-        failureAlert.style.display = 'block';
-    }
-
-    function deleteFieldConfirmed() {
-        const id = fieldToDeleteId;
-
-        fetch(`/api/formFields/${id}`, {
-            method: 'DELETE',
-        })
-            .then(response => {
-                if (response.status == 200) {
-                    $('#deleteConfirmationModal').modal('hide');
-                    showSuccessAlert(); // Show the success alert
-                } else {
-                    $('#deleteConfirmationModal').modal('hide');
-                    showFailureAlert(); // Show the failure alert
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                $('#deleteConfirmationModal').modal('hide');
-                alert('Det oppstod en feil under sletting av feltet. Vær så snill, prøv på nytt.');
-            });
-    }
-
-    function deleteAllFieldConfirmed() {
-
-        fetch(`/api/formFields`, {
-            method: 'DELETE',
-        })
-            .then(response => {
-                if (response.status == 200) {
-                    showSuccessAlert(); // Show the success alert
-                } else {
-                    showFailureAlert(); // Show the failure alert
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Det oppstod en feil under sletting av alle felt. Vær så snill, prøv på nytt.');
-            });
-    }
-</script>
-
-<script>
-    // JavaScript for Search Filter
-    const searchInput = document.getElementById('searchInput');
-    const formFieldsTable = document.getElementById('formFieldsTable');
-    const tableRows = formFieldsTable.getElementsByTagName('tr');
-
-    searchInput.addEventListener('keyup', function () {
-        const filter = searchInput.value.toLowerCase();
-
-        for (let i = 1; i < tableRows.length; i++) {
-            const title = tableRows[i].getElementsByTagName('td')[0].innerText.toLowerCase();
-            if (title.includes(filter)) {
-                tableRows[i].style.display = '';
-            } else {
-                tableRows[i].style.display = 'none';
-            }
-        }
+      $("#example1").DataTable({
+        "responsive": true, "lengthChange": true, "autoWidth": false,
+        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+      
+      }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
+  </script>
+<script>
+    var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+
+        function deleteField(id) {
+        fetch(`/admin/api/formFields/${id}`, {
+            method: 'DELETE',
+        })
+            .then(async response => {
+                if (response.status == 200) {
+                    Toast.fire({
+                        icon: 'success',
+                        title: "Felt ble slettet"
+                    })
+
+                    setTimeout(() =>{
+                        location.reload();
+                    },3000)
+                } else {
+                    Toast.fire({
+                        icon: 'error',
+                        title: await response.json()
+                    })
+                }
+            })
+            .catch(error => {
+                Toast.fire({
+                    icon: 'error',
+                    title: error.message
+                })
+            });
+    }
+
+    function deleteAllFields() {
+
+        fetch(`/admin/api/formFields`, {
+            method: 'DELETE',
+        })
+            .then(async response => {
+                if (response.status == 200) {
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Alle felt ble slettet'
+                    })
+
+                    setTimeout(() =>{
+                        location.reload()
+                    },3000)
+                } else {
+                    Toast.fire({
+                        icon: 'error',
+                        title: await response.json()
+                    })
+                }
+            })
+            .catch(error => {
+                Toast.fire({
+                    icon: 'error',
+                    title: error.message
+                })
+            });
+    }
+
 </script>
 </body>
 </html>
+
+
