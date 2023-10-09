@@ -263,7 +263,7 @@ app.get('/archieves/:id', async (req, res) => {
 
 app.get('/admin/api/logout',(req,res) =>{
 
-    res.cookie('isLogged',{
+    res.cookie('is_logged',{
         expires: Date.now()
     })
 
