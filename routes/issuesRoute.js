@@ -283,33 +283,33 @@ Takk for beskjed.
                     console.log('ok i was 2 or 3');
                     await sendAlertSMS({
                         text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
-                        to: '4740088605'
-                        // to: `4747931499`
+                        //to: '4740088605'
+                        to: `4747931499`
                     })
 
                     await sendAlertSMS({
                         text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
-                        to: '4740088605'
-                        // to: `4747931499`
+                        //to: '4740088605'
+                        to: `4747931499`
                     })
                 }else if(importanceLevel == 1){
                     console.log('ok i was 1 and that is very serious');
                     await sendAlertSMS({
                         text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
-                        to: '4740088605'
-                        // to: `4747931499`
+                        //to: '4740088605'
+                        to: `4747931499`
                     })
 
                     await sendAlertSMS({
                         text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
-                        to: '4740088605'
-                        // to: `4747931499`
+                        //to: '4740088605'
+                        to: `4747931499`
                     })
 
                     await sendAlertSMS({
                         text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
-                        to: '4740088605'
-                        // to: `4747931499`
+                        //to: '4740088605'
+                        to: `4747931499`
                     })
                 }
             await Machine.updateOne({
@@ -397,8 +397,8 @@ router.post('/issues/:id/technician/reports', async (req, res) => {
 
             await sendAlertSMS({
                 text: `P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentTech.name}`,
-                // to: `4747931499`
-                to: '4740088605'
+                to: `4747931499`
+                //to: '4740088605'
             })
 
             return res.status(200).json('issue was successfully closed');
@@ -535,8 +535,8 @@ router.post('/issues/:id/report', upload.single('report') ,async (req, res) => {
 
             await sendAlertSMS({
                 text: `P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentUser.name}`,
-                // to: `4747931499`
-                to: '4740088605'
+                to: `4747931499`
+                //to: '4740088605'
             })
 
 
@@ -573,14 +573,14 @@ Grunn: ${reason}
 
         await sendAlertSMS({
             text: smsMessageFormatted,
-            to: `4740088605`
-            // to: `4747931499`
+            //to: `4740088605`
+            to: `4747931499`
         })
 
         await sendAlertSMS({
             text: smsMessageFormatted,
-            to: `4740088605`
-            // to: `4747931499`
+            //to: `4740088605`
+            to: `4747931499`
         })
 
         let drivers = [
