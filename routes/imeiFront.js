@@ -42,7 +42,7 @@ router.get('/imeis/:id/edit',async (req,res) =>{
   }
 })
 
-router.get('/imeis/new',async (req,res) =>{
+router.get('/imeis/create',async (req,res) =>{
   try{
     let jwt_access_token = req.cookies.jwt_token
     let decoded = jwt.verify(jwt_access_token,process.env.JWT_SECRET_KEY)
