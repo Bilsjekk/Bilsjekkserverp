@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/usersModel');
 const jwt = require('jsonwebtoken');
-
+const Manager = require('../models/Manager');
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -58,24 +58,57 @@ exports.login = async (req, res) => {
 
     const user = await User.findOne({ accountId: accountId });
 
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+    if(user){
+      const isMatch = await bcrypt.compare(password, user.password);
+
+      if (isMatch) {
+        const token = jwt.sign(
+          { 
+            userId: user._id,
+             accountId: user.accountId,
+              role: 'user' 
+            },
+          process.env.JWT_SECRET_KEY
+        );
+
+        return res.status(200).json({
+          token: token,
+          user: user,
+          role: 'user'
+        });
+      } else {
+        return res.status(401).json('Invalid password');
+      }
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    
+    const technician = await Manager.findOne({ username: accountId });
 
-    if (isMatch) {
-      const token = jwt.sign(
-        { userId: user._id, accountId: user.accountId, role: 'user' },
-        'your-secret-key'
-      );
+    if(technician){
+      const isMatch = await bcrypt.compare(password, technician.password);
 
-      return res.status(200).json({
-        token: token,
-        user: user
-      });
-    } else {
-      return res.status(401).json('Invalid password');
+      if (isMatch) {
+        const token = jwt.sign(
+          { 
+            userId: technician._id,
+             username: technician.username,
+              role: 'technician' 
+            },
+          process.env.JWT_SECRET_KEY
+        );
+  
+        return res.status(200).json({
+          token: token,
+          user: technician,
+          role: 'technician'
+        });
+      } else {
+        return res.status(401).json('Invalid password');
+      }
+    }
+
+    if(!user && !technician){
+      return res.status(404).json('Not Found');
     }
   } catch (error) {
     console.log(error.message)
@@ -86,7 +119,7 @@ exports.login = async (req, res) => {
 exports.getUser = async (req, res) => {
   try {
     const { token } = req.headers
-    const decodedToken = jwt.verify(token, 'your-secret-key');
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
     const user = await User.findById(decodedToken.userId);
 
@@ -153,7 +186,7 @@ const uuid = require("uuid");
 exports.validateToken = (req,res) =>{
   try{
     const { token } = req.headers
-    jwt.verify(token, 'your-secret-key',{
+    jwt.verify(token, process.env.JWT_SECRET_KEY,{
 
     },(error,cb) => {
       if(error){

@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
     <!-- Toastr -->
     <link rel="stylesheet" href="/plugins/toastr/toastr.min.css">
+
+      <!-- Select2 -->
+  <link rel="stylesheet" href="../../plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="../../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 </head>
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -25,13 +29,11 @@
         <div class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
-                <div class="col-sm-6">
-                </div><!-- /.col -->
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
+                <div class="col-sm-12">
+                    <ol class="breadcrumb float-sm-left">
                     <li class="breadcrumb-item"><a href="/">Hjem</a></li>
                     <li class="breadcrumb-item"><a href="/machines">Maskiner</a></li>
-                    <li class="breadcrumb-item active">Skape</li>
+                    <li class="breadcrumb-item active">Legge til</li>
                     </ol>
                 </div><!-- /.col -->
                 </div><!-- /.row -->
@@ -66,6 +68,13 @@
                                                   <div class="form-group">
                                                     <label>Rute</label>
                                                     <select class="custom-select" id="zone" name="zone">
+                                                  
+                                                    </select>
+                                                  </div>
+
+                                                  <div class="form-group">
+                                                    <label>Category</label>
+                                                    <select class="select2" id="category" name="category"  multiple="multiple" data-placeholder="Select a State" style="width: 100%;">
                                                   
                                                     </select>
                                                   </div>
@@ -105,10 +114,14 @@
     <script src="/plugins/sweetalert2/sweetalert2.min.js"></script>
     <!-- Toastr -->
 <script src="/plugins/toastr/toastr.min.js"></script>
+<script src="../../plugins/select2/js/select2.full.min.js"></script>
+
 
 
 
     <script>
+        $('.select2').select2()
+
         var Toast = Swal.mixin({
             toast: true,
             position: 'top-end',
@@ -156,11 +169,14 @@
                 const serial = document.getElementById('serial').value;
             const zone = document.getElementById('zone').value;
             const zoneLocation = document.getElementById('zoneLocation').value;
+            const categories = $("#category").val()
+
 
             const machineData = {
                 serial,
                 zone,
-                zoneLocation
+                zoneLocation,
+                categories
             };
 
             try {
@@ -216,10 +232,63 @@
             }
         }
 
+        // Function to populate the zone dropdown with data from /admin/api/zones
+        async function populateCategoryDropdown() {
+            try {
+                const categoryDropdown = document.getElementById('category');
+
+                // Fetch zones data from /admin/api/zones
+                const response = await fetch('/admin/api/issues/categories');
+                const categories = await response.json();
+
+                let jumpColors = {
+                    1: 'red',
+                    2: 'gold',
+                    3: 'green'
+                }
+
+                // Populate the dropdown options
+                categories.forEach((category) => {
+                    const option = document.createElement('option');
+                    option.value = category._id;
+                    option.text = category.name;
+                    option.setAttribute('data-color',category.importanceLevel)
+
+                    option.style.background = jumpColors[category.importanceLevel]
+                    categoryDropdown.appendChild(option);
+                });
+
+                categoryDropdown.addEventListener('change', function (e) {
+                        e.preventDefault();
+                        let selected = categoryDropdown.selectedIndex
+                        let selectedOption = categoryDropdown.options[selected]
+                        console.log(selectedOption);
+                        categoryDropdown.style.background = jumpColors[selectedOption.getAttribute('data-color')];
+                    })
+
+
+            } catch (error) {
+                console.error('Error fetching and populating zones:', error);
+            }
+        }
+
+        // function initializeFirstSelectedColor(){
+        //     let jumpColors = {
+        //             1: 'red',
+        //             2: 'gold',
+        //             3: 'green'
+        //         }
+        //     const categoryDropdown = document.getElementById('category');
+        //     let selected = categoryDropdown.selectedIndex
+        //     let selectedOption = categoryDropdown.options[selected]
+        //     categoryDropdown.style.background = jumpColors[selectedOption.getAttribute('data-color')];
+        // }
+
         // Invoke the code when the DOM content is loaded
         document.addEventListener('DOMContentLoaded', () => {
             // Populate the zone dropdown when the page loads
             populateZoneDropdown();
+            populateCategoryDropdown();
         });
 
     </script>

@@ -31,10 +31,8 @@
         <div class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
-                <div class="col-sm-6">
-                </div><!-- /.col -->
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
+                <div class="col-sm-12">
+                    <ol class="breadcrumb float-sm-left">
                     <li class="breadcrumb-item"><a href="/">Hjem</a></li>
                     <li class="breadcrumb-item active">Routes</li>
                     </ol>
@@ -182,7 +180,12 @@
     $(function () {
       $("#example1").DataTable({
         "responsive": true, "lengthChange": true, "autoWidth": false,
-        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+        "language": {
+        "emptyTable": "Ingen data tilgjengelig",
+        "infoEmpty": "Ingen data tilgjengelig Info",
+        "zeroRecords": "Det er ingen samsvarende data"
+        } ,
       }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
   </script>

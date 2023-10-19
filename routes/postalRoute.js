@@ -65,7 +65,7 @@ router.post('/postals',upload.single('violation'),async (req,res) =>{
       
   };
   const filledTemplate = Handlebars.compile(htmlTemplate)(template_data);
-  let filename = `postal_${Date.now()}.pdf`
+  let filename = `post_${pnid}_${localDateString}.pdf`
   
   // Generate PDF from filled template
   await page.setContent(filledTemplate);

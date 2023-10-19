@@ -11,10 +11,17 @@ const admin = require('../utils/firebase');
 
 router.get('/machines', async (req, res) => {
     try{
-        let machines = await Machine.find({}).populate({
-            path: 'zone',
-            ref: 'Zone'
-        })
+        let machines = await Machine.find({}).populate([
+            {
+                path: 'zone',
+                ref: 'Zone'
+            },
+
+            {
+                path: 'categories',
+                ref: 'IssueCategory'
+            }
+        ])
         return res.status(200).json(machines)
     }catch(err){
         console.log(err.message)
@@ -24,10 +31,17 @@ router.get('/machines', async (req, res) => {
 
 router.get('/machines/:id', async (req, res) => {
     try{
-        let machine = await Machine.findOne({_id:req.params.id}).populate({
-            path: 'zone',
-            ref: 'Zone'
-        })
+        let machine = await Machine.findOne({_id:req.params.id}).populate([
+            {
+                path: 'zone',
+                ref: 'Zone'
+            },
+
+            {
+                path: 'categories',
+                ref: 'IssueCategory'
+            }
+        ])
         console.log(machine);
         return res.status(200).json(machine)
     }catch(err){
@@ -39,12 +53,13 @@ router.get('/machines/:id', async (req, res) => {
 
 router.post('/machines', async (req, res) => {
     try{
-        const { serial,zone,shiftNumber,zoneLocation } = req.body
+        const { serial,zone,shiftNumber,zoneLocation,categories } = req.body
         let machine = new Machine({
             serial,
             zone,
             zoneLocation,
             shiftNumber,
+            categories
         })
         await machine.save()
 
@@ -86,6 +101,16 @@ router.put('/machines/:id', async (req, res) => {
 router.delete('/machines/:id', async (req, res) => {
     try{
         let isDeleted = await Machine.deleteOne({_id:req.params.id})
+        return res.status(200).json(isDeleted)
+    }catch(err){
+        console.log(err.message)
+        return res.status(500).json({message: err.message});
+    }
+})
+
+router.delete('/machines', async (req, res) => {
+    try{
+        let isDeleted = await Machine.deleteMany()
         return res.status(200).json(isDeleted)
     }catch(err){
         console.log(err.message)

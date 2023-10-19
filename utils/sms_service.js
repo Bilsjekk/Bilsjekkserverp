@@ -21,7 +21,7 @@ axios.post(apiUrl, querystring.stringify({
   api_key: 'd1840a73',
   api_secret: 'c2eOlaZYWqqO6DyT',
   type: 'text',
-  from: 'Nordic',
+  from: 'IKT-Drift',
   to: to,
   text: text
 }),{

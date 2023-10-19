@@ -60,5 +60,15 @@ router.delete('/maps/:id',async (req,res) =>{
   }
 })
 
+router.delete('/maps',async (req,res) =>{
+  try{
+    await Map.deleteMany({})
+    return res.status(200).json('success')
+  }catch(error){
+    console.log(error.message)
+    return res.status(500).json(error.message)
+  }
+})
+
 
 module.exports = router

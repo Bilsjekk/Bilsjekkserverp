@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
 
 const IssueSchema = new mongoose.Schema({
-    machine: {
+    machine:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'machine'
+        required: true
     },
 
     date: {
@@ -11,9 +11,34 @@ const IssueSchema = new mongoose.Schema({
         required: true
     },
 
+    fixedAt: {
+        type: String,
+        default: null
+    },
+
+    totalTime: {
+        type: String,
+        default: null
+    },
+
+    publisher:{
+        type: String,
+        default: 'unknown'
+    },
+
+    fixedBy:{
+        type: String,
+        default: null
+    },
+
+    processes:{
+        type: [String],
+        default: []
+    },
+
     boardNumber: {
         type: String,
-        required: true
+        default: null
     },
 
     title: {
@@ -28,12 +53,18 @@ const IssueSchema = new mongoose.Schema({
 
     notes:{
         type: String,
-        default: 'No Notes'
+        default: null
     },
 
     status: {
         type: String,
-        default: 'incomplete'
+        default: 'incomplete',
+        enum: ['complete', 'incomplete', 'waiting','redirected']
+    },
+
+    statusText: {
+        type: String,
+        default: ''
     },
 
     zone:{
@@ -48,6 +79,21 @@ const IssueSchema = new mongoose.Schema({
 
     serial:{
         type: String,
+        required: true
+    },
+
+    category:{
+        type: String,
+        required: true
+    },
+
+    problem:{
+        type: String,
+        required: true
+    },
+
+    importanceLevel:{
+        type: Number,
         required: true
     }
 })

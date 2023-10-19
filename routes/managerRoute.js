@@ -10,6 +10,7 @@ router.post('/managers', async (req, res) => {
             username,
             name,
             password,
+            role,
             permissions
         } = req.body
 
@@ -20,7 +21,11 @@ router.post('/managers', async (req, res) => {
             username: username,
             name: name,
             password: hashedPassword,
-            permissions: permissions
+            role: role,
+            permissions: role == 'manager' ? permissions : [{
+                route: 'machines',
+                method: 'GET'
+            }]
         })
 
         let saveManager = await manager.save()

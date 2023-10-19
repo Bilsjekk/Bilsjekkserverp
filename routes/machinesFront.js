@@ -10,10 +10,17 @@ router.get('/machines', async (req, res) => {
     let decoded = jwt.verify(jwt_access_token,process.env.JWT_SECRET_KEY)
     let manager = await Manager.findOne({ _id: decoded.id })
 
-      let machines = await Machine.find({}).populate({
-        path: 'zone',
-        ref: 'Zone'
-      });
+      let machines = await Machine.find({}).populate([
+        {
+          path: 'zone',
+          ref: 'Zone'
+        },
+
+        {
+          path: 'categories',
+          ref: 'IssueCategory'
+        }
+      ]);
   
       // Sort the machines array so that "inactive" machines come first
       machines.sort((a, b) => {
@@ -59,9 +66,13 @@ router.get('/machines/:id/edit', async (req, res) => {
     let decoded = jwt.verify(jwt_access_token,process.env.JWT_SECRET_KEY)
     let manager = await Manager.findOne({ _id: decoded.id })
 
-        let machine = await Machine.findOne({ _id: req.params.id})
+        let machine = await Machine.findOne({ _id: req.params.id}).populate({
+          path: 'categories',
+          ref: 'IssueCategory'
+        })
         return res.status(200).render('machines/edit', { 
           machine,
+          jsMachine: JSON.stringify(machine),
           isAdmin: decoded.role === 'admin',
       permissions: manager.permissions
          });

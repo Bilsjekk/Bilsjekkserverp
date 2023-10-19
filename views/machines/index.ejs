@@ -48,6 +48,10 @@
                     <i class="fa fa-plus"></i>
                     <span>Skape</span>
                 </a>
+                <a href="/issues/categories/create" class="btn btn-warning btn-sm mr-1">
+                    <i class="fa fa-plus"></i>
+                    <span>Create category</span>
+                </a>
                 <button data-toggle="modal" data-target="#confirmAllDeleteModal" class="btn btn-danger btn-sm">
                     <i class="fa fa-trash"></i>
                     <span>Slett alle</span>
@@ -72,6 +76,7 @@
                                     <th>Status</th>
                                     <th>Rute</th>
                                     <th>Hvor?</th>
+                                    <th>Categories</th>
                                     <th>QR kode</th>
                                     <th>Handlinger</th>
                                 </tr>
@@ -83,6 +88,7 @@
                                             <td style="color: <%= machine.status == 'active' ? 'green' : 'red' %>; font-weight:bold"><%= machine.status == 'active' ? 'Active' : 'Inactive' %></td>
                                             <td><%= machine.zone?.name ?? '---' %></td>
                                             <td><%= machine.zoneLocation %></td>
+                                            <td><%= machine.categories.map(e => e.name) %></td>
                                             <td>
                                                 <a href="/machines/<%= machine._id %>/qrcode">
                                                     <i class="fas fa-qrcode fa-2x"></i>
@@ -119,7 +125,7 @@
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
-                                                        <button type="button" class="btn btn-danger" id="confirmDelete" onclick="deleteMachine('<%= machine._id %>')">Slett</button>
+                                                        <button type="button" class="btn btn-danger" id="confirmDelete" onclick="deleteMachine('<%= machine._id %>')" data-dismiss="modal">Slett</button>
                                                         
                                                     </div>
                                                 </div>
@@ -162,7 +168,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deleteAllCars()" id="confirmAllDeleteBtn">Slett</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deleteAllMachines()" id="confirmAllDeleteBtn">Slett</button>
                 </div>
             </div>
         </div>
@@ -188,25 +194,16 @@
 <script src="/plugins/bootstrap-switch/js/bootstrap-switch.min.js"></script>
 
 
-
-<script>
-    $("input[data-bootstrap-switch]").each(function(){
-      $(this).bootstrapSwitch('state', $(this).prop('',false));
-    })
-
-    $('input[data-bootstrap-switch]').on('switchChange.bootstrapSwitch', function (event, state) {
-        if(state){
-            console.log(event.target.getAttribute('data-machine'));
-        }
-    }); 
-
-</script>
-
 <script>
     $(function () {
       $("#example1").DataTable({
         "responsive": true, "lengthChange": true, "autoWidth": false,
-        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+        "language": {
+        "emptyTable": "Ingen data tilgjengelig",
+        "infoEmpty": "Ingen data tilgjengelig Info",
+        "zeroRecords": "Det er ingen samsvarende data"
+        } ,
       }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
   </script>
@@ -319,6 +316,35 @@
                             })
                     });
         }
+
+        function deleteAllMachines(){
+            
+            // Send a DELETE request to delete the machine
+            fetch(`/admin/api/machines`, {
+                method: 'DELETE',
+            })
+            .then(async (response) => {
+                if (response.status == 200) {
+                    Toast.fire({
+                        icon: 'success',
+                        title: "Alle maskiner ble slettet"
+                    })
+
+                    setTimeout(() => location.reload(),3000)
+                } else {
+                    Toast.fire({
+                        icon: 'error',
+                        title: await response.json()
+                    })
+                }
+            })
+            .catch((error) => {
+                Toast.fire({
+                        icon: 'error',
+                        title: error.message
+                    })
+            });
+}
 </script>
 </body>
 </html>

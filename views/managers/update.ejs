@@ -37,6 +37,21 @@
             <%- include('../components/manager_sidebar', { permissions }) %> 
         <% } %> 
             <div class="content-wrapper">
+              <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                    <div class="col-sm-12">
+                        <ol class="breadcrumb float-sm-left">
+                        <li class="breadcrumb-item"><a href="/">Hjem</a></li>
+                        <li class="breadcrumb-item active"><a href="/managers">Ledere</a></li>
+                        <li class="breadcrumb-item active">Oppdater</li>
+                        </ol>
+                    </div><!-- /.col -->
+                    </div><!-- /.row -->
+    
+                </div><!-- /.container-fluid -->
+                </div>
+
                 <div class="content">
                     <form class="container-fluid mt-5" id="createStaffForm">
                         <div class="input-group mb-3">
@@ -60,8 +75,8 @@
                             <input type="text" class="form-control" placeholder="Passord" id="password">
                           </div>
 
-                          <% if(manager.role != 'admin'){ %>
-                            <div class="d-flex justify-content-between align-items-center">
+                          <% if(manager.role == 'manager'){ %>
+                            <div class="d-flex justify-content-between align-items-start">
                               <div class="form-group flex-grow-1 mr-2">
                                 <select class="custom-select" id="method">
                                   <option value="GET">Lese</option>
@@ -92,7 +107,7 @@
                                 </select>
                               </div>
   
-                                <div class="btn btn-info btn-sm" onclick="addPermission()">Add</div>
+                                <div class="btn btn-info" onclick="addPermission()">Add</div>
   
   
                             </div>

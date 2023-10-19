@@ -7,15 +7,104 @@ const IssueReport = require('../models/IssueReport');
 const admin = require('../utils/firebase');
 const { sendAlertSMS } = require('../utils/sms_service')
 const Machine = require('../models/Machine')
+const moment = require('moment');
+const IssueCategory = require('../models/IssueCategory')
+const Manager = require('../models/Manager')
+const jwt = require('jsonwebtoken')
 
+router.get('/issues/categories', async (req, res) => {
+    try{
+        const categories = await IssueCategory.find({})
+        console.log(categories);
+        return res.status(200).json(categories)
+    }catch(err){
+        console.log(err.message);
+        return res.status(500).json(err.message)
+    }
+})
+
+router.post('/issues/categories', async (req, res) => {
+    try{
+        const {
+            name,
+            importanceLevel,
+            problems
+        } = req.body
+
+        const category = new IssueCategory({
+            name: name,
+            importanceLevel: importanceLevel,
+            problems: problems
+        })
+
+        await category.save()
+
+        return res.status(200).json(category)
+    }catch(err){
+        return res.status(500).json(err.message)
+    }
+})
+
+router.delete('/issues/categories/:id', async (req, res) => {
+    try{
+        const {
+            id
+        } = req.params
+
+        let isDeleted = await IssueCategory.deleteOne({
+            _id: id
+        })
+
+        if(isDeleted){
+            return res.status(200).json('deleted')
+        }else{
+            return res.status(404).json('issue category not found')
+        }
+    }catch(err){
+        return res.status(500).json(err.message)
+    }
+})
+
+router.delete('/issues/categories', async (req, res) => {
+    try{
+
+        await IssueCategory.deleteMany({})
+        return res.status(200).json('All issue categories deleted')
+    }catch(err){
+        return res.status(500).json(err.message)
+    }
+})
+
+router.put('/issues/categories/:id', async (req, res) => {
+    try{
+        const {
+            id
+        } = req.params
+
+        const {
+            name,
+            importanceLevel,
+            problems
+        } = req.body
+
+        let isUpdated = await IssueCategory.updateOne({
+            _id: id
+        },{ name,importanceLevel,problems })
+
+        if(isUpdated){
+            return res.status(200).json('updated')
+        }else{
+            return res.status(404).json('issue category not found')
+        }
+    }catch(err){
+        return res.status(500).json(err.message)
+    }
+})
 
 router.get('/issues/complete', async (req, res) => {
     try{
         let issues = await Issue.find({
             status: 'complete'
-        }).populate({
-            path: 'machine',
-            ref: 'Machine'
         })
         return res.status(200).json(issues.reverse())
     }catch(err){
@@ -25,12 +114,7 @@ router.get('/issues/complete', async (req, res) => {
 
 router.get('/issues/current', async (req, res) => {
     try{
-        let issues = await Issue.find({
-            status: 'incomplete'
-        }).populate({
-            path: 'machine',
-            ref: 'machine'
-        })
+        let issues = await Issue.find({status: 'incomplete'})
 
         return res.status(200).json(issues.reverse())
     }catch(err){
@@ -38,13 +122,83 @@ router.get('/issues/current', async (req, res) => {
     }
 })
 
+router.get('/issues/waiting', async (req, res) => {
+    try{
+        let issues = await Issue.find({
+            status: 'waiting'
+        })
+        return res.status(200).json(issues.reverse())
+    }catch(err){
+        return res.status(500).json(err.message)
+    }
+})
+
+router.get('/issues/verified', async (req, res) => {
+    try{
+        let issues = await Issue.find({
+            $or:[
+                { status: 'redirected' },
+                {
+                    $and: [
+                        { publisher: 'driver' },
+                        {
+                            status: 'incomplete'
+                        },
+                    ]
+                }
+            ]
+        })
+        return res.status(200).json(issues.reverse())
+    }catch(err){
+        return res.status(500).json(err.message)
+    }
+})
+
+
+router.put('/issues/:id/waiting', async (req, res) => {
+    try{
+        const { id } = req.params
+        const { reason } = req.body
+        let issue = await Issue.findOne({ _id: id })
+        let currentDate = moment(moment.now()).format('yyyy-MM-DD HH:mm:ss')
+
+        issue.processes.push(`Issue is in waiting state at ${currentDate}`)
+        issue.status = 'waiting'
+        issue.statusText = reason
+
+        await issue.save()
+        return res.status(200).json('moved to waiting')
+    }catch(err){
+        return res.status(500).json(err.message)
+    }
+})
+
+router.delete('/issues/:id', async (req, res) => {
+    try{
+
+        let issue = await Issue.findOne({ _id: req.params.id })
+        await Machine.updateOne({ _id: issue.machine },{
+            'status': 'active',
+        })
+        await Issue.deleteOne({ _id: req.params.id })
+        return res.status(200).json('deleted')
+    }catch(err){
+        return res.status(500).json(err.message)
+    }
+})
 
 router.post('/issues', async (req, res) => {
     try{
         const {
             boardNumber,
+            pnid,
             notes,
             id,
+            category,
+            problem,
+            importanceLevel,
+            publisher,
+            phone
         } = req.body
 
         const machine = await Machine.findOne({
@@ -54,54 +208,110 @@ router.post('/issues', async (req, res) => {
             ref: 'Zone'
         })
 
-        const message = {
-            data: {
-                title: `Feil på ${machine.zoneLocation} Automat`,
-                body: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
-                type: 'issue',
-                id:id,
-            },
-            topic: 'nordic', // Replace with the topic you want to use
-          };
-          
-          let response = await admin
-            .messaging()
-            .send(message)
-
-            console.log('Message sent:', response);
             const now = new Date();
             const localDate = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
             const localDateString = localDate.toISOString().split('T')[0];
 
             const issueNotification = new IssueNotification({
                 title: `Feil på ${machine.zoneLocation} Automat`,
-                body: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
+                body: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,
                 date: localDateString,
                 fullDate: localDate.toDateString(),
                 type: 'issue'
             })
 
             await issueNotification.save()
+
+            let currentDate = moment(moment.now()).format('yyyy-MM-DD HH:mm:ss')
+            let localeDate = moment(moment.now()).format('yyyy-MM-DD')
+
             const issue = new Issue({
                 title: `Feil på Automat ${machine.zoneLocation}`,
-                description: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,
+                description: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,
                 notes: notes ?? null,
-                date: localDateString,
+                date: localeDate,
                 machine: id ,
                 serial: machine.serial,
                 zone: machine.zone.name,
                 zoneLocation: machine.zoneLocation,
-                boardNumber: boardNumber
+                boardNumber: boardNumber,
+                processes:[
+                    `${publisher} uploaded issue at ${currentDate}`,
+                ],
+                category: category,
+                problem: problem,
+                importanceLevel: importanceLevel,
+                publisher: publisher
             })
 
 
             await issue.save()
 
+            const message = {
+                data: {
+                    title: `Feil på ${machine.zoneLocation} Automat`,
+                    body: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,
+                    type: 'issue',
+                    id:id,
+                },
+                topic: 'nordic', // Replace with the topic you want to use
+              };
+              
+              let response = await admin
+                .messaging()
+                .send(message)
+    
+                console.log('Message sent:', response);
+
+            if(publisher == 'client' && phone){
+                console.log(phone);
+                let smsMessageFormatted = 
+`
+Hei, 
+Vi har mottatt din klager på ${machine.zoneLocation} og vi snart der for å fikse saken.
+
+Takk for beskjed.
+`
                 await sendAlertSMS({
-                    text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med skilt nr ${boardNumber}`,                    // to: `4747931499`
-                    // to: '4740088605'
-                    to: `4747931499`
+                    text: smsMessageFormatted,
+                    to: phone.toString()
+                    // to: `4747931499`
                 })
+            }
+
+                if(importanceLevel == 3 || importanceLevel == 2){
+                    console.log('ok i was 2 or 3');
+                    await sendAlertSMS({
+                        text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
+                        to: '4740088605'
+                        // to: `4747931499`
+                    })
+
+                    await sendAlertSMS({
+                        text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
+                        to: '4740088605'
+                        // to: `4747931499`
+                    })
+                }else if(importanceLevel == 1){
+                    console.log('ok i was 1 and that is very serious');
+                    await sendAlertSMS({
+                        text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
+                        to: '4740088605'
+                        // to: `4747931499`
+                    })
+
+                    await sendAlertSMS({
+                        text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
+                        to: '4740088605'
+                        // to: `4747931499`
+                    })
+
+                    await sendAlertSMS({
+                        text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
+                        to: '4740088605'
+                        // to: `4747931499`
+                    })
+                }
             await Machine.updateOne({
                 _id:id,
             },{ status: 'inactive' })
@@ -135,6 +345,68 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+router.post('/issues/:id/technician/reports', async (req, res) => {
+    try{
+        const { id } = req.params
+        const { token } = req.headers
+        let decoded = jwt.verify(token,process.env.JWT_SECRET_KEY)
+
+
+
+        let currentIssue = await Issue.findOne({_id: id})
+        let currentTech = await Manager.findOne({
+            username: decoded.username
+        })
+
+
+        let currentDate = moment(moment.now()).format('yyyy-MM-DD HH:mm:ss')
+
+
+        let issue = await Issue.findOne({ _id: id })
+        issue.status = 'complete'
+        issue.fixedAt = currentDate
+        issue.processes.push(`issue was fixed and closed by ${currentTech.name} at ${currentDate}`)
+        await issue.save()
+
+        console.log('Issue updated and closed');
+
+        let machineId = currentIssue.machine
+
+        let machineActivation = await Machine.updateOne({
+            _id: machineId,
+        },{
+            status: 'active',
+        })
+
+        if(machineActivation){
+            console.log('Machine activated');
+        }
+
+        const message = {
+            data: {
+                title: `P-Autmat ${currentIssue.zoneLocation} er i orden`,
+                body: ` P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentTech.name}`,
+                type: 'issue_closed',
+            },
+            topic: 'nordic', // Replace with the topic you want to use
+          };
+          
+          let response = await admin
+            .messaging()
+            .send(message)
+
+            await sendAlertSMS({
+                text: `P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentTech.name}`,
+                // to: `4747931499`
+                to: '4740088605'
+            })
+
+            return res.status(200).json('issue was successfully closed');
+    }catch(error){
+        return res.status(500).json(error.message)
+    }
+})
+
 router.post('/issues/:id/report', upload.single('report') ,async (req, res) => {
     console.log(req.params);
     try{
@@ -149,7 +421,7 @@ router.post('/issues/:id/report', upload.single('report') ,async (req, res) => {
         let image = process.env.BASE_URL + req.file.path.split('public')[1].replaceAll('\\','/')
         let currentIssue = await Issue.findOne({_id: req.params.id})
         const currentUser = await User.findOne({
-            accountId: pnid.toUpperCase(),
+            accountId: pnid,
         })
 
 
@@ -165,9 +437,6 @@ router.post('/issues/:id/report', upload.single('report') ,async (req, res) => {
         const now = new Date();
         const localDate = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
         const localDateString = localDate.toISOString().split('T')[0];
-
-        console.log(localDateString);
-        console.log(localDate);
 
         // Replace placeholders with dynamic data
         const template_data = {
@@ -222,15 +491,22 @@ router.post('/issues/:id/report', upload.single('report') ,async (req, res) => {
 
         await issueNotification.save()
 
-        let currentIssueUpdated = await Issue.updateOne({
-            _id: req.params.id,
-        },{
-            status: 'complete',
-        })
+        let currentDate = moment(moment.now()).format('yyyy-MM-DD HH:mm:ss')
 
-        if(currentIssueUpdated){
-            console.log('Issue updated and closed');
-        }
+        // let currentIssueUpdated = await Issue.updateOne({
+        //     _id: req.params.id,
+        // },{
+        //     status: 'complete',
+        //     fixedAt: currentDate
+        // })
+
+        let issue = await Issue.findOne({ _id: req.params.id })
+        issue.status = 'complete'
+        issue.fixedAt = currentDate
+        issue.processes.push(`issue was fixed and closed by ${currentUser.name} at ${currentDate}`)
+        await issue.save()
+
+        console.log('Issue updated and closed');
 
         let machineId = currentIssue.machine
 
@@ -259,8 +535,8 @@ router.post('/issues/:id/report', upload.single('report') ,async (req, res) => {
 
             await sendAlertSMS({
                 text: `P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentUser.name}`,
-                to: `4747931499`
-                // to: '4740088605'
+                // to: `4747931499`
+                to: '4740088605'
             })
 
 
@@ -281,6 +557,13 @@ router.post('/issues/:id/external/notify', async (req,res) =>{
             _id: req.params.id
         })
 
+        let currentDate = moment(moment.now()).format('yyyy-MM-DD HH:mm:ss')
+
+        issue.processes.push(`issue couldn't be fixed and notified managers at ${currentDate}`)
+        issue.status = 'redirected'
+        issue.statusText = reason
+        await issue.save()
+
         let smsMessageFormatted = `
 Feil på P-Automat ${issue.serial}  på ${issue.zoneLocation} ute av drift.
 
@@ -290,8 +573,8 @@ Grunn: ${reason}
 
         await sendAlertSMS({
             text: smsMessageFormatted,
-            // to: `4740088605`
-            to: `4747931499`
+            to: `4740088605`
+            // to: `4747931499`
         })
 
         await sendAlertSMS({
@@ -299,6 +582,43 @@ Grunn: ${reason}
             to: `4740088605`
             // to: `4747931499`
         })
+
+        let drivers = [
+            '4745078525',
+            '4746428404',
+            '4799564631',
+            '4791171227',
+            '4748641582',
+            '4792073338',
+            '4748663198',
+            '4798619269',
+            '4797300429',
+            '4799587640',
+            '4746330028',
+            '4799866900',
+            '4748346050',
+            '4740730294',
+            '4740747706',
+            '4748421818',
+            '4740088605',
+            '4745492045',
+            '4795885836',
+            '4747380151'
+        ]
+        let driversFormattedMessage = 
+`
+Hei,
+Ikke kontroll på ${issue.zoneLocation} til nærmere beskjed.
+
+Drift, Parknordic
+`
+
+for(let driver of drivers){
+    await sendAlertSMS({
+        text: driversFormattedMessage,
+        to: driver
+    })
+}
 
         return res.status(200).json({message: smsMessageFormatted})
     }catch(error){

@@ -34,11 +34,9 @@
         <!-- Content Header (Page header) -->
         <div class="content-header">
             <div class="container-fluid">
-                <div class="row mb-2">
-                <div class="col-sm-6">
-                </div><!-- /.col -->
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
+                <div class="row mb-2"><!-- /.col -->
+                <div class="col-sm-12">
+                    <ol class="breadcrumb float-sm-left">
                     <li class="breadcrumb-item"><a href="/">Hjem</a></li>
                     <li class="breadcrumb-item active">Biler</li>
                     </ol>
@@ -51,7 +49,7 @@
             <div class="d-flex justify-content-end align-items-center mb-2 container-fluid">
                 <a href="/cars/create" class="btn btn-info btn-sm mr-1">
                     <i class="fa fa-plus"></i>
-                    <span>Skape</span>
+                    <span>Legge til</span>
                 </a>
                 <button data-toggle="modal" data-target="#confirmAllDeleteModal" class="btn btn-danger btn-sm">
                     <i class="fa fa-trash"></i>
@@ -189,6 +187,11 @@
       $("#example1").DataTable({
         "responsive": true, "lengthChange": true, "autoWidth": false,
         "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+        "language": {
+        "emptyTable": "Ingen data tilgjengelig",
+        "infoEmpty": "Ingen data tilgjengelig Info",
+        "zeroRecords": "Det er ingen samsvarende data"
+        } ,
       
       }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });

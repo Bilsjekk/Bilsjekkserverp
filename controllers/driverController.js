@@ -21,7 +21,7 @@ const createNewDriver = async (req,res) =>{
         const { data, token } = req.headers
         const information = JSON.parse(decodeURIComponent(data))
 
-        let decodedToken = jwt.verify(token,'your-secret-key')
+        let decodedToken = jwt.verify(token,process.env.JWT_SECRET_KEY)
         let user = await User.findOne({ _id: decodedToken.userId })
 
 
@@ -52,7 +52,8 @@ const createNewDriver = async (req,res) =>{
     
                 sendAlertMail({
                     // to:'me@mutaz.no',
-                    to:"vaktleder@parknordic.no",
+                    // to:"vaktleder@parknordic.no",
+                    to:"alitarek99944@gmail.com",
                     subject: emailSubject,
                     text: emailText,
                     html: `<h2>${emailText}</h2>`                    
@@ -72,11 +73,11 @@ const createNewDriver = async (req,res) =>{
     
                 console.log(smsText)
     
-                await sendAlertSMS({
-                    text: smsText,
-                    to:"4747931499"
-                    // to:'4740088605'
-                });
+                // await sendAlertSMS({
+                //     text: smsText,
+                //     to:"4747931499"
+                //     // to:'4740088605'
+                // });
     
                 await Car.updateOne({ _id: information.carId },{
                     kilometers:0,
@@ -149,7 +150,12 @@ const createNewDriver = async (req,res) =>{
 
         const filledTemplate = Handlebars.compile(htmlTemplate)(template_data);
 
-        let filename = `driver_${Date.now()}.pdf`
+        const now = new Date();
+        const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+        const localDateString = localDate.toISOString().split('T')[0];
+        const localTimeString = localDate.toISOString().split('T')[1];
+
+        let filename = `Betjent_${user.accountId}_${localDateString}.pdf`
 
         // Generate PDF from filled template
         await page.setContent(filledTemplate);
@@ -158,11 +164,6 @@ const createNewDriver = async (req,res) =>{
         printBackground: true,
 
         format: 'A3' });
-
-        const now = new Date();
-        const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
-        const localDateString = localDate.toISOString().split('T')[0];
-        const localTimeString = localDate.toISOString().split('T')[1];
 
         let pdf = new PDF({
             name: filename,

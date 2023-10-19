@@ -25,14 +25,15 @@ const createNewCar = async (req,res) =>{
         await car.save()
 
         const data = JSON.stringify({
-            boardNumber,privateNumber,kilometers: +kilometers,
+            boardNumber,
+            privateNumber,
             _id: car._id
         }); // URL or any data you want to encode
         const qrCode = qr.image(data, { type: 'png' });
 
 
         // Generate a unique filename
-        const filename = `qrcode_${Date.now()}.png`;
+        const filename = `${boardNumber}_${privateNumber}.png`;
         const filePath = `public/qrcodes/${filename}`;
 
         const qrStream = qrCode.pipe(fs.createWriteStream(filePath));
@@ -71,7 +72,9 @@ const updateCar = async (req,res) =>{
         const { boardNumber, privateNumber,kilometers } = req.body
 
         const data = JSON.stringify({
-            boardNumber,privateNumber,kilometers: +kilometers
+            boardNumber,
+            privateNumber,
+            _id: id
         }); // URL or any data you want to encode
         const qrCode = qr.image(data, { type: 'png' });
 
