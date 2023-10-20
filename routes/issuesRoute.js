@@ -289,8 +289,8 @@ Takk for beskjed.
 
                     await sendAlertSMS({
                         text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
-                        //to: '4740088605'
-                        to: `4747931499`
+                        to: '4740088605'
+                        // to: `4747931499`
                     })
                 }else if(importanceLevel == 1){
                     console.log('ok i was 1 and that is very serious');
@@ -308,8 +308,8 @@ Takk for beskjed.
 
                     await sendAlertSMS({
                         text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
-                        //to: '4740088605'
-                        to: `4747931499`
+                        to: '4740088605'
+                        // to: `4747931499`
                     })
                 }
             await Machine.updateOne({
@@ -579,8 +579,8 @@ Grunn: ${reason}
 
         await sendAlertSMS({
             text: smsMessageFormatted,
-            //to: `4740088605`
-            to: `4747931499`
+            to: `4740088605`
+            // to: `4747931499`
         })
 
         let drivers = [
