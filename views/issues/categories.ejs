@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maskiner</title>
+    <title>P-Automater</title>
 
     <%- include('../components/headers') %>
 
@@ -35,8 +35,8 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-left">
                     <li class="breadcrumb-item"><a href="/">Hjem</a></li>
-                    <li class="breadcrumb-item active"><a href="/issues">Issues</a></li>
-                    <li class="breadcrumb-item active">Categories</li>
+                    <li class="breadcrumb-item active"><a href="/issues">Problemer</a></li>
+                    <li class="breadcrumb-item active">kategori</li>
                     </ol>
                 </div><!-- /.col -->
                 </div><!-- /.row -->
@@ -47,7 +47,7 @@
             <div class="d-flex justify-content-end align-items-center mb-2 container-fluid">
                 <a href="/issues/categories/create" class="btn btn-warning btn-sm mr-1">
                     <i class="fa fa-plus"></i>
-                    <span>Create category</span>
+                    <span>Opprett kategori</span>
                 </a>
                 <button data-toggle="modal" data-target="#confirmAllDeleteModal" class="btn btn-danger btn-sm">
                     <i class="fa fa-trash"></i>
@@ -61,7 +61,7 @@
                         <div class="card">
                             <div class="card-header">
                               <h3 class="card-title d-flex justify-content-between align-items-center">
-                                Maskindata
+                                P-Automatdata
                               </h3>
                             </div>
                             <!-- /.card-header -->
@@ -69,8 +69,8 @@
                               <table id="example1" class="table table-bordered table-striped text-center">
                                 <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>importance</th>
+                                    <th>Type</th>
+                                    <th>Betydning</th>
                                     <th>Problems</th>
                                     <th>Handlinger</th>
                                 </tr>
@@ -165,7 +165,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Do you want to delete all issue categories?
+                    Vil du slette alle problemkategorier?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
@@ -227,7 +227,7 @@
                         if (response.status == 200) {
                             Toast.fire({
                                 icon: 'success',
-                                title: "Issue Category deleted successfully"
+                                title: "Problemkategori slettet"
                             })
 
                             setTimeout(() => location.reload(),3000)
