@@ -311,6 +311,8 @@ router.get('/reports/general/:id', async (req, res) => {
       fixedBy: 'driver'
     })
 
+    console.log(inCompletedIssues.length);
+
     if(id == 0){
       let currentMonth = moment().month()
       completedIssues = completedIssues.filter(issue =>{
@@ -318,16 +320,17 @@ router.get('/reports/general/:id', async (req, res) => {
       })
 
       inCompletedIssues = inCompletedIssues.filter(issue =>{
-        return moment(issue.fixedAt).month() == currentMonth
+        return moment(moment(issue.date).format('YYYY-MM-DD')).isSame(moment().format('YYYY-MM-DD'),'month')
       })
 
+      console.log(inCompletedIssues.length);
       issues = issues.filter(issue =>{
         return moment(issue.date).month() == currentMonth
       })
 
 
       issuePublishedByDriver = issuePublishedByDriver.filter(issue =>{
-        return moment(issue.fixedAt).month() == currentMonth
+        return moment(issue.date).month() == currentMonth
       })
 
       issueSolvedByDriver = issueSolvedByDriver.filter(issue =>{
@@ -345,15 +348,15 @@ router.get('/reports/general/:id', async (req, res) => {
       })
 
       waitingIssues = waitingIssues.filter(issue =>{
-        return moment(issue.fixedAt).day() == currentDay && moment(issue.fixedAt).month() == currentMonth
+        return moment(issue.date).day() == currentDay && moment(issue.fixedAt).month() == currentMonth
       })
 
       inCompletedIssues = inCompletedIssues.filter(issue =>{
-        return moment(issue.fixedAt).day() == currentDay && moment(issue.fixedAt).month() == currentMonth
+        return moment(issue.date).day() == currentDay && moment(issue.fixedAt).month() == currentMonth
       })
 
       issuePublishedByDriver = issuePublishedByDriver.filter(issue =>{
-        return moment(issue.fixedAt).day() == currentDay && moment(issue.fixedAt).month() == currentMonth
+        return moment(issue.date).day() == currentDay && moment(issue.fixedAt).month() == currentMonth
       })
 
       issueSolvedByDriver = issueSolvedByDriver.filter(issue =>{
@@ -372,15 +375,15 @@ router.get('/reports/general/:id', async (req, res) => {
       })
 
       inCompletedIssues = inCompletedIssues.filter(issue =>{
-        return moment(moment(issue.fixedAt).format('YYYY-MM-DD')).isBetween(twoDaysAgo,currentDate,'days','[]')
+        return moment(moment(issue.date).format('YYYY-MM-DD')).isBetween(twoDaysAgo,currentDate,'days','[]')
       })
 
       waitingIssues = waitingIssues.filter(issue =>{
-        return moment(moment(issue.fixedAt).format('YYYY-MM-DD')).isBetween(twoDaysAgo,currentDate,'days','[]')
+        return moment(moment(issue.date).format('YYYY-MM-DD')).isBetween(twoDaysAgo,currentDate,'days','[]')
       })
 
       issuePublishedByDriver = issuePublishedByDriver.filter(issue =>{
-        return moment(moment(issue.fixedAt).format('YYYY-MM-DD')).isBetween(twoDaysAgo,currentDate,'days','[]')
+        return moment(moment(issue.date).format('YYYY-MM-DD')).isBetween(twoDaysAgo,currentDate,'days','[]')
       })
 
       issueSolvedByDriver = issueSolvedByDriver.filter(issue =>{
@@ -399,15 +402,15 @@ router.get('/reports/general/:id', async (req, res) => {
       })
 
       inCompletedIssues = inCompletedIssues.filter(issue =>{
-        return moment(moment(issue.fixedAt).format('YYYY-MM-DD')).isBetween(oneWeekAgo,currentDate,'days','[]')
+        return moment(moment(issue.date).format('YYYY-MM-DD')).isBetween(oneWeekAgo,currentDate,'days','[]')
       })
 
       waitingIssues = waitingIssues.filter(issue =>{
-        return moment(moment(issue.fixedAt).format('YYYY-MM-DD')).isBetween(oneWeekAgo,currentDate,'days','[]')
+        return moment(moment(issue.date).format('YYYY-MM-DD')).isBetween(oneWeekAgo,currentDate,'days','[]')
       })
 
       issuePublishedByDriver = issuePublishedByDriver.filter(issue =>{
-        return moment(moment(issue.fixedAt).format('YYYY-MM-DD')).isBetween(oneWeekAgo,currentDate,'days','[]')
+        return moment(moment(issue.date).format('YYYY-MM-DD')).isBetween(oneWeekAgo,currentDate,'days','[]')
       })
 
       issueSolvedByDriver = issueSolvedByDriver.filter(issue =>{
@@ -426,15 +429,15 @@ router.get('/reports/general/:id', async (req, res) => {
       })
 
       inCompletedIssues = inCompletedIssues.filter(issue =>{
-        return moment(moment(issue.fixedAt).format('YYYY-MM-DD')).isBetween(oneMonthAgo,currentDate,'days','[]')
+        return moment(moment(issue.date).format('YYYY-MM-DD')).isBetween(oneMonthAgo,currentDate,'days','[]')
       })
 
       waitingIssues = waitingIssues.filter(issue =>{
-        return moment(moment(issue.fixedAt).format('YYYY-MM-DD')).isBetween(oneMonthAgo,currentDate,'days','[]')
+        return moment(moment(issue.date).format('YYYY-MM-DD')).isBetween(oneMonthAgo,currentDate,'days','[]')
       })
 
       issuePublishedByDriver = issuePublishedByDriver.filter(issue =>{
-        return moment(moment(issue.fixedAt).format('YYYY-MM-DD')).isBetween(oneMonthAgo,currentDate,'days','[]')
+        return moment(moment(issue.date).format('YYYY-MM-DD')).isBetween(oneMonthAgo,currentDate,'days','[]')
       })
 
       issueSolvedByDriver = issueSolvedByDriver.filter(issue =>{
@@ -458,19 +461,19 @@ router.get('/reports/general/:id', async (req, res) => {
       })
 
       issues = issues.filter(issue =>{
-        return moment(moment(issue.fixedAt).format('YYYY-MM-DD')).isBetween(start,end,'days','[]')
+        return moment(moment(issue.date).format('YYYY-MM-DD')).isBetween(start,end,'days','[]')
       })
 
       inCompletedIssues = inCompletedIssues.filter(issue =>{
-        return moment(moment(issue.fixedAt).format('YYYY-MM-DD')).isBetween(start,end,'days','[]')
+        return moment(moment(issue.date).format('YYYY-MM-DD')).isBetween(start,end,'days','[]')
       })
 
       waitingIssues = waitingIssues.filter(issue =>{
-        return moment(moment(issue.fixedAt).format('YYYY-MM-DD')).isBetween(start,end,'days','[]')
+        return moment(moment(issue.date).format('YYYY-MM-DD')).isBetween(start,end,'days','[]')
       })
 
       issuePublishedByDriver = issuePublishedByDriver.filter(issue =>{
-        return moment(moment(issue.fixedAt).format('YYYY-MM-DD')).isBetween(start,end,'days','[]')
+        return moment(moment(issue.date).format('YYYY-MM-DD')).isBetween(start,end,'days','[]')
       })
 
       issueSolvedByDriver = issueSolvedByDriver.filter(issue =>{
