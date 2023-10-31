@@ -307,21 +307,15 @@ Takk for beskjed.
                 if(importanceLevel == 3 || importanceLevel == 2){
                     console.log('ok i was 2 or 3');
                     await sendAlertSMS({
-<<<<<<< HEAD
                         text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
-                        to: '4740088605'
-                        // to: `4747931499`
-=======
-                        text: `Automat som ligger i adressen ${machine.zoneLocation} er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
                         //to: '4740088605'
                         to: `4747931499`
->>>>>>> 0137c847b053bac586e4bdf4de4d088676762644
-                    })
+=                    })
 
                     await sendAlertSMS({
                         text: `Automat som ligger i adressen ${machine.zoneLocation} er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
-                        to: '4740088605'
-                        // to: `4747931499`
+                        //to: '4740088605'
+                        to: `4747931499`
                     })
 
                     let delivery_date = moment().format('YYYY-MM-DD HH:mm:ss')
@@ -341,11 +335,6 @@ Takk for beskjed.
                 }else if(importanceLevel == 1){
                     console.log('ok i was 1 and that is very serious');
                     await sendAlertSMS({
-<<<<<<< HEAD
-                        text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
-                        to: '4740088605'
-                        // to: `4747931499`
-=======
                         text: `Automat som ligger i adressen ${machine.zoneLocation} er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
                         //to: '4740088605'
                         to: `4747931499`
@@ -355,7 +344,6 @@ Takk for beskjed.
                         text: `Automat som ligger i adressen ${machine.zoneLocation} er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
                         //to: '4740088605'
                         to: `4747931499`
->>>>>>> 0137c847b053bac586e4bdf4de4d088676762644
                     })
 
                     await sendAlertSMS({
