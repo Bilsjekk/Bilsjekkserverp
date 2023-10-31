@@ -771,7 +771,7 @@ updateChart(initialData);
 let liveTimes = document.querySelectorAll('.live-time')
 setInterval(() => {
     for(let live in liveTimes) {
-        let startDate = moment(liveTimes.item(live).getAttribute('date'))
+        let startDate = moment(moment(liveTimes.item(live).getAttribute('date')).format('YYYY-MM-DD HH:mm:ss'));
         let endDate = moment(moment(moment.now()).format('yyyy-MM-DD HH:mm:ss'))
         let diff = moment.duration(endDate.diff(startDate))
         liveTimes.item(live).textContent = moment.utc(diff.asMilliseconds()).format("DD[d] HH:mm:ss");
