@@ -770,13 +770,19 @@ updateChart(initialData);
 
 let liveTimes = document.querySelectorAll('.live-time')
 setInterval(() => {
-    for(let live in liveTimes) {
-        let startDate = moment(moment(liveTimes.item(live).getAttribute('date')).format('YYYY-MM-DD HH:mm:ss'));
-        let endDate = moment(moment(moment.now()).format('YYYY-MM-DD HH:mm:ss'))
-        let diff = moment.duration(endDate.diff(startDate))
-        liveTimes.item(live).textContent = moment.utc(diff.asMilliseconds()).format("DD[d] HH:mm:ss");
+    for (let live in liveTimes) {
+        let startDate = moment(liveTimes.item(live).getAttribute('date'));
+        let endDate = moment();
+        let diff = moment.duration(endDate.diff(startDate));
+        let days = diff.days();
+        let hours = diff.hours();
+        let minutes = diff.minutes();
+        let seconds = diff.seconds();
+        let durationText = days > 0 ? `${days}D ` : '';
+        durationText += `${hours}H ${minutes}M ${seconds}S`;
+        liveTimes.item(live).textContent = durationText;
     }
-},1000)
+}, 1000);
 
     async function initalizeGeneralNumbers(id,lowerbound,upperbound) {
         let ci = document.getElementById('ci-holder')
