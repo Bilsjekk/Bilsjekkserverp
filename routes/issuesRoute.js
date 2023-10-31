@@ -310,7 +310,7 @@ Takk for beskjed.
                         text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
                         //to: '4740088605'
                         to: `4747931499`
-=                    })
+                    })
 
                     await sendAlertSMS({
                         text: `Automat som ligger i adressen ${machine.zoneLocation} er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
