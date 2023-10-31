@@ -312,7 +312,7 @@ router.get('/reports/general/:id', async (req, res) => {
     })
 
     console.log(inCompletedIssues.length);
-
+    
     if(id == 0){
       let currentMonth = moment().month()
       completedIssues = completedIssues.filter(issue =>{

@@ -247,7 +247,22 @@ holderSortableArray.sort((a,b) =>{
 })
 
 
-console.log(holderSortableArray);
+let issueGroupedIntoImportance = issues.reduce((result, item) => {
+  const key = item.importanceLevel;
+  if (key !== undefined && key !== null) {
+    if (!result[key]) {
+      result[key] = [];
+    }
+    result[key].push(item);
+  }
+  return result;
+}, {});
+
+Object.keys(issueGroupedIntoImportance).map(key => {
+  issueGroupedIntoImportance[key] = (issueGroupedIntoImportance[key].length / issues.length) * 100
+})
+
+console.log(issueGroupedIntoImportance);
 
   return res.render('reports/dashboard',{
     machines: JSON.stringify(machines),
@@ -255,7 +270,8 @@ console.log(holderSortableArray);
     waitingMachines: waitingMachines.length,
     activeMachines: activeMachines.length,
     inActiveMachines:inActiveMachines.length,
-
+    issueGroupedIntoImportance: JSON.stringify(issueGroupedIntoImportance),
+    issueGroupedIntoImportanceTotalIssues: issues.length,
     issuesGroupedIntoMonths: JSON.stringify(issuesGroupedIntoMonths),
     holderSortableArray: JSON.stringify(holderSortableArray),
 
