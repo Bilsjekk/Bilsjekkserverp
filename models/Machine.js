@@ -10,6 +10,7 @@ const machineSchema = mongoose.Schema({
     },
     status:{
       type: String,
+      enum: ['active','waiting','inactive'],
       default: 'active'
     },
     qrcode:{
@@ -23,6 +24,16 @@ const machineSchema = mongoose.Schema({
     },
     zoneLocation:{
       type: String,
+      required: true
+    },
+
+    longitude:{
+      type: Number,
+      required: true
+    },
+
+    latitude:{
+      type: Number,
       required: true
     },
 

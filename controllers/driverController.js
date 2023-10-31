@@ -51,8 +51,8 @@ const createNewDriver = async (req,res) =>{
     
     
                 sendAlertMail({
-                    // to:'me@mutaz.no',
-                    to:"vaktleder@parknordic.no",
+                    to:'me@mutaz.no',
+                    // to:"vaktleder@parknordic.no",
                     // to:"alitarek99944@gmail.com",
                     subject: emailSubject,
                     text: emailText,
@@ -73,11 +73,11 @@ const createNewDriver = async (req,res) =>{
     
                 console.log(smsText)
     
-                 await sendAlertSMS({
-                     text: smsText,
-                     to:"4747931499"
-                     //to:'4740088605'
-                 });
+                await sendAlertSMS({
+                    text: smsText,
+                    // to:"4747931499"
+                    to:'4740088605'
+                });
     
                 await Car.updateOne({ _id: information.carId },{
                     kilometers:0,

@@ -16,11 +16,6 @@ const IssueSchema = new mongoose.Schema({
         default: null
     },
 
-    totalTime: {
-        type: String,
-        default: null
-    },
-
     publisher:{
         type: String,
         default: 'unknown'
@@ -29,6 +24,35 @@ const IssueSchema = new mongoose.Schema({
     fixedBy:{
         type: String,
         default: null
+    },
+
+    fixedByIdentifier:{
+        type: String,
+        default: null
+    },
+
+    wasRedirected:{
+        type: Boolean,
+        default: false
+    },
+
+    redirectStartTime:{
+        type: String,
+        default: null
+    },
+
+    waitingStartTime:{
+        type: String,
+        default: null
+    },
+
+    WaitingEndTime:{
+        type: String,
+        default: null
+    },
+    wasInWaitingState:{
+        type: Boolean,
+        default: false
     },
 
     processes:{

@@ -61,19 +61,8 @@
                                                     <label for="serial" class="form-label">Gruppe nr:</label>
                                                     <input type="number" id="serial" class="form-control" value="<%= machine.serial %>" required>
                                                 </div>
-                                        
-                                                <div class="mb-3">
-                                                    <div class="custom-control custom-radio">
-                                                        <input class="custom-control-input" type="radio" id="active" name="status" value="active" <%= machine.status == 'active' ? 'checked' : '' %>>
-                                                        <label for="active" class="custom-control-label">Aktiv</label>
-                                                    </div>
-                                                    <div class="custom-control custom-radio">
-                                                        <input class="custom-control-input custom-control-input-danger" type="radio" id="inactive" name="status" value="inactive" <%= machine.status == 'inactive' ? 'checked' : '' %>>
-                                                        <label for="inactive" class="custom-control-label">Inaktiv</label>
-                                                    </div>
-                                                      
-                                                
-                                                </div>
+
+                                
                                                 <div class="form-group">
                                                     <label>Route</label>
                                                     <select class="custom-select" id="zone">
@@ -172,19 +161,40 @@ var Toast = Swal.mixin({
   async function updateMachine() {
             const machineId = '<%= machine._id %>';
             const serial = document.getElementById('serial').value;
-            const statusActive = document.getElementById('active').checked;
-            const status = statusActive ? 'active' : 'inactive';
             const zoneLocation = document.getElementById('zoneLocation').value;
+            let latitude = 0;
+            let longitude = 0;
             const zone = document.getElementById('zone').value;
             const categories = $("#category").val()
 
 
+            const apiKey = 'AIzaSyB_RMmoc5iVAGRDfxi8WLjQc27_QocN-eI';
+
+            // Define the geocoding request URL
+            const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(zoneLocation)}&key=${apiKey}`;
+            let geoResponse = await fetch(geocodingUrl)
+            let geoJson = await geoResponse.json();
+
+            if (geoResponse.status == 200 && geoJson.results.length > 0) {
+                  // Extract the latitude and longitude from the first result
+                  const location = geoJson.results[0].geometry.location;
+                  latitude = location.lat;
+                  longitude = location.lng;
+                  
+
+                }
+
+
+                console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+
+
             const machineData = {
                 serial,
-                status,
                 zone,
                 zoneLocation,
                 categories,
+                latitude,
+                longitude
             };
 
             try {

@@ -11,6 +11,7 @@ const moment = require('moment');
 const IssueCategory = require('../models/IssueCategory')
 const Manager = require('../models/Manager')
 const jwt = require('jsonwebtoken')
+const SMS = require('../models/SMS')
 
 router.get('/issues/categories', async (req, res) => {
     try{
@@ -165,8 +166,15 @@ router.put('/issues/:id/waiting', async (req, res) => {
         issue.processes.push(`Issue is in waiting state at ${currentDate}`)
         issue.status = 'waiting'
         issue.statusText = reason
+        issue.waitingStartTime = moment(currentDate).format('YYYY-MM-DD')
+        issue.wasInWaitingState = true
 
         await issue.save()
+
+        let machineId = issue.machine
+        await Machine.updateOne({
+            _id: machineId
+        },{ status: 'waiting'})
         return res.status(200).json('moved to waiting')
     }catch(err){
         return res.status(500).json(err.message)
@@ -212,6 +220,9 @@ router.post('/issues', async (req, res) => {
             const localDate = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
             const localDateString = localDate.toISOString().split('T')[0];
 
+            let currentDate = moment(moment.now()).format('yyyy-MM-DD HH:mm:ss')
+
+
             const issueNotification = new IssueNotification({
                 title: `Feil på ${machine.zoneLocation} Automat`,
                 body: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,
@@ -222,14 +233,11 @@ router.post('/issues', async (req, res) => {
 
             await issueNotification.save()
 
-            let currentDate = moment(moment.now()).format('yyyy-MM-DD HH:mm:ss')
-            let localeDate = moment(moment.now()).format('yyyy-MM-DD')
-
             const issue = new Issue({
                 title: `Feil på Automat ${machine.zoneLocation}`,
                 description: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,
                 notes: notes ?? null,
-                date: localeDate,
+                date: currentDate,
                 machine: id ,
                 serial: machine.serial,
                 zone: machine.zone.name,
@@ -243,6 +251,11 @@ router.post('/issues', async (req, res) => {
                 importanceLevel: importanceLevel,
                 publisher: publisher
             })
+
+            if(publisher == 'driver'){
+                issue.wasRedirected = true
+                issue.redirectStartTime = moment(currentDate).format('YYYY-MM-DD')
+            }
 
 
             await issue.save()
@@ -277,14 +290,26 @@ Takk for beskjed.
                     to: phone.toString()
                     // to: `4747931499`
                 })
+
+                let delivery_date = moment().format('YYYY-MM-DD HH:mm:ss')
+
+                let smsMessage = new SMS({
+                    delivery_date,
+                    delivered_to: [phone.toString()],
+                    total_received: 1,
+                    content: smsMessageFormatted,
+                    about: 'notify client issue was received',
+                })
+
+                await smsMessage.save()
             }
 
                 if(importanceLevel == 3 || importanceLevel == 2){
                     console.log('ok i was 2 or 3');
                     await sendAlertSMS({
                         text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
-                        //to: '4740088605'
-                        to: `4747931499`
+                        to: '4740088605'
+                        // to: `4747931499`
                     })
 
                     await sendAlertSMS({
@@ -292,18 +317,27 @@ Takk for beskjed.
                         to: '4740088605'
                         // to: `4747931499`
                     })
+
+                    let delivery_date = moment().format('YYYY-MM-DD HH:mm:ss')
+
+                    let smsMessage = new SMS({
+                        delivery_date,
+                        delivered_to: [
+                            '4740088605',
+                            '4740088605'
+                        ],
+                        total_received: 2,
+                        content: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,
+                        about: 'notify about low or medium importance issue',
+                    })
+    
+                    await smsMessage.save()
                 }else if(importanceLevel == 1){
                     console.log('ok i was 1 and that is very serious');
                     await sendAlertSMS({
                         text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
-                        //to: '4740088605'
-                        to: `4747931499`
-                    })
-
-                    await sendAlertSMS({
-                        text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
-                        //to: '4740088605'
-                        to: `4747931499`
+                        to: '4740088605'
+                        // to: `4747931499`
                     })
 
                     await sendAlertSMS({
@@ -311,6 +345,28 @@ Takk for beskjed.
                         to: '4740088605'
                         // to: `4747931499`
                     })
+
+                    await sendAlertSMS({
+                        text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
+                        to: '4740088605'
+                        // to: `4747931499`
+                    })
+
+                    let delivery_date = moment().format('YYYY-MM-DD HH:mm:ss')
+
+                    let smsMessage = new SMS({
+                        delivery_date,
+                        delivered_to: [
+                            '4740088605',
+                            '4740088605',
+                            '4740088605',
+                        ],
+                        total_received: 3,
+                        content: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,
+                        about: 'notify about high importance issue',
+                    })
+    
+                    await smsMessage.save()
                 }
             await Machine.updateOne({
                 _id:id,
@@ -366,7 +422,56 @@ router.post('/issues/:id/technician/reports', async (req, res) => {
         issue.status = 'complete'
         issue.fixedAt = currentDate
         issue.processes.push(`issue was fixed and closed by ${currentTech.name} at ${currentDate}`)
+
+        issue.fixedByIdentifier = currentTech.username
+        issue.fixedBy = 'technician'
+
+        if(issue.wasInWaitingState){
+            issue.WaitingEndTime = moment(currentDate).format('YYYY-MM-DD')
+        }
         await issue.save()
+
+        const browser = await puppeteer.launch({
+            headless: 'new',
+            args:['--no-sandbox']
+        });
+        const page = await browser.newPage();
+
+        // Load the HTML template
+        const htmlTemplate = fs.readFileSync('templates/machine_fix_report_tech.html', 'utf8');
+
+        const now = new Date();
+        const localDate = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
+        const localDateString = localDate.toISOString().split('T')[0];
+
+        // Replace placeholders with dynamic data
+        const template_data = {
+            details: details,
+            notes: notes ,
+            clientNotes: currentIssue.notes,
+            boardNumber:currentIssue.boardNumber,
+            date: localDateString,
+            fullDate: localDate.toDateString(),
+            serial: currentIssue.serial,
+            zone: currentIssue.zone,
+            zoneLocation: currentIssue.zoneLocation,
+            username: currentTech.username,
+            name: currentTech.name
+        };
+
+        const filledTemplate = Handlebars.compile(htmlTemplate)(template_data);
+        let up_date = moment().format('YYYY-MM-DD')
+        let filename = `technician_machine_fix_report_${up_date}.pdf`
+
+        // Generate PDF from filled template
+        await page.setContent(filledTemplate);
+        await page.pdf({ path: `./public/profiles/${filename}`,
+        
+        printBackground: true,
+
+        format: 'A3' });
+
+        await browser.close();
 
         console.log('Issue updated and closed');
 
@@ -397,9 +502,23 @@ router.post('/issues/:id/technician/reports', async (req, res) => {
 
             await sendAlertSMS({
                 text: `P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentTech.name}`,
-                to: `4747931499`
-                //to: '4740088605'
+                // to: `4747931499`
+                to: '4740088605'
             })
+
+            let delivery_date = moment().format('YYYY-MM-DD HH:mm:ss')
+
+            let smsMessage = new SMS({
+                delivery_date,
+                delivered_to: [
+                    '4740088605',
+                ],
+                content: `P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentTech.name}`,
+                total_received: 1,
+                about: 'Technician uploads fix report',
+            })
+
+            await smsMessage.save()
 
             return res.status(200).json('issue was successfully closed');
     }catch(error){
@@ -455,8 +574,8 @@ router.post('/issues/:id/report', upload.single('report') ,async (req, res) => {
         };
 
         const filledTemplate = Handlebars.compile(htmlTemplate)(template_data);
-
-        let filename = `machine_fix_report_${Date.now()}.pdf`
+        let up_date = moment().format('YYYY-MM-DD')
+        let filename = `machine_fix_report_${up_date}.pdf`
 
         // Generate PDF from filled template
         await page.setContent(filledTemplate);
@@ -504,6 +623,12 @@ router.post('/issues/:id/report', upload.single('report') ,async (req, res) => {
         issue.status = 'complete'
         issue.fixedAt = currentDate
         issue.processes.push(`issue was fixed and closed by ${currentUser.name} at ${currentDate}`)
+        issue.fixedByIdentifier = currentUser.accountId
+        issue.fixedBy = 'driver'
+
+        if(issue.wasInWaitingState){
+            issue.WaitingEndTime = moment(currentDate).format('YYYY-MM-DD') 
+        }
         await issue.save()
 
         console.log('Issue updated and closed');
@@ -535,12 +660,24 @@ router.post('/issues/:id/report', upload.single('report') ,async (req, res) => {
 
             await sendAlertSMS({
                 text: `P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentUser.name}`,
-                to: `4747931499`
-                //to: '4740088605'
+                // to: `4747931499`
+                to: '4740088605'
             })
 
 
+            let delivery_date = moment().format('YYYY-MM-DD HH:mm:ss')
 
+            let smsMessage = new SMS({
+                delivery_date,
+                delivered_to: [
+                    '4740088605',
+                ],
+                content: `P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentUser.name}`,
+                total_received: 1,
+                about: 'User Upload Fix Report',
+            })
+
+            await smsMessage.save()
 
         return res.status(200).json({ message: 'PDF generated and saved successfully' });
     }catch(err){
@@ -562,6 +699,9 @@ router.post('/issues/:id/external/notify', async (req,res) =>{
         issue.processes.push(`issue couldn't be fixed and notified managers at ${currentDate}`)
         issue.status = 'redirected'
         issue.statusText = reason
+
+        issue.redirectStartTime = currentDate
+        issue.wasRedirected = true
         await issue.save()
 
         let smsMessageFormatted = `
@@ -573,8 +713,8 @@ Grunn: ${reason}
 
         await sendAlertSMS({
             text: smsMessageFormatted,
-            //to: `4740088605`
-            to: `4747931499`
+            to: `4740088605`
+            // to: `4747931499`
         })
 
         await sendAlertSMS({
@@ -582,6 +722,21 @@ Grunn: ${reason}
             to: `4740088605`
             // to: `4747931499`
         })
+
+        let delivery_date = moment().format('YYYY-MM-DD HH:mm:ss')
+
+        let smsMessage = new SMS({
+            delivery_date,
+            delivered_to: [
+                '4740088605',
+                '4740088605'
+            ],
+            content: smsMessageFormatted,
+            total_received: 2,
+            about: 'issue redirected by driver',
+        })
+
+        await smsMessage.save()
 
         let drivers = [
             '4745078525',
@@ -619,6 +774,16 @@ for(let driver of drivers){
         to: driver
     })
 }
+
+let smsAnotherMessage = new SMS({
+    delivery_date,
+    delivered_to: drivers,
+    content: driversFormattedMessage,
+    total_received: drivers.length,
+    about: 'issue redirected by driver',
+})
+
+await smsAnotherMessage.save()
 
         return res.status(200).json({message: smsMessageFormatted})
     }catch(error){

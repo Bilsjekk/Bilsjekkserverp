@@ -192,6 +192,7 @@ const machinesRouter = require('./routes/machinesRoute')
 const issueNotificationRouter = require('./routes/issueNotificationRoute')
 const issuesRouter = require('./routes/issuesRoute')
 const reportRouter = require('./routes/reportRoute')
+const issueReportRouter = require('./routes/issueReportRoute')
 
 
 app.use(
@@ -217,7 +218,8 @@ app.use(
     carRouter,
     locationRouter,
     imeiRouter,
-    zoneRouter
+    zoneRouter,
+    issueReportRouter
     )
     
 
@@ -248,7 +250,8 @@ app.use(
     carRouter,
     locationRouter,
     imeiRouter,
-    zoneRouter
+    zoneRouter,
+    issueReportRouter
     )
 
 const driverFront = require('./routes/driverFront')

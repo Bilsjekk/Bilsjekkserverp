@@ -4,7 +4,9 @@ const IssueReport = require('../models/IssueReport')
 const jwt = require('jsonwebtoken')
 const Manager = require('../models/Manager')
 
-
+const Machine = require('../models/Machine')
+const Issue = require('../models/Issue')
+const moment = require('moment');
 
 router.get('/reports', async (req, res) => {
   try{
@@ -23,5 +25,245 @@ router.get('/reports', async (req, res) => {
     res.status(500).send(err.message);
   }
 });
+
+router.get('/reports/dashboard', async (req, res) => {
+  let machines = await Machine.find()
+  let waitingMachines = await Machine.find({
+    status: 'waiting'
+  })
+  let activeMachines = await Machine.find({
+    status: 'active'
+  })
+  let inActiveMachines = await Machine.find({
+    status: 'inactive'
+  })
+
+  let issues = await Issue.find()
+  let waitingIssues = await Issue.find({
+    status: 'waiting'
+  })
+
+  let completedIssues = await Issue.find({
+    status: 'complete'
+  })
+
+  let inCompletedIssues = await Issue.find({
+    status: 'incomplete'
+  })
+
+  let issuePublishedByDriver = await Issue.find({
+    publisher: 'driver'
+  })
+
+  let issueSolvedByDriver = await Issue.find({
+    fixedBy: 'driver'
+  })
+
+  let issueSolvedHours = completedIssues.map(ic => {
+    let end = moment(ic.fixedAt)
+    let start = moment(ic.date)
+
+    let diff = moment.duration(end.diff(start))
+    return diff.asHours()
+  })
+
+  issueSolvedHours = issueSolvedHours.filter(Boolean)
+  let issueSolvedHoursSum = issueSolvedHours.reduce((sum, hour) => sum + hour,0)
+  let issueSolvedHoursAverage = (issueSolvedHoursSum / issueSolvedHours.length).toFixed(2)
+  let fraction = issueSolvedHoursAverage.split('.')
+  fraction[0] = fraction[0] + 'H'
+  fraction[1] = ((+fraction[1] / 100) * 60).toFixed(2) + 'M'
+  issueSolvedHoursAverage = fraction.join(' ')
+
+
+  let issuesWereInWaitingState = await Issue.find({
+    wasInWaitingState: true
+  })
+
+  let issueWaitingHours = issuesWereInWaitingState.map(iws => {
+    let end = moment(iws.WaitingEndTime)
+    let start = moment(iws.waitingStartTime)
+
+    let diff = moment.duration(end.diff(start))
+    return diff.asHours()
+  })
+
+  issueWaitingHours = issueWaitingHours.filter(Boolean)
+  let issueSolvedWaitingHoursSum = issueWaitingHours.reduce((sum, hour) => sum + hour,0)
+  let issueSolvedWaitingHoursAverage = issueWaitingHours.length > 0 ? 
+    (issueSolvedWaitingHoursSum / issueWaitingHours.length).toFixed(2) : 0
+
+  let issueWereRedirected = await Issue.find({
+    wasRedirected: true
+  })
+
+  let issueRedirectHours = issueWereRedirected.map(iwr =>{
+    let end = moment(iwr.fixedAt)
+    let start = moment(iwr.redirectStartTime)
+
+    let diff = moment.duration(end.diff(start))
+    return diff.asHours()
+  })
+
+  issueRedirectHours = issueRedirectHours.filter(Boolean)
+  let issueRedirectHoursSum = issueRedirectHours.reduce((sum, hour) => sum + hour, 0)
+  let issueRedirectHoursAverage = issueRedirectHours.length > 0 ?
+    (issueRedirectHoursSum / issueRedirectHours.length) : 0
+
+    let reports = (await IssueReport.find()).reverse()
+    reports = reports.slice(0,5)
+
+
+
+
+
+    let issueGroupedIntoDates = completedIssues.reduce((result, item) => {
+      let key = item.date;
+      if (key !== undefined && key !== null) {
+        key = moment(key).format('YYYY-MM-DD')
+
+        if (!result[key]) {
+          result[key] = [];
+        }
+        let end = moment(item.fixedAt)
+        let start = moment(item.date)
+        
+        let diff = moment.duration(end.diff(start))
+        result[key].push(diff.asHours())
+        result[key] = result[key].filter(Boolean)
+      }
+      return result;
+    }, {});
+
+    let parsedGroupedDates = []
+    for(let key in issueGroupedIntoDates){
+      const values = issueGroupedIntoDates[key];
+    const sum = values.reduce((acc, value) => acc + value, 0);
+    const average = sum / values.length;
+    parsedGroupedDates.push({
+      date: key,
+      value: average.toFixed(2),
+    })
+    }
+
+
+    let issues_2 = await Issue.find()
+let issuesGroupedIntoMonths = issues_2.reduce((result, item) =>{
+  let key = item.date
+  if(key !== undefined && key !== null){
+    key = moment(key).format('YYYY-MM')
+    if (!result[key]) {
+      result[key] = [];
+    }
+
+    result[key].push(item)
+    return result
+  }
+},{})
+
+
+Object.keys(issuesGroupedIntoMonths).forEach(key => {
+    let issues = issuesGroupedIntoMonths[key]
+
+    let issueGroupedIntoSerials = issues.reduce((result, item) => {
+      const key = item.zoneLocation;
+      if (key !== undefined && key !== null) {
+        if (!result[key]) {
+          result[key] = [];
+        }
+        result[key].push(item);
+      }
+      return result;
+    }, {});
+
+    let groupsIntoNumbers = 0
+    for(let key in issueGroupedIntoSerials){
+      if(issueGroupedIntoSerials.hasOwnProperty(key) && issueGroupedIntoSerials[key].length >= 5){
+        groupsIntoNumbers += Math.floor(issueGroupedIntoSerials[key].length / 5)
+      }
+    }
+
+    let zoneLocationSet = []
+
+    Object.keys(issueGroupedIntoSerials).forEach(key => {
+      zoneLocationSet.push({
+        zoneLocation: key,
+        repeat: issueGroupedIntoSerials[key].length >= 5 ?  Math.floor(issueGroupedIntoSerials[key].length / 5) : undefined
+      })
+    })
+
+    console.log(zoneLocationSet);
+
+    issuesGroupedIntoMonths[key] = {
+      totalIssues: issuesGroupedIntoMonths[key].length,
+      totalRepeated: groupsIntoNumbers,
+      zoneLocationSet: zoneLocationSet
+    }
+})
+
+
+let issueGroupedIntoIdentifiers = completedIssues.reduce((result, item) => {
+  const key = item.fixedByIdentifier;
+  if (key !== undefined && key !== null) {
+    if (!result[key]) {
+      result[key] = [];
+    }
+    result[key].push(item);
+  }
+  return result;
+}, {});
+
+
+
+let holder = {}
+
+Object.keys(issueGroupedIntoIdentifiers).forEach((key) =>{
+  let list = issueGroupedIntoIdentifiers[key]
+  let sumx = list.reduce((sum, item) =>{
+    let end = moment(item.fixedAt)
+  let start = moment(item.date)
+
+
+
+  let diff = moment.duration(end.diff(start))
+  return sum + diff.asHours()
+  },0)
+
+  avgx = sumx / list.length
+
+  holder[key] = avgx
+})
+
+let holderSortableArray = []
+for(let key in holder){
+  holderSortableArray.push({
+    identifier: key,
+    value: holder[key]
+  })
+}
+
+holderSortableArray.sort((a,b) =>{
+  return a.value - b.value
+})
+
+
+console.log(holderSortableArray);
+
+  return res.render('reports/dashboard',{
+    machines: JSON.stringify(machines),
+    issues: [...inCompletedIssues,...waitingIssues],
+    waitingMachines: waitingMachines.length,
+    activeMachines: activeMachines.length,
+    inActiveMachines:inActiveMachines.length,
+
+    issuesGroupedIntoMonths: JSON.stringify(issuesGroupedIntoMonths),
+    holderSortableArray: JSON.stringify(holderSortableArray),
+
+    reports,
+
+    issueGroupedIntoDates,
+    parsedGroupedDates: JSON.stringify(parsedGroupedDates)
+  })
+})
 
 module.exports = router

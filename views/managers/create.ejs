@@ -77,8 +77,8 @@
 
                           <div class="form-group">
                             <select class="custom-select" id="role">
-                              <option value="manager">Manager</option>
-                              <option value="technician">Technician</option>
+                              <option value="manager">Teamleder</option>
+                              <option value="technician">Teknikker</option>
                             </select>
                           </div>
 
@@ -86,7 +86,7 @@
                             <div class="form-group flex-grow-1 mr-2">
                                 <select class="custom-select" id="method">
                                   <option value="GET">Lese</option>
-                                  <option value="POST">Skape</option>
+                                  <option value="POST">Legge til</option>
                                   <option value="DELETE">Slett</option>
                                   <option value="PUT">Oppdater</option>
                                 </select>
@@ -101,8 +101,8 @@
                                   <option value="zones">Soner</option>
                                   <option value="machines">Maskiner</option>
                                   <option value="imeis">Imeis</option>
-                                  <option value="postals">Post</option>
-                                  <option value="scans">Skanner</option>
+                                  <option value="postals">Send per post</option>
+                                  <option value="scans">Makulering</option>
                                   <option value="notifications">Varsler</option>
                                   <option value="settings">Innstillinger</option>
                                   <option value="archieve">Arkiv</option>
@@ -113,7 +113,7 @@
                                 </select>
                               </div>
 
-                              <div class="btn btn-info" onclick="addPermission()">Add</div>
+                              <div class="btn btn-info" onclick="addPermission()">Legge til</div>
 
 
                           </div>
@@ -123,7 +123,7 @@
                           </div>
 
                           <div class="btn-group d-flex">
-                            <button type="button" class="btn btn-info btn-sm" onclick="createManager()">Skape</button>
+                            <button type="button" class="btn btn-info btn-sm" onclick="createManager()">Legge til</button>
                             <a href="/managers" class="btn btn-secondary btn-sm">Avbryt</a>
                           </div>
                     </form>

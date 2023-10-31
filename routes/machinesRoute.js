@@ -53,13 +53,15 @@ router.get('/machines/:id', async (req, res) => {
 
 router.post('/machines', async (req, res) => {
     try{
-        const { serial,zone,shiftNumber,zoneLocation,categories } = req.body
+        const { serial,zone,shiftNumber,zoneLocation,categories,latitude,longitude } = req.body
         let machine = new Machine({
             serial,
             zone,
             zoneLocation,
             shiftNumber,
-            categories
+            categories,
+            latitude,
+            longitude,
         })
         await machine.save()
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lag maskin</title>
+    <title>Desgine P-Automat</title>
     <!-- Add Bootstrap CSS link -->
     <%- include('../components/headers.ejs') %>
       <!-- SweetAlert2 -->
@@ -28,8 +28,8 @@
                 <div class="col-sm-12">
                     <ol class="breadcrumb float-sm-left">
                     <li class="breadcrumb-item"><a href="/">Hjem</a></li>
-                    <li class="breadcrumb-item"><a href="/issues/categories">Machine Categories</a></li>
-                    <li class="breadcrumb-item active">Create</li>
+                    <li class="breadcrumb-item"><a href="/issues/categories">P-Automat kategori</a></li>
+                    <li class="breadcrumb-item active">Opprett</li>
                     </ol>
                 </div><!-- /.col -->
                 </div><!-- /.row -->
@@ -43,7 +43,7 @@
                         <div class="card">
                             <div class="card-header">
                               <h3 class="card-title d-flex justify-content-between align-items-center">
-                                Create category
+                                Opprett kategori
                               </h3>
                             </div>
                             <!-- /.card-header -->
@@ -64,9 +64,9 @@
                                                   <div class="form-group">
                                                     <label>Importance</label>
                                                     <select class="custom-select" id="importanceLevel" name="importanceLevel">
-                                                        <option value="1">High</option>
+                                                        <option value="1">Høy</option>
                                                         <option value="2">Medium</option>
-                                                        <option value="3">Low</option>
+                                                        <option value="3">Lav</option>
                                                     </select>
                                                   </div>
 
@@ -138,10 +138,10 @@
     },
     messages: {
       name: {
-        required: "Enter category name",
+        required: "Skriv inn kategorinavn",
       },
       importanceLevel: {
-        required: "please choose importance level",
+        required: "Velg viktighetsnivå",
       },
     },
     errorElement: 'span',
@@ -184,7 +184,7 @@
                 if (response.status == 200) {
                     Toast.fire({
                         icon : 'success',
-                        title : "Category created successfully"
+                        title : "Kategori opprettet"
                     })
                     setTimeout(() =>{
                         location.href = '/issues/categories'

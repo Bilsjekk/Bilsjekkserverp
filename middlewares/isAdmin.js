@@ -15,7 +15,7 @@ const isAdmin = (req,res,next) =>{
 
     let token = req.cookies.jwt_token;
 
-    let decodedToken = jwt.verify(token, 'your-secret-key');
+    let decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
     if(decodedToken.role == 'admin'){
         return next();
     }

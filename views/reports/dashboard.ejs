@@ -1,0 +1,1054 @@
+
+<!doctype html>
+<html lang="en" dir="">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Insta Dash | Responsive Bootstrap 4 Admin Dashboard Template</title>
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" />
+    <link rel="stylesheet" href="/assets/css/backend-plugin.min.css?v=2.0.0">
+    <link rel="stylesheet" href="/assets/css/backend.css?v=2.0.0">
+    <link rel="stylesheet" href="/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="/assets/vendor/line-awesome/dist/line-awesome/css/line-awesome.min.css">
+    <link rel="stylesheet" href="/assets/vendor/remixicon/fonts/remixicon.css">
+    <link rel="stylesheet" href="/assets/vendor/@icon/dripicons/dripicons.css">
+    
+    <link rel='stylesheet' href='/assets/vendor/fullcalendar/core/main.css' />
+    <link rel='stylesheet' href='/assets/vendor/fullcalendar/daygrid/main.css' />
+    <link rel='stylesheet' href='/assets/vendor/fullcalendar/timegrid/main.css' />
+    <link rel='stylesheet' href='/assets/vendor/fullcalendar/list/main.css' />
+    <link rel="stylesheet" href="/assets/vendor/mapbox/mapbox-gl.css"></head>
+
+    <link rel="stylesheet" href="/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+    <link rel='stylesheet' href='../assets/vendor/fullcalendar/core/main.css' />
+    <link rel='stylesheet' href='../assets/vendor/fullcalendar/daygrid/main.css' />
+    <link rel='stylesheet' href='../assets/vendor/fullcalendar/timegrid/main.css' />
+    <link rel='stylesheet' href='../assets/vendor/fullcalendar/list/main.css' />
+    <link rel="stylesheet" href="/plugins/daterangepicker/daterangepicker.css">
+
+
+
+    <style>
+        #map {
+            width: 100%;
+            height: 450px;
+        }
+        
+    </style>
+
+<body>
+    <!-- loader Start -->
+    <div id="loading">
+            <div id="loading-center">
+            </div>
+    </div>
+    <!-- loader END -->
+    <!-- Wrapper Start -->
+    <div class="wrapper">
+        <!-- Fixed Side Menu -->
+        <div class="dashboard3-fixed-menu">
+            <div class="dashboard3-info bg-primary p-2 rounded">
+                <a href="#payment" class="collapsed" data-toggle="collapse" aria-expanded="false">
+                    <i class="ri-list-check"></i>
+                </a>
+                <ul id="payment" class="iq-submenu collapse show list-inline m-0 p-0 mt-2">
+                    <li>
+                        <a href="gallery-grid.html" data-toggle="tooltip" data-placement="right" title="Gallery"><i
+                                class="las la-images iq-arrow-left"></i></a>
+                    </li>
+                    <li>
+                        <a href="blog-simple.html" data-toggle="tooltip" data-placement="right" title="Blog"><i
+                                class="las la-blog iq-arrow-left"></i></a>
+                    </li>
+                    <li>
+                        <a href="plugin-rating.html" data-toggle="tooltip" data-placement="right" title="Plugins"><i
+                                class="las la-network-wired iq-arrow-left"></i></a>
+                    </li>
+                    <li>
+                        <a href="tables-basic.html" data-toggle="tooltip" data-placement="right" title="Table"><i
+                                class="las la-border-all"></i></a>
+                    </li>
+                    <li>
+                        <a href="../app/email.html" data-toggle="tooltip" data-placement="right" title="Email"><i
+                                class="las la-envelope-square"></i></a>
+                    </li>
+                    <li>
+                        <a href="../app/chat.html" data-toggle="tooltip" data-placement="right" title="Chat"><i
+                                class="lab la-rocketchat"></i></a>
+                    </li>
+                    <li>
+                        <a href="pages-faq.html" data-toggle="tooltip" data-placement="right" title="Faq"><i
+                                class="las la-drafting-compass"></i></a>
+                    </li>
+                    <li>
+                        <a href="auth-sign-in.html" data-toggle="tooltip" data-placement="right" title="Sign in"><i
+                                class="las la-sign-in-alt"></i></a>
+                    </li>
+                    <li>
+                        <a href="auth-sign-up.html" data-toggle="tooltip" data-placement="right" title="Sign Up"><i
+                                class="las la-sign-out-alt"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+           <div class="content-wrapper">
+    <div class="container mt-2">
+        <div class="row">
+            <div class="col-lg-12 mb-3">
+                <div class="d-flex align-items-center justify-content-between welcome-content">
+                    <div class="navbar-breadcrumb">
+                        <h4 class="mb-1">Welcome To Dashboard</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8 mb-2 d-flex align-items-center">
+                <div class="btn btn-sm btn-primary mr-1" onclick="initalizeGeneralNumbers(6); initializeAverages(6); initializeLeaderboard(6)">All</div>
+                <div class="btn btn-sm btn-primary mr-1" onclick="initalizeGeneralNumbers(1); initializeAverages(1); initializeLeaderboard(1)">today</div>
+                <div class="btn btn-sm btn-primary mr-1" onclick="initalizeGeneralNumbers(2); initializeAverages(2); initializeLeaderboard(2)">2D</div>
+                <div class="btn btn-sm btn-primary mr-1" onclick="initalizeGeneralNumbers(3); initializeAverages(3); initializeLeaderboard(3)">week</div>
+                <div class="btn btn-sm btn-primary mr-1" onclick="initalizeGeneralNumbers(4); initializeAverages(4); initializeLeaderboard(4)">month</div>
+                
+                <div class="date" id="reservationdate" data-target-input="nearest">
+                    <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4"></div>
+            
+            <div class="col-lg-8">
+                <div class="row">
+                    <div class="col-md-4 col-sm-6">
+                        <div class="card card-block card-stretch card-height">
+                            <div class="card-body">
+                                <div class="top-block-one d-flex align-items-center justify-content-between">
+                                    <div class="icon iq-icon-box-2 mr-2 rtl-ml-2 rtl-mr-0 rounded">
+                                        <img src="/images/issues.png" alt="" srcset="" width="100%" height="100%">
+                                    </div>
+                                    <span class="text-primary"> <i class="ri-arrow-up-fill mr-1 fa-2x"></i></span>
+
+                                </div>
+                                <div class="mt-4 ">
+                                    <h3 id="ti-holder">-</h3>
+                                    <span class="mb-0">Total Issues</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="card card-block card-stretch card-height bg-primary">
+                            <div class="card-body">
+                                <div class="top-block-one d-flex align-items-center justify-content-between">
+                                    <div class="icon iq-icon-box-2 mr-2 rtl-ml-2 rtl-mr-0 rounded">
+                                        <img src="/images/completed.png" alt="" srcset="" width="100%" height="100%">
+                                    </div>
+                                    <span class="text-white"><i class="ri-arrow-down-line mr-1 fa-2x"></i></span>
+
+                                </div>
+
+                                <div class="mt-4 ">
+                                    <h3 class="text-white" id="ci-holder">-</h3>
+                                    <span class="mb-0  text-white">Completed Issues</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="card card-block card-stretch card-height">
+                            <div class="card-body">
+                                <div class="top-block-one d-flex align-items-center justify-content-between">
+                                    <div class="icon iq-icon-box-2 mr-2 rtl-ml-2 rtl-mr-0 rounded">
+                                        <img src="/images/waiting.png" alt="" srcset="" width="100%" height="100%">
+                                    </div>
+                                    <span class="text-primary"> <i class="ri-arrow-up-fill mr-1 fa-2x"></i></span>
+
+                                </div>
+
+                                <div class="mt-4 ">
+                                    <h3 id="wi-holder">-</h3>
+                                    <span class="mb-0">Issues In Wait</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="card card-block card-stretch card-height">
+                            <div class="card-body">
+                                <div class="top-block-one d-flex align-items-center justify-content-between">
+                                    <div class="icon iq-icon-box-2 mr-2 rtl-ml-2 rtl-mr-0 rounded">
+                                        <img src="/images/not_solved.png" alt="" srcset="" width="100%" height="100%">
+                                    </div>
+                                    <span class="text-white"><i class="ri-arrow-down-line mr-1 fa-2x"></i></span>
+
+                                </div>
+
+                                <div class="mt-4 ">
+                                    <h3 id="ici-holder">-</h3>
+                                    <span class="mb-0">In-Completed Issues</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="card card-block card-stretch card-height">
+                            <div class="card-body">
+                                <div class="top-block-one d-flex align-items-center justify-content-between">
+                                    <div class="icon iq-icon-box-2 mr-2 rtl-ml-2 rtl-mr-0 rounded">
+                                        <img src="/images/from_driver.png" alt="" srcset="" width="100%" height="100%">
+                                    </div>
+                                    <span class="text-primary"> <i class="ri-arrow-up-fill mr-1 fa-2x"></i></span>
+
+                                </div>
+
+                                <div class="mt-4 ">
+                                    <h3 id="ibd-holder">-</h3>
+                                    <span class="mb-0">Issues By Driver</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                        <div class="card card-block card-stretch card-height">
+                            <div class="card-body">
+                                <div class="top-block-one d-flex align-items-center justify-content-between">
+                                    <div class="icon iq-icon-box-2 mr-2 rtl-ml-2 rtl-mr-0 rounded">
+                                        <img src="/images/by_driver.png" alt="" srcset="" width="100%" height="100%">
+                                    </div>
+                                    <span class="text-white"><i class="ri-arrow-down-line mr-1 fa-2x"></i></span>
+
+                                 
+                                </div>
+
+                                <div class="mt-4 ">
+                                    <h3 id="isd-holder">-</h3>
+                                    <span class="mb-0">Issue Solved By Driver</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card card-block card-stretch card-height rtl-card">
+                <div class="card-header border-none">
+                    <div class="header-title">
+                        <h4 class="card-title">Facebook Daily Likes</h4>
+                    </div>
+                </div>
+                    <div class="card-body" id="progress-container">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-12">
+                <div class="card card-block card-stretch card-height">
+                    <div class="card-header border-none">
+                        <div class="header-title">
+                            <h4 class="card-title">Issues Graph</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="dual-repeated-chart"></div>
+                    </div>
+                    </div>
+            </div>
+        
+            <div class="col-lg-8 col-md-6">
+                <div class="card card-block card-stretch card-height">
+                    <div class="card-header border-none">
+                        <div class="header-title">
+                            <h4 class="card-title mb-1">Demographic Audience</h4>
+                            <span class="mb-0">See insights on how you profile has grown and changed over time</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="layout-3-chart-01" class="layout-3-chart-01"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="card card-block card-stretch card-height">
+                    <div class="card-header border-none">
+                        <div class="header-title">
+                            <h4 class="card-title mb-1">Machines Statistic</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="layout-3-chart-02"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="card card-block card-stretch card-height ">
+                    <div class="card-header border-none">   
+                        <div class="header-title">
+                            <h4 class="card-title">Current Issues</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table text-center mb-0 table-borderless">
+                                <thead>
+                                    <tr>
+                                        <th>Dato</th>
+                                        <th>Seriell</th>
+                                        <th>Sone</th>
+                                        <th>Category</th>
+                                        <th>Problem</th>
+                                        <th>Importance</th>
+                                        <th>Rute</th>
+                                        <th>Status</th>
+                                        <th>Up Time</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% 
+                                        let importanceLevelJumpTable = {
+                                            1: 'High',
+                                            2: 'Medium',
+                                            3: 'Low',
+                                        }    
+
+                                        let importanceLevelColorJumpTable = {
+                                            1: 'red',
+                                            2: 'gold',
+                                            3: 'green'
+                                        }
+                                    %>
+                                        <% if (issues.length === 0) { %>
+                                            <tr>
+                                                <td colspan="6">Ingen problemrapporter ennå</td>
+                                            </tr>
+                                        <% } else { %>
+                                            <% issues.forEach(report => { %>
+                                                <tr>
+                                                    <td><%= report.date %></td>
+                                                    <td><%= report.serial %></td>
+                                                    <td><%= report.zone %></td>
+                                                    <td><%= report.category %></td>
+                                                    <td><%= report.problem %></td>
+                                                    <td style="color: <%= importanceLevelColorJumpTable[report.importanceLevel] %>;"><%= importanceLevelJumpTable[report.importanceLevel] %></td>
+                                                    <td><%= report.zoneLocation %></td>
+                                                    <td><%= report.status %></td>
+                                                    <td date="<%= report.date %>" class="live-time btn btn-sm btn-primary" style="font-size: 14px;">-</td>
+                                                
+                                                </tr>
+                            
+                                                <div class="modal fade" id="deleteReportModal<%= report._id %>" tabindex="-1" aria-labelledby="deleteReportModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="deleteReportModalLabel">Slett rapportbekreftelse</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                Er du sikker på at du vil slette denne problemrapporten?
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                                                                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deleteReport('<%= report._id %>')" id="confirmDeleteBtn">Slett</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <% }); %>
+                                        <% } %>
+                                        </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="card card-block card-stretch card-height rule-box averages-card">
+                    <div class="card-header d-flex justify-content-between border-none">
+                        <div class="header-title">
+                            <h4 class="card-title">Averages</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="averages-container">
+                            <div class="average-item">
+                                <i class="fas fa-chart-line average-icon"></i>
+                                <div class="average-details">
+                                    <p class="average-title">Issue / Hour</p>
+                                    <h4 id="isha-holder" class="average-value btn btn-sm btn-primary">-</h4>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="average-item">
+                                <i class="fas fa-clock average-icon"></i>
+                                <div class="average-details">
+                                    <p class="average-title">Waiting / Hour</p>
+                                    <h4 id="iswhg-holder" class="average-value btn btn-sm btn-primary">-</h4>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="average-item">
+                                <i class="fas fa-exchange-alt average-icon"></i>
+                                <div class="average-details">
+                                    <p class="average-title">Redirect / Hour</p>
+                                    <h4 id="idha-holder" class="average-value btn btn-sm btn-primary">-</h4>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="average-item">
+                                <i class="fas fa-comment average-icon"></i>
+                                <div class="average-details">
+                                    <p class="average-title">SMS</p>
+                                    <h4 id="sms-holder" class="average-value btn btn-sm btn-primary">-</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-8 col-md-6">
+                <div class="card card-block card-stretch card-height">
+                <div class="card-header border-none">
+                    <div class="header-title">
+                        <h4 class="card-title">Total Fix Average Time</h4>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="layout-1-chart-06"></div>
+                  
+                    <div class="d-flex align-items-center">
+                        <label class="mr-3">Filter Data</label>
+                        <div>
+                            <div class="date" id="reservationdateF" data-target-input="nearest">
+                                <div class="input-group-append" data-target="#reservationdateF" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                </div>
+                            </div>
+    
+                        </div>
+                      </div>
+                </div>
+                </div>
+            </div>
+       
+            <div class="col-lg-8">
+                <div class="card card-block card-stretch card-height ">
+                    <div class="card-header border-none">   
+                        <div class="header-title d-flex justify-content-between">
+                            <h4 class="card-title">Recent Reports</h4>
+                            <a class="btn btn-primary" href="/reports">Show All</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table mb-0 table-borderless text-center">
+                                <thead>
+                                    <tr>
+                                        <th>Dato</th>
+                                        <th>Seriell</th>
+                                        <th>Sone</th>
+                                        <th>Rute</th>
+                                        <th>PDF</th>
+                                        <th>Handlinger</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (reports.length === 0) { %>
+                                            <tr>
+                                                <td colspan="6">Ingen problemrapporter ennå</td>
+                                            </tr>
+                                        <% } else { %>
+                                            <% reports.forEach(report => { %>
+                                                <tr>
+                                                    <td><%= report.date %></td>
+                                                    <td><%= report.serial %></td>
+                                                    <td><%= report.zone %></td>
+                                                    <td><%= report.zoneLocation %></td>
+                                                    <td><a href="<%= report.pdf %>" target="_blank">Se PDF</a></td>
+                                                    <td class="d-flex justify-content-center custom-issue-report-controls">
+                                                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteReportModal<%= report._id %>">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                            
+                                                <div class="modal fade" id="deleteReportModal<%= report._id %>" tabindex="-1" aria-labelledby="deleteReportModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="deleteReportModalLabel">Slett rapportbekreftelse</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                Er du sikker på at du vil slette denne problemrapporten?
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
+                                                                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deleteReport('<%= report._id %>')" id="confirmDeleteBtn">Slett</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <% }); %>
+                                        <% } %>
+                                        </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card card-block card-height overflow-hidden">
+                    <div class="card-header border-none">
+                        <div class="header-title ">
+                            <h4 class="card-title">
+                                Solvers
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div id="leaderboard-container" class="card-body" style="overflow-y: auto; height: 200px;">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        </div>
+    </div>
+    <!-- Wrapper End-->
+
+    
+    
+    
+
+    <!-- Backend Bundle JavaScript -->
+    <script src="/assets/js/backend-bundle.min.js"></script>
+    
+    <!-- Flextree Javascript-->
+    <script src="/assets/js/flex-tree.min.js"></script>
+    <script src="/assets/js/tree.js"></script>
+    
+    <!-- Table Treeview JavaScript -->
+    <script src="/assets/js/table-treeview.js"></script>
+    
+    <!-- Masonary Gallery Javascript -->
+    <script src="/assets/js/masonry.pkgd.min.js"></script>
+    <script src="/assets/js/imagesloaded.pkgd.min.js"></script>
+    
+    <!-- Mapbox Javascript -->
+    <script src="/assets/js/mapbox-gl.js"></script>
+    <script src="/assets/js/mapbox.js"></script>
+    
+    <!-- Fullcalender Javascript -->
+    <script src='/assets/vendor/fullcalendar/core/main.js'></script>
+    <script src='/assets/vendor/fullcalendar/daygrid/main.js'></script>
+    <script src='/assets/vendor/fullcalendar/timegrid/main.js'></script>
+    <script src='/assets/vendor/fullcalendar/list/main.js'></script>
+    
+    <!-- SweetAlert JavaScript -->
+    <script src="/assets/js/sweetalert.js"></script>
+    
+    <!-- Vectoe Map JavaScript -->
+    <script src="/assets/js/vector-map-custom.js"></script>
+    
+    <!-- Chart Custom JavaScript -->
+    <script src="/assets/js/customizer.js"></script>
+    <script src="/assets/js/rtl.js"></script>
+    
+    <!-- Chart Custom JavaScript -->
+    <!-- <script src="/assets/js/chart-custom.js"></script> -->
+    
+    <!-- slider JavaScript -->
+    <script src="/assets/js/slider.js"></script>
+    
+    <!-- app JavaScript -->
+    <script src="/assets/js/app.js"></script>
+
+    <script src="https://momentjs.com/downloads/moment.js"></script>
+    <script src="/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+
+
+        <!-- Fullcalender Javascript -->
+        <script src='../assets/vendor/fullcalendar/core/main.js'></script>
+        <script src='../assets/vendor/fullcalendar/daygrid/main.js'></script>
+        <script src='../assets/vendor/fullcalendar/timegrid/main.js'></script>
+        <script src='../assets/vendor/fullcalendar/list/main.js'></script>
+        <script src="/plugins/daterangepicker/daterangepicker.js"></script>
+
+
+    <script>
+        "use strict";
+        if (jQuery('#layout-3-chart-02').length) {
+  Highcharts.chart('layout-3-chart-02', {
+    chart: {
+      plotBackgroundColor: null,
+      plotBorderWidth: null,
+      plotShadow: false,
+      height: 300,
+      type: 'pie'
+    },
+    title: {
+      text: ''
+    },
+    tooltip: {
+      pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    accessibility: {
+      point: {
+        valueSuffix: '%'
+      }
+    },
+    plotOptions: {
+      pie: {
+        allowPointSelect: true,
+        cursor: 'pointer',
+        dataLabels: {
+          enabled: true, // Set this to true to show data labels
+          format: '{point.name}: {point.percentage:.1f} %'
+        },
+        showInLegend: true
+      }
+    },
+    colors: ["green", "gold", "red"],
+    series: [
+      {
+        name: 'Machines',
+        colorByPoint: true,
+        data: [
+          {
+            name: 'Working',
+            y: <%- activeMachines %>,
+          },
+          {
+            name: 'Waiting',
+            y: <%- waitingMachines %>
+          },
+          {
+            name: 'Out of service',
+            y: <%- inActiveMachines %>
+          }
+        ]
+      }
+    ]
+  });
+} else {
+  console.log('not found');
+}
+
+
+  am4core.ready(function () {
+
+// Themes begin
+am4core.useTheme(am4themes_animated);
+// Themes end
+
+// Create map instance
+var chart = am4core.create("layout-3-chart-01", am4maps.MapChart);
+// Set map definition
+chart.geodata = am4geodata_worldLow;
+
+// Set projection
+chart.projection = new am4maps.projections.Miller();
+
+// Create map polygon series
+var polygonSeries = chart.series.push(new am4maps.MapPolygonSeries());
+
+// Exclude Antartica
+polygonSeries.exclude = ["AQ"];
+polygonSeries.include = ["NO"]
+
+
+// Make map load polygon (like country names) data from GeoJSON
+polygonSeries.useGeodata = true;
+
+// Configure series
+var polygonTemplate = polygonSeries.mapPolygons.template;
+polygonTemplate.fill = '#585858';
+
+polygonTemplate.tooltipText = "{name}";
+polygonTemplate.polygon.fillOpacity = 0.6;
+
+
+// Create hover state and set alternative fill color
+var hs = polygonTemplate.states.create("hover");
+hs.properties.fill = chart.colors.getIndex(0);
+
+// Add image series
+var imageSeries = chart.series.push(new am4maps.MapImageSeries());
+imageSeries.mapImages.template.propertyFields.longitude = "longitude";
+imageSeries.mapImages.template.propertyFields.latitude = "latitude";
+imageSeries.mapImages.template.tooltipText = "{title}";
+imageSeries.mapImages.template.propertyFields.url = "url";
+
+var circle = imageSeries.mapImages.template.createChild(am4core.Circle);
+circle.radius = 6;
+circle.propertyFields.fill = "color";
+
+var circle2 = imageSeries.mapImages.template.createChild(am4core.Circle);
+circle2.radius = 5;
+circle2.propertyFields.fill = "color";
+
+
+circle2.events.on("inited", function (event) {
+  animateBullet(event.target);
+});
+
+
+function animateBullet(circle) {
+  var animation = circle.animate([{ property: "scale", from: 1, to: 5 }, { property: "opacity", from: 1, to: 0 }], 1000, am4core.ease.circleOut);
+  animation.events.on("animationended", function (event) {
+    animateBullet(event.target.object);
+  })
+}
+
+// var colorSet = new am4core.ColorSet();
+
+let machines = <%- machines %>
+console.log(machines);
+imageSeries.data = machines.map(m => {
+    return {
+        "title": m.zoneLocation,
+        "latitude": m.latitude,
+        "longitude": m.longitude,
+        "color": m.status == 'active' ? 'green' : m.status == 'waiting' ? 'gold' : 'red'
+    }
+});
+
+const body = document.querySelector('body')
+if (body.classList.contains('dark')) {
+  amChartUpdate(chart, {
+    dark: true
+  })
+}
+
+document.addEventListener('ChangeColorMode', function (e) {
+  amChartUpdate(chart, e.detail)    
+})
+
+});
+
+// Sample data (you can replace this with your actual data)
+var initialData = <%- parsedGroupedDates %>
+
+function updateChart(data) {
+  var options = {
+    series: [
+      {
+        name: 'Total Average',
+        data: data.map(item => item.value)
+      }
+    ],
+    chart: {
+      type: 'bar',
+      height: 310
+    },
+    xaxis: {
+      type: 'datetime',
+      categories: data.map(item => moment(item.date).format('YYYY-MM-DD'))
+    },
+
+    plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '30%',
+          },
+        },
+
+        dataLabels: {
+        enabled: false // Hide default values on bars
+    },
+
+    tooltip: {
+        y: {
+            formatter: function (val) {
+                let average = val.toString()
+                let avgParts = average.split('.')
+                avgParts[0] = avgParts[0] + 'H'
+                avgParts[1] = ((+avgParts[1] / 100) * 60).toFixed(2) + 'M'
+
+                let joined = avgParts.join(' ')
+                return joined
+            }
+        }
+    },
+    // ... Other chart options ...
+  };
+  document.getElementById('layout-1-chart-06').innerHTML = ''
+  var chart = new ApexCharts(document.querySelector("#layout-1-chart-06"), options);
+  chart.render();
+}
+
+
+// Initial chart rendering
+updateChart(initialData);
+
+let liveTimes = document.querySelectorAll('.live-time')
+setInterval(() => {
+    for(let live in liveTimes) {
+        let startDate = moment(liveTimes.item(live).getAttribute('date'))
+        let endDate = moment(moment(moment.now()).format('yyyy-MM-DD HH:mm:ss'))
+        let diff = moment.duration(endDate.diff(startDate))
+        liveTimes.item(live).textContent = moment.utc(diff.asMilliseconds()).format("DD[d] HH:mm:ss");
+    }
+},1000)
+
+    async function initalizeGeneralNumbers(id,lowerbound,upperbound) {
+        let ci = document.getElementById('ci-holder')
+        let wi = document.getElementById('wi-holder')
+        let ti = document.getElementById('ti-holder')
+        let ici = document.getElementById('ici-holder')
+        let ibd = document.getElementById('ibd-holder')
+        let isd = document.getElementById('isd-holder')
+
+        let generalResponse = await fetch(`/api/reports/general/${id}`,{
+            headers:{
+                lowerbound:lowerbound,
+                upperbound: upperbound
+            }
+        })
+        let json = await generalResponse.json()
+
+        ci.textContent = json['completedIssues']
+        wi.textContent = json['waitingIssues']
+        ti.textContent = json['totalIssues']
+        ici.textContent = json['inCompletedIssues']
+        ibd.textContent = json['issuePublishedByDriver']
+        isd.textContent = json['issueSolvedByDriver']
+    }
+
+
+    async function initializeAverages(id,lowerbound,upperbound){
+        let isha = document.getElementById('isha-holder')
+        let iswhg = document.getElementById('iswhg-holder')
+        let idha = document.getElementById('idha-holder')
+
+        let averagesResponse = await fetch(`/api/reports/averages/${id}`,{
+            headers:{
+                lowerbound: lowerbound,
+                upperbound: upperbound
+            }
+        })
+        let json = await averagesResponse.json()
+
+        isha.textContent = json['issueSolvedHoursAverage']
+        iswhg.textContent = json['issueSolvedWaitingHoursAverage']
+        idha.textContent = json['issueRedirectHoursAverage']
+    }
+
+    async function initializeLeaderboard(id,lowerbound,upperbound) {
+
+        let leaderboardContainer = document.getElementById('leaderboard-container')
+        leaderboardContainer.innerHTML = ''
+        let leaderboardResponse = await fetch(`/api/reports/leaderboard/${id}`,{
+            headers:{
+                lowerbound: lowerbound,
+                upperbound: upperbound
+            }
+        })
+        let holderSortableArray = await leaderboardResponse.json()
+
+        for (let holder of holderSortableArray) {
+
+            let leaderboardItem = document.createElement('div')
+            leaderboardItem.className = 'd-flex justify-content-between align-items-center'
+
+            let identifierHolder = document.createElement('p')
+            let valueHolder = document.createElement('p')
+
+            identifierHolder.textContent = holder.identifier
+            valueHolder.textContent = holder.value
+            valueHolder.className = 'btn btn-primary btn-sm'
+
+
+            leaderboardItem.appendChild(identifierHolder)
+            leaderboardItem.appendChild(valueHolder)
+
+            leaderboardContainer.appendChild(leaderboardItem)
+        }
+    }
+
+
+    async function initializeTotalSMS(){
+        let smsHolder = document.getElementById('sms-holder')
+        let response = await fetch('/api/reports/sms/total')
+        let total = await response.json()
+
+        console.log(total);
+        smsHolder.textContent = total
+    }
+
+
+
+     //Date picker
+     $('#reservationdate').daterangepicker({ sideBySide: true, debug: true }).on('apply.daterangepicker', async function (e, picker) {
+    var startDate = picker.startDate.format('YYYY-MM-DD');
+    var endDate = picker.endDate.format('YYYY-MM-DD');
+
+    await initalizeGeneralNumbers(5,startDate,endDate)
+    await initializeLeaderboard(5,startDate,endDate)
+    await initializeAverages(5,startDate,endDate)
+
+
+})
+     //Date picker
+     $('#reservationdateF').daterangepicker({ sideBySide: true, debug: true }).on('apply.daterangepicker', async function (e, picker) {
+    var startDate = picker.startDate.format('YYYY-MM-DD');
+    var endDate = picker.endDate.format('YYYY-MM-DD');
+
+    // Sample data filtering logic based on date range
+    var filteredData = initialData.filter(item => {
+        var currentDate = moment(moment(item.date).format('YYYY-MM-DD'));
+        return currentDate.isBetween(startDate, endDate, null, "[]");
+    });
+    
+    updateChart(filteredData);
+
+})
+
+    document.addEventListener('DOMContentLoaded', async (event) =>{
+        await initalizeGeneralNumbers(0)
+        await initializeAverages(0)
+        await initializeLeaderboard(0)
+        await initializeTotalSMS()
+    })
+
+    if (jQuery("#dual-repeated-chart").length) {
+
+
+        let dualData = <%- issuesGroupedIntoMonths %>;
+        var options = {
+          series: [{
+          name: 'Total Issues',
+          data: Object.values(dualData).map(v => v.totalIssues)
+        }, {
+          name: 'Total Repeated',
+          data: Object.values(dualData).map(v => v.totalRepeated)
+        }],
+          chart: {
+          type: 'bar',
+          height: 310
+        },
+    colors: ['#05bbc9','#876cfe'],
+
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '10%',
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: Object.keys(dualData),
+        },
+      yaxis: {
+        show: true,
+        labels: {
+          minWidth: 20,
+          maxWidth: 20
+        }
+      },
+        fill: {
+          opacity: 1
+        },
+        tooltip: {
+            custom: function({ series,seriesIndex, dataPointIndex, w }){
+                if(seriesIndex == 1){
+                    const xValue = w.globals.labels[dataPointIndex]; // Access x-axis value
+                    return `
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    Locations Repeated
+                                </div>      
+
+                                <div class="card-body">
+                                    <h5>Total: ${dualData[xValue].totalRepeated}</h5>
+                                    <ul>
+                                        ${Object.values(dualData[xValue].zoneLocationSet).map(v => {
+                                        if(v.repeat != undefined)
+                                        return `<li><span class="zone-location">${v.zoneLocation}</span><span class="repeat">  ${v.repeat}</span></li>`;
+                                    }).join('\n')}
+                                    </ul>
+                                </div>
+                            </div> 
+                            
+                            <div class="card-body"></div>
+                        </div>
+                    `
+                }else{
+                    return series[seriesIndex] + " issues"
+                }
+            }
+          }
+        }
+        };
+
+    var chart = new ApexCharts(document.querySelector("#dual-repeated-chart"), options);
+        chart.render();
+
+let holderSortableArray = <%- holderSortableArray %>;
+let progressContainer = document.getElementById('progress-container');
+for(let value of holderSortableArray){
+    /*
+        <div class="iq-details mt-4">
+                        <h5 class="title">Favorite</h5>
+                        <div class="iq-progress-bar bg-orange-light mt-2">
+                            <span class="bg-orange iq-progress progress-1" data-percent="92" >
+                            <span class="progress-text-one bg-orange">92%</span>
+                            </span>
+                        </div>
+                    </div>
+    
+    */
+
+    let container = document.createElement('div')
+    container.className = 'iq-details mt-4'
+
+    let title = document.createElement('h5')
+    title.className = 'title'
+    title.textContent = value.identifier
+
+    let progressIqContainer = document.createElement('div')
+    progressIqContainer.className = 'iq-progress-bar bg-orange-light mt-2'
+
+    let dataPercent = document.createElement('span')
+    dataPercent.className = 'bg-orange iq-progress progress-1'
+    dataPercent.setAttribute('data-percent', value.value.toString())
+    
+    let dataPercentText = document.createElement('span')
+    dataPercentText.className = 'progress-text-one bg-orange'
+    dataPercentText.textContent = value.value + '%'
+
+    container.appendChild(title)
+    dataPercent.appendChild(dataPercentText)
+
+    progressIqContainer.appendChild(dataPercent)
+
+    container.appendChild(progressIqContainer)
+    progressContainer.appendChild(container)
+}
+
+    </script>
+</body>
+
+</html>
