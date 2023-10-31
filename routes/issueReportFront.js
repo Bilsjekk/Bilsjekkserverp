@@ -259,7 +259,7 @@ let issueGroupedIntoImportance = issues.reduce((result, item) => {
 }, {});
 
 Object.keys(issueGroupedIntoImportance).map(key => {
-  issueGroupedIntoImportance[key] = (issueGroupedIntoImportance[key].length / issues.length) * 100
+  issueGroupedIntoImportance[key] = ((issueGroupedIntoImportance[key].length / issues.length) * 100).toFixed(2)
 })
 
 console.log(issueGroupedIntoImportance);
