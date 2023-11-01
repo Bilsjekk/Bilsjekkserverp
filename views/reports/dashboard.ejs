@@ -33,7 +33,7 @@
 
 
     <style>
-        #map {
+        #cmap {
             width: 100%;
             height: 450px;
         }
@@ -257,7 +257,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <div id="layout-3-chart-01" class="layout-3-chart-01"></div>
+                        <div id="cmap" class="layout-3-chart-01"></div>
                     </div>
                 </div>
             </div>
@@ -575,6 +575,16 @@
         <script src='../assets/vendor/fullcalendar/list/main.js'></script>
         <script src="/plugins/daterangepicker/daterangepicker.js"></script>
 
+        <script src="//cdn.amcharts.com/lib/4/plugins/overlapBuster.js"></script> 
+
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_RMmoc5iVAGRDfxi8WLjQc27_QocN-eI&libraries=places"></script>
+        <script src="/geo/geoxml3.js"></script>
+        <script src="/geo/ZipFile.complete.js"></script>
+
+        <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
+
+
+
 
     <script>
         "use strict";
@@ -665,8 +675,8 @@ polygonSeries.useGeodata = true;
 var polygonTemplate = polygonSeries.mapPolygons.template;
 polygonTemplate.fill = '#05bbc9';
 
-polygonTemplate.tooltipText = "{name}";
 polygonTemplate.polygon.fillOpacity = 0.6;
+
 
 
 // Create hover state and set alternative fill color
@@ -679,27 +689,40 @@ imageSeries.mapImages.template.propertyFields.longitude = "longitude";
 imageSeries.mapImages.template.propertyFields.latitude = "latitude";
 imageSeries.mapImages.template.tooltipText = "{title}";
 imageSeries.mapImages.template.propertyFields.url = "url";
+var imageSeriesTemplate = imageSeries.mapImages.template;
 
-var circle = imageSeries.mapImages.template.createChild(am4core.Circle);
-circle.radius = 6;
-circle.propertyFields.fill = "color";
+// Set a fixed radius for the bullets
+var fixedRadius = 7;
 
-var circle2 = imageSeries.mapImages.template.createChild(am4core.Circle);
-circle2.radius = 5;
+// var circle = imageSeries.mapImages.template.createChild(am4core.Circle);
+// circle.radius = 5;
+// circle.propertyFields.fill = "color";
+
+var circle2 = imageSeriesTemplate.createChild(am4core.Circle);
+circle2.radius = fixedRadius;
 circle2.propertyFields.fill = "color";
 
+imageSeriesTemplate.layout = "absolute";
+imageSeriesTemplate.isMeasured = true;
+var overlap = chart.plugins.push(new am4plugins_overlapBuster.OverlapBuster());
+overlap.targets.push(imageSeries.mapImages.template);
 
-circle2.events.on("inited", function (event) {
-  animateBullet(event.target);
-});
+
+// circle2.events.on("inited", function (event) {
+//   var bullet = event.target;
+//   animateBullet(bullet);
+// });
 
 
-function animateBullet(circle) {
-  var animation = circle.animate([{ property: "scale", from: 1, to: 5 }, { property: "opacity", from: 1, to: 0 }], 1000, am4core.ease.circleOut);
-  animation.events.on("animationended", function (event) {
-    animateBullet(event.target.object);
-  })
-}
+// function animateBullet(circle) {
+//   var animation = circle.animate([{ property: "scale", from: 1, to: 2 }, { property: "opacity", from: 1, to: 0 }], 1000, am4core.ease.circleOut);
+//   animation.events.on("animationended", function (event) {
+//     animateBullet(event.target.object);
+//   })
+// }
+
+
+
 
 // var colorSet = new am4core.ColorSet();
 
@@ -713,6 +736,9 @@ imageSeries.data = machines.map(m => {
         "color": m.status == 'active' ? 'green' : m.status == 'waiting' ? 'gold' : 'red'
     }
 });
+
+
+
 
 const body = document.querySelector('body')
 if (body.classList.contains('dark')) {
@@ -880,7 +906,7 @@ setInterval(() => {
         let total = await response.json()
 
         console.log(total);
-        smsHolder.textContent = total
+        smsHolder.textContent = total + ' Messages'
     }
 
 
@@ -1091,6 +1117,130 @@ if (jQuery("#layout-3-chart-04").length) {
 
   }
 
+
+
+   var bounds = null;
+   var map = null
+  async function initialize() {
+    var myOptions = {
+    zoom: 10,
+    center: new google.maps.LatLng(42,-80),
+    mapTypeControl: true,
+    mapTypeControlOptions: {style: google.maps.MapTypeControlStyle.DROPDOWN_MENU},
+    navigationControl: true,
+    mapTypeId: google.maps.MapTypeId.TERRAIN
+  }
+  map = new google.maps.Map(document.getElementById("cmap"),
+                            myOptions);
+
+  bounds = new google.maps.LatLngBounds();
+
+  var donut = new google.maps.Polygon({
+             paths: [[
+                        new google.maps.LatLng(-87, 120), 
+                        new google.maps.LatLng(-87, -87), 
+                        new google.maps.LatLng(-87, 0)],
+            ],
+             strokeColor: "#000000",
+             strokeOpacity: 0.6,
+             strokeWeight: 2,
+             fillColor: "#333333",
+             fillOpacity: 1
+ });
+ donut.setMap(map);
+
+ map.fitBounds(bounds);
+
+    
+
+    // const {KmlLayer} = await google.maps.importLibrary("maps")
+    // KmlLayer.setUrl('http://localhost:9090/kmz/gadm41_NOR_2.kmz')
+    // kmzLayer.setMap(map);
+    var geocoder = new google.maps.Geocoder();
+    var geoXml = new geoXML3.parser({
+                    map: map,
+                    zoom: false, 
+                 });
+
+    geoXml.parse("http://localhost:9090/kmz/norway_administrative_boundaries_province_polygon.kml");
+    google.maps.event.addListener(geoXml,'parsed', function() {
+      geocoder.geocode( { 'address': "Norway"}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+            console.log(results);
+          map.fitBounds(results[0].geometry.viewport); 
+
+          for (var i = 0; i < geoXml.docs[0].gpolygons.length; i++) {
+    var polygon = geoXml.docs[0].gpolygons[i];
+            
+    // Set the fill color for the Polygon
+
+    // Set other style properties if needed
+    polygon.set('strokeColor', 'white'); // Border color
+    polygon.set('strokeWeight', 2); // Border width
+  }
+        } else {
+          alert("Geocode was not successful for the following reason: " + status);
+        }
+      });    
+    })
+
+
+
+    let machines = <%- machines %>;
+
+// Define marker icons for different statuses
+const markerIcons = {
+  active: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+  waiting: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
+  inactive: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+};
+
+// Create an array to store all markers
+let markers = [];
+
+for (let i = 0; i < machines.length; i++) {
+  const status = machines[i].status; // Replace with the actual property that represents the status
+  const marker = new google.maps.Marker({
+    position: { lat: machines[i].latitude, lng: machines[i].longitude },
+    map: map,   
+    title: 'Marker Title',
+    icon: markerIcons[status], // Set the marker icon based on status
+  });
+
+  if(machines[i].status == 'inactive'){
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+  }
+
+  // Create content for the tooltip
+  const tooltipContent = `
+    <div>
+      <h3>${machines[i].zoneLocation}</h3>
+      <p>Latitude: ${machines[i].latitude}</p>
+      <p>Longitude: ${machines[i].longitude}</p>
+      <p>Status: ${status}</p>
+    </div>
+  `;
+
+  const infowindow = new google.maps.InfoWindow({
+    content: tooltipContent,
+  });
+
+  // Attach a click event listener to the marker
+  marker.addListener('click', () => {
+    infowindow.open(map, marker);
+  });
+
+  markers.push(marker);
+}
+
+// Use the MarkerClusterer to cluster nearby markers
+// const markerCluster = new MarkerClusterer(map, markers, {
+//   imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
+// });
+
+
+}
+google.maps.event.addDomListener(window, "load", initialize);
     </script>
 </body>
 
