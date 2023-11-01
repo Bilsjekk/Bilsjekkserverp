@@ -247,15 +247,8 @@ router.get('/reports/averages/:id', async (req, res) => {
     let issueSolvedHoursAverage = (issueSolvedHoursSum / issueSolvedHours.length).toFixed(2)
     let fraction = issueSolvedHoursAverage.split('.')
     fraction[0] = fraction[0] + 'H'
-    fraction[1] = ((+fraction[1] / 100) * 60).toFixed(2) + 'M'
+    fraction[1] = issueSolvedHours.length > 0 ? ((+fraction[1] / 100) * 60).toFixed(2) + 'M' : '0M'
     issueSolvedHoursAverage = issueSolvedHours.length > 0 ? fraction.join(' ') : 0
-
-    let isha = issueSolvedHoursAverage.toString().split('.')
-    isha[0] = isha[0] + 'H'
-    isha[1]  = issueSolvedHours.length > 0 ?  (+isha[1] / 100) * 60 + 'M' : 0 + 'M'
-  
-    isha = isha.join(' ')
-    issueSolvedHoursAverage = isha
 
     let issueWaitingHours = issuesWereInWaitingState.map(iws => {
       let end = moment(iws.WaitingEndTime)
