@@ -244,9 +244,13 @@ for(let key in holder){
   })
 }
 
+console.log(holderSortableArray);
+
 holderSortableArray.sort((a,b) =>{
   return a.value - b.value
 })
+
+console.log(holderSortableArray);
 
 let combinedCurrentIssues = [
   ...inCompletedIssues,
