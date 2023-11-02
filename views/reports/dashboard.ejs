@@ -1162,7 +1162,7 @@ if (jQuery("#layout-3-chart-04").length) {
                     zoom: false, 
                  });
 
-    geoXml.parse("http://localhost:9090/kmz/norway_administrative_boundaries_province_polygon.kml");
+    geoXml.parse("https://nordic.bilsjekk.in/kmz/norway_administrative_boundaries_province_polygon.kml");
     google.maps.event.addListener(geoXml,'parsed', function() {
       geocoder.geocode( { 'address': "Norway"}, function(results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
