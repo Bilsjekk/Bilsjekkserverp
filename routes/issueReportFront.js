@@ -272,11 +272,20 @@ Object.keys(issueGroupedIntoImportance).map(key => {
   issueGroupedIntoImportance[key] = (((issueGroupedIntoImportance[key].length / combinedCurrentIssues.length)) * 100).toFixed(2)
 })
 
-issueGroupedIntoImportanceValues.push(issueGroupedIntoImportance['3'])
-issueGroupedIntoImportanceValues.push(issueGroupedIntoImportance['2'])
-issueGroupedIntoImportanceValues.push(issueGroupedIntoImportance['1'])
 
-console.log(issueGroupedIntoImportance);
+if(issueGroupedIntoImportance.hasOwnProperty('3')){
+  issueGroupedIntoImportanceValues.push(+issueGroupedIntoImportance['3'])
+}
+
+if(issueGroupedIntoImportance.hasOwnProperty('2')){
+  issueGroupedIntoImportanceValues.push(+issueGroupedIntoImportance['2'])
+}
+
+if(issueGroupedIntoImportance.hasOwnProperty('1')){
+  issueGroupedIntoImportanceValues.push(+issueGroupedIntoImportance['1'])
+}
+
+console.log(issueGroupedIntoImportanceValues);
 
   return res.render('reports/dashboard',{
     machines: JSON.stringify(machines),
