@@ -247,7 +247,7 @@ for(let key in holder){
 console.log(holderSortableArray);
 
 holderSortableArray.sort((a,b) =>{
-  return a.value - b.value
+  return b.value - a.value
 })
 
 console.log(holderSortableArray);
