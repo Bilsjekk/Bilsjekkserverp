@@ -275,14 +275,20 @@ Object.keys(issueGroupedIntoImportance).map(key => {
 
 if(issueGroupedIntoImportance.hasOwnProperty('3')){
   issueGroupedIntoImportanceValues.push(+issueGroupedIntoImportance['3'])
+}else{
+  issueGroupedIntoImportanceValues.push(0)
 }
 
 if(issueGroupedIntoImportance.hasOwnProperty('2')){
   issueGroupedIntoImportanceValues.push(+issueGroupedIntoImportance['2'])
+}else{
+  issueGroupedIntoImportanceValues.push(0)
 }
 
 if(issueGroupedIntoImportance.hasOwnProperty('1')){
   issueGroupedIntoImportanceValues.push(+issueGroupedIntoImportance['1'])
+}else{
+  issueGroupedIntoImportanceValues.push(0)
 }
 
 console.log(issueGroupedIntoImportanceValues);
