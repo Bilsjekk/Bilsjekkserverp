@@ -265,9 +265,16 @@ let issueGroupedIntoImportance = combinedCurrentIssues.reduce((result, item) => 
   return result;
 }, {});
 
+let issueGroupedIntoImportanceValues = []
+
+
 Object.keys(issueGroupedIntoImportance).map(key => {
   issueGroupedIntoImportance[key] = (((issueGroupedIntoImportance[key].length / combinedCurrentIssues.length)) * 100).toFixed(2)
 })
+
+issueGroupedIntoImportanceValues.push(issueGroupedIntoImportance['3'])
+issueGroupedIntoImportanceValues.push(issueGroupedIntoImportance['2'])
+issueGroupedIntoImportanceValues.push(issueGroupedIntoImportance['1'])
 
 console.log(issueGroupedIntoImportance);
 
@@ -277,7 +284,7 @@ console.log(issueGroupedIntoImportance);
     waitingMachines: waitingMachines.length,
     activeMachines: activeMachines.length,
     inActiveMachines:inActiveMachines.length,
-    issueGroupedIntoImportance: JSON.stringify(issueGroupedIntoImportance),
+    issueGroupedIntoImportance: JSON.stringify(issueGroupedIntoImportanceValues),
     issueGroupedIntoImportanceTotalIssues: combinedCurrentIssues.length,
     issuesGroupedIntoMonths: JSON.stringify(issuesGroupedIntoMonths),
     holderSortableArray: JSON.stringify(holderSortableArray),
