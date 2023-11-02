@@ -938,9 +938,9 @@ setInterval(() => {
 })
 
     document.addEventListener('DOMContentLoaded', async (event) =>{
-        await initalizeGeneralNumbers(0)
-        await initializeAverages(0)
-        await initializeLeaderboard(0)
+        await initalizeGeneralNumbers(6)
+        await initializeAverages(6)
+        await initializeLeaderboard(6)
         await initializeTotalSMS()
     })
 
@@ -1041,10 +1041,10 @@ for(let value of holderSortableArray){
     */
 
     let container = document.createElement('div')
-    container.className = 'iq-details mt-4'
+    container.className = 'iq-details'
 
     let title = document.createElement('h5')
-    title.className = 'title'
+    title.className = 'title mb-4'
     title.textContent = value.identifier
 
     let progressIqContainer = document.createElement('div')
@@ -1162,7 +1162,7 @@ if (jQuery("#layout-3-chart-04").length) {
                     zoom: false, 
                  });
 
-    geoXml.parse("https://nordic.bilsjekk.in/kmz/norway_administrative_boundaries_province_polygon.kml");
+    geoXml.parse("http://localhost:9090/kmz/norway_administrative_boundaries_province_polygon.kml");
     google.maps.event.addListener(geoXml,'parsed', function() {
       geocoder.geocode( { 'address': "Norway"}, function(results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
@@ -1190,13 +1190,29 @@ if (jQuery("#layout-3-chart-04").length) {
 
 // Define marker icons for different statuses
 const markerIcons = {
-  active: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
-  waiting: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
-  inactive: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+  active: {
+    url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
+    scaledSize: new google.maps.Size(40, 40), // Adjust the width and height as needed
+    origin: new google.maps.Point(0, 0), // (0,0) is the top-left corner of the image
+    anchor: new google.maps.Point(20, 40) 
+  },
+  waiting: {
+    url: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
+    scaledSize: new google.maps.Size(40, 40), // Adjust the width and height as needed
+    origin: new google.maps.Point(0, 0), // (0,0) is the top-left corner of the image
+    anchor: new google.maps.Point(20, 40) 
+  },
+  inactive: {
+    url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+    scaledSize: new google.maps.Size(40, 40), // Adjust the width and height as needed
+  origin: new google.maps.Point(0, 0), // (0,0) is the top-left corner of the image
+  anchor: new google.maps.Point(20, 40) 
+  },
 };
 
 // Create an array to store all markers
 let markers = [];
+let infowindows = []
 
 for (let i = 0; i < machines.length; i++) {
   const status = machines[i].status; // Replace with the actual property that represents the status
@@ -1225,8 +1241,14 @@ for (let i = 0; i < machines.length; i++) {
     content: tooltipContent,
   });
 
+  infowindows.push(infowindow);
+
   // Attach a click event listener to the marker
   marker.addListener('click', () => {
+    infowindows.map(iw => {
+        iw.close()
+    })
+
     infowindow.open(map, marker);
   });
 
