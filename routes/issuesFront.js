@@ -64,7 +64,7 @@ router.get('/issues', async (req, res) => {
 
     let issues = await Issue.find({})
 
-    return res.render('issues/categories_update',{
+    return res.render('issues/index',{
         isAdmin: decoded.role === 'admin',
         permissions: manager.permissions,
         issues: issues

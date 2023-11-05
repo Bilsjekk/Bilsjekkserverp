@@ -12,6 +12,7 @@ const IssueCategory = require('../models/IssueCategory')
 const Manager = require('../models/Manager')
 const jwt = require('jsonwebtoken')
 const SMS = require('../models/SMS')
+const AppNotification = require('../models/AppNotification')
 
 router.get('/issues/categories', async (req, res) => {
     try{
@@ -225,7 +226,7 @@ router.post('/issues', async (req, res) => {
 
             const issueNotification = new IssueNotification({
                 title: `Feil på ${machine.zoneLocation} Automat`,
-                body: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,
+                body: `Automat som ligger i adressen ${machine.zoneLocation} er ${problem},  klagen har kommet fra ${publisher == 'driver' ? 'pnid ' + pnid : publisher == 'admin' ? 'Drift' : 'skilt nr ' + boardNumber}`,
                 date: localDateString,
                 fullDate: localDate.toDateString(),
                 type: 'issue'
@@ -235,7 +236,7 @@ router.post('/issues', async (req, res) => {
 
             const issue = new Issue({
                 title: `Feil på Automat ${machine.zoneLocation}`,
-                description: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,
+                description: `Automat som ligger i adressen ${machine.zoneLocation}  er ${problem},  klagen har kommet fra ${publisher == 'driver' ? 'pnid ' + pnid : publisher == 'admin' ? 'Drift' : 'skilt nr ' + boardNumber}`,
                 notes: notes ?? null,
                 date: currentDate,
                 machine: id ,
@@ -263,7 +264,7 @@ router.post('/issues', async (req, res) => {
             const message = {
                 data: {
                     title: `Feil på ${machine.zoneLocation} Automat`,
-                    body: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,
+                    body: `Automat som ligger i adressen ${machine.zoneLocation} er ${problem},  klagen har kommet fra ${publisher == 'driver' ? 'pnid ' + pnid : publisher == 'admin' ? 'Drift' : 'skilt nr ' + boardNumber}`,
                     type: 'issue',
                     id:id,
                 },
@@ -273,6 +274,13 @@ router.post('/issues', async (req, res) => {
               let response = await admin
                 .messaging()
                 .send(message)
+
+
+              const appNotification = await AppNotification.create({
+                delivery_date: moment().format('YYYY-MM-DD HH:mm:ss'),
+                content: `Automat som ligger i adressen ${machine.zoneLocation} er ${problem},  klagen har kommet fra ${publisher == 'driver' ? 'pnid ' + pnid : publisher == 'admin' ? 'Drift' : 'skilt nr ' + boardNumber}`,
+                title: `Feil på ${machine.zoneLocation} Automat`,
+              })
     
                 console.log('Message sent:', response);
 
@@ -307,13 +315,13 @@ Takk for beskjed.
                 if(importanceLevel == 3 || importanceLevel == 2){
                     console.log('ok i was 2 or 3');
                     await sendAlertSMS({
-                        text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
+                        text: `Automat som ligger i adressen ${machine.zoneLocation} er ${problem}  klagen har kommet fra ${publisher == 'driver' ? 'pnid ' + pnid : publisher == 'admin' ? 'Drift' : 'skilt nr ' + boardNumber}`,                    // to: `4747931499`
                         to: '4740088605'
                         // to: `4747931499`
                     })
 
                     await sendAlertSMS({
-                        text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
+                        text: `Automat som ligger i adressen ${machine.zoneLocation} er ${problem}  klagen har kommet fra ${publisher == 'driver' ? 'pnid ' + pnid : publisher == 'admin' ? 'Drift' : 'skilt nr ' + boardNumber}`,                    // to: `4747931499`
                         to: '4740088605'
                         // to: `4747931499`
                     })
@@ -327,7 +335,7 @@ Takk for beskjed.
                             '4740088605'
                         ],
                         total_received: 2,
-                        content: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,
+                        content: `Automat som ligger i adressen ${machine.zoneLocation} er ${problem}  klagen har kommet fra ${publisher == 'driver' ? 'pnid ' + pnid : publisher == 'admin' ? 'Drift' : 'skilt nr ' + boardNumber}`,
                         about: 'notify about low or medium importance issue',
                     })
     
@@ -335,19 +343,19 @@ Takk for beskjed.
                 }else if(importanceLevel == 1){
                     console.log('ok i was 1 and that is very serious');
                     await sendAlertSMS({
-                        text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
+                        text: `Automat som ligger i adressen ${machine.zoneLocation} er ${problem}  klagen har kommet fra ${publisher == 'driver' ? 'pnid ' + pnid : publisher == 'admin' ? 'Drift' : 'skilt nr ' + boardNumber}`,                    // to: `4747931499`
                         to: '4740088605'
                         // to: `4747931499`
                     })
 
                     await sendAlertSMS({
-                        text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
+                        text: `Automat som ligger i adressen ${machine.zoneLocation} er ${problem}  klagen har kommet fra ${publisher == 'driver' ? 'pnid ' + pnid : publisher == 'admin' ? 'Drift' : 'skilt nr ' + boardNumber}`,                    // to: `4747931499`
                         to: '4740088605'
                         // to: `4747931499`
                     })
 
                     await sendAlertSMS({
-                        text: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,                    // to: `4747931499`
+                        text: `Automat som ligger i adressen ${machine.zoneLocation} er ${problem}  klagen har kommet fra ${publisher == 'driver' ? 'pnid ' + pnid : publisher == 'admin' ? 'Drift' : 'skilt nr ' + boardNumber}`,                    // to: `4747931499`
                         to: '4740088605'
                         // to: `4747931499`
                     })
@@ -362,7 +370,7 @@ Takk for beskjed.
                             '4740088605',
                         ],
                         total_received: 3,
-                        content: `Automat som ligger i adressen ${machine.zoneLocation} kanskje er ute av drift, klagen har kommet gjennom bilfører med ${publisher == 'driver' ? 'pnid ' + pnid : 'skilt nr' + boardNumber}`,
+                        content: `Automat som ligger i adressen ${machine.zoneLocation} er ${problem},  klagen har kommet fra ${publisher == 'driver' ? 'pnid ' + pnid : publisher == 'admin' ? 'Drift' : 'skilt nr ' + boardNumber}`,
                         about: 'notify about high importance issue',
                     })
     
@@ -490,7 +498,7 @@ router.post('/issues/:id/technician/reports', async (req, res) => {
         const message = {
             data: {
                 title: `P-Autmat ${currentIssue.zoneLocation} er i orden`,
-                body: ` P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentTech.name}`,
+                body: `P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentTech.name}`,
                 type: 'issue_closed',
             },
             topic: 'nordic', // Replace with the topic you want to use
@@ -499,6 +507,12 @@ router.post('/issues/:id/technician/reports', async (req, res) => {
           let response = await admin
             .messaging()
             .send(message)
+
+            const appNotification = await AppNotification.create({
+                delivery_date: moment().format('YYYY-MM-DD HH:mm:ss'),
+                title: `P-Autmat ${currentIssue.zoneLocation} er i orden`,
+                content: ` P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentTech.name}`
+              })
 
             await sendAlertSMS({
                 text: `P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentTech.name}`,
@@ -657,6 +671,12 @@ router.post('/issues/:id/report', upload.single('report') ,async (req, res) => {
           let response = await admin
             .messaging()
             .send(message)
+
+            const appNotification = await AppNotification.create({
+                delivery_date: moment().format('YYYY-MM-DD HH:mm:ss'),
+                content: ` P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentUser.name}`,
+                title: `P-Autmat ${currentIssue.zoneLocation} er i orden`,
+              })
 
             await sendAlertSMS({
                 text: `P-Automat i adressen ${currentIssue.zoneLocation} fikset av ${currentUser.name}`,

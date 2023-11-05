@@ -5,10 +5,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Insta Dash | Responsive Bootstrap 4 Admin Dashboard Template</title>
+    <title>Drift-Report admin</title>
     
     <!-- Favicon -->
-    <link rel="shortcut icon" href="/assets/images/favicon.ico" />
+    <link rel="shortcut icon" href="/assets/images/gensolv.png" />
     <link rel="stylesheet" href="/assets/css/backend-plugin.min.css?v=2.0.0">
     <link rel="stylesheet" href="/assets/css/backend.css?v=2.0.0">
     <link rel="stylesheet" href="/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css">
@@ -38,6 +38,10 @@
             height: 450px;
         }
         
+        #chartdiv {
+  width: 100%;
+  height: 500px;
+}
     </style>
 
 <body>
@@ -57,12 +61,12 @@
                 </a>
                 <ul id="payment" class="iq-submenu collapse show list-inline m-0 p-0 mt-2">
                     <li>
-                        <a href="/" data-toggle="tooltip" data-placement="right" title="Home"><i
+                        <a href="/" data-toggle="tooltip" data-placement="right" title="Hjem"><i
                                 class="las la-home iq-arrow-left"></i></a>
                     </li>
             
                     <li>
-                        <a href="/admin/api/logout" data-toggle="tooltip" data-placement="right" title="Logout" style="color: red;"><i
+                        <a href="/admin/api/logout" data-toggle="tooltip" data-placement="right" title="Logg ut" style="color: red;"><i
                                 class="las la-sign-out-alt"></i></a>
                     </li>
                 </ul>
@@ -75,17 +79,17 @@
             <div class="col-lg-12 mb-3">
                 <div class="d-flex align-items-center justify-content-between welcome-content">
                     <div class="navbar-breadcrumb">
-                        <h4 class="mb-1">Welcome To Dashboard</h4>
+                        <h4 class="mb-1">Drift Klage Report</h4>
                     </div>
                 </div>
             </div>
 
             <div class="col-lg-8 mb-2 d-flex align-items-center">
-                <div class="btn btn-sm btn-primary mr-1" onclick="initalizeGeneralNumbers(6); initializeAverages(6); initializeLeaderboard(6)">All</div>
-                <div class="btn btn-sm btn-primary mr-1" onclick="initalizeGeneralNumbers(1); initializeAverages(1); initializeLeaderboard(1)">today</div>
+                <div class="btn btn-sm btn-primary mr-1" onclick="initalizeGeneralNumbers(6); initializeAverages(6); initializeLeaderboard(6)">Alle</div>
+                <div class="btn btn-sm btn-primary mr-1" onclick="initalizeGeneralNumbers(1); initializeAverages(1); initializeLeaderboard(1)">Dag</div>
                 <div class="btn btn-sm btn-primary mr-1" onclick="initalizeGeneralNumbers(2); initializeAverages(2); initializeLeaderboard(2)">2D</div>
-                <div class="btn btn-sm btn-primary mr-1" onclick="initalizeGeneralNumbers(3); initializeAverages(3); initializeLeaderboard(3)">week</div>
-                <div class="btn btn-sm btn-primary mr-1" onclick="initalizeGeneralNumbers(4); initializeAverages(4); initializeLeaderboard(4)">month</div>
+                <div class="btn btn-sm btn-primary mr-1" onclick="initalizeGeneralNumbers(3); initializeAverages(3); initializeLeaderboard(3)">Uke</div>
+                <div class="btn btn-sm btn-primary mr-1" onclick="initalizeGeneralNumbers(4); initializeAverages(4); initializeLeaderboard(4)">Månd</div>
                 
                 <div class="date" id="reservationdate" data-target-input="nearest">
                     <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
@@ -109,8 +113,13 @@
 
                                 </div>
                                 <div class="mt-4 ">
-                                    <h3 id="ti-holder">-</h3>
-                                    <span class="mb-0">Total Issues</span>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h3 id="ti-holder">-</h3>
+                                        <a href="/issues" class="btn btn-sm btn-info">
+                                            Check
+                                        </a>
+                                    </div>
+                                    <span class="mb-0">Alle klage</span>
                                 </div>
                             </div>
                         </div>
@@ -127,8 +136,12 @@
                                 </div>
 
                                 <div class="mt-4 ">
-                                    <h3 class="text-white" id="ci-holder">-</h3>
-                                    <span class="mb-0  text-white">Completed Issues</span>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h3 id="ci-holder">-</h3>
+                                        <a href="/issues" class="btn btn-sm btn-info">
+                                            Check
+                                        </a>
+                                    </div>                                    <span class="mb-0  text-white">Løst klage</span>
                                 </div>
                             </div>
                         </div>
@@ -145,8 +158,12 @@
                                 </div>
 
                                 <div class="mt-4 ">
-                                    <h3 id="wi-holder">-</h3>
-                                    <span class="mb-0">Issues In Wait</span>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h3 id="wi-holder">-</h3>
+                                        <a href="/issues" class="btn btn-sm btn-info">
+                                            Check
+                                        </a>
+                                    </div>                                    <span class="mb-0">Klage på vent</span>
                                 </div>
                             </div>
                         </div>
@@ -163,8 +180,12 @@
                                 </div>
 
                                 <div class="mt-4 ">
-                                    <h3 id="ici-holder">-</h3>
-                                    <span class="mb-0">In-Completed Issues</span>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h3 id="ici-holder">-</h3>
+                                        <a href="/issues" class="btn btn-sm btn-info">
+                                            Check
+                                        </a>
+                                    </div>                                    <span class="mb-0">Uløst klage</span>
                                 </div>
                             </div>
                         </div>
@@ -181,8 +202,12 @@
                                 </div>
 
                                 <div class="mt-4 ">
-                                    <h3 id="ibd-holder">-</h3>
-                                    <span class="mb-0">Issues By Driver</span>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h3 id="ibd-holder">-</h3>
+                                        <a href="/issues" class="btn btn-sm btn-info">
+                                            Check
+                                        </a>
+                                    </div>                                    <span class="mb-0">Klage ab betjent</span>
                                 </div>
                             </div>
                         </div>
@@ -200,8 +225,12 @@
                                 </div>
 
                                 <div class="mt-4 ">
-                                    <h3 id="isd-holder">-</h3>
-                                    <span class="mb-0">Issue Solved By Driver</span>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h3 id="isd-holder">-</h3>
+                                        <a href="/issues" class="btn btn-sm btn-info">
+                                            Check
+                                        </a>
+                                    </div>                                    <span class="mb-0">Løst klage av betjent</span>
                                 </div>
                             </div>
                         </div>
@@ -213,7 +242,7 @@
                 <div class="card card-block card-stretch card-height rtl-card">
                 <div class="card-header border-none">
                     <div class="header-title">
-                        <h4 class="card-title">Facebook Daily Likes</h4>
+                        <h4 class="card-title">Rask betjent inngående klage</h4>
                     </div>
                 </div>
                     <div class="card-body" id="progress-container">
@@ -221,11 +250,25 @@
                 </div>
             </div>
 
+
+            <div class="col-lg-12">
+                <div class="card card-block card-stretch card-height rtl-card">
+                <div class="card-header border-none">
+                    <div class="header-title">
+                        <h4 class="card-title">Analytics</h4>
+                    </div>
+                </div>
+                    <div class="card-body" id="chartdiv">
+                    </div>
+                </div>
+            </div>
+
+
             <div class="col-lg-4">
                 <div class="card card-block card-stretch card-height">
                     <div class="card-header border-none">
                         <div class="header-title">
-                            <h4 class="card-title">Media Values</h4>
+                            <h4 class="card-title">Klage kategori</h4>
                         </div>
                     </div>
                     <div class="card-body">
@@ -239,7 +282,7 @@
                 <div class="card card-block card-stretch card-height">
                     <div class="card-header border-none">
                         <div class="header-title">
-                            <h4 class="card-title">Issues Graph</h4>
+                            <h4 class="card-title">Antall og gjentatt klage</h4>
                         </div>
                     </div>
                     <div class="card-body">
@@ -252,8 +295,8 @@
                 <div class="card card-block card-stretch card-height">
                     <div class="card-header border-none">
                         <div class="header-title">
-                            <h4 class="card-title mb-1">Demographic Audience</h4>
-                            <span class="mb-0">See insights on how you profile has grown and changed over time</span>
+                            <h4 class="card-title mb-1">Direkte P-Automat status på kart</h4>
+                            <span class="mb-0">Se alle automatene som har fått klage eller ute av drift</span>
                         </div>
                     </div>
                     <div class="card-body">
@@ -266,7 +309,7 @@
                 <div class="card card-block card-stretch card-height">
                     <div class="card-header border-none">
                         <div class="header-title">
-                            <h4 class="card-title mb-1">Machines Statistic</h4>
+                            <h4 class="card-title mb-1">P-automat statistikk</h4>
                         </div>
                     </div>
                     <div class="card-body">
@@ -278,7 +321,7 @@
                 <div class="card card-block card-stretch card-height ">
                     <div class="card-header border-none">   
                         <div class="header-title">
-                            <h4 class="card-title">Current Issues</h4>
+                            <h4 class="card-title">Nåværende klage og status</h4>
                         </div>
                     </div>
                     <div class="card-body">
@@ -287,14 +330,15 @@
                                 <thead>
                                     <tr>
                                         <th>Dato</th>
-                                        <th>Seriell</th>
-                                        <th>Sone</th>
-                                        <th>Category</th>
-                                        <th>Problem</th>
-                                        <th>Importance</th>
+                                        <th>pub</th>
+                                        <th>Tasknr</th>
                                         <th>Rute</th>
+                                        <th>Kategori</th>
+                                        <th>Klage</th>
+                                        <th>Betydning</th>
+                                        <th>Hvor</th>
                                         <th>Status</th>
-                                        <th>Up Time</th>
+                                        <th>Siden?</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -310,6 +354,11 @@
                                             2: 'gold',
                                             3: 'green'
                                         }
+                                        let importanceLevelBGColorJumpTable = {
+                                            1: '#f2e7e7',
+                                            2: '#fef8ed',
+                                            3: '#e6f7f5'
+                                        }
                                     %>
                                         <% if (issues.length === 0) { %>
                                             <tr>
@@ -319,11 +368,15 @@
                                             <% issues.forEach(report => { %>
                                                 <tr>
                                                     <td><%= report.date %></td>
+                                                    <td><%= report.publisher %></td>
                                                     <td><%= report.serial %></td>
                                                     <td><%= report.zone %></td>
                                                     <td><%= report.category %></td>
                                                     <td><%= report.problem %></td>
-                                                    <td style="color: <%= importanceLevelColorJumpTable[report.importanceLevel] %>;"><%= importanceLevelJumpTable[report.importanceLevel] %></td>
+                                                    <td style="color: <%= importanceLevelColorJumpTable[report.importanceLevel] %>; font-size: 16px;">
+                                                    <div class="p-0" style="background-color: <%= importanceLevelBGColorJumpTable[report.importanceLevel] %>">
+                                                        <%= importanceLevelJumpTable[report.importanceLevel] %>
+                                                    </div></td>
                                                     <td><%= report.zoneLocation %></td>
                                                     <td><%= report.status %></td>
                                                     <td date="<%= report.date %>" class="live-time btn btn-sm btn-primary" style="font-size: 14px;">-</td>
@@ -361,7 +414,7 @@
                 <div class="card card-block card-stretch card-height rule-box averages-card">
                     <div class="card-header d-flex justify-content-between border-none">
                         <div class="header-title">
-                            <h4 class="card-title">Averages</h4>
+                            <h4 class="card-title">Gjennomsnitt</h4>
                         </div>
                     </div>
                     <div class="card-body">
@@ -369,7 +422,7 @@
                             <div class="average-item">
                                 <i class="fas fa-chart-line average-icon"></i>
                                 <div class="average-details">
-                                    <p class="average-title">Issue / Hour</p>
+                                    <p class="average-title">Klage / time</p>
                                     <h4 id="isha-holder" class="average-value btn btn-sm btn-primary">-</h4>
                                 </div>
                             </div>
@@ -377,7 +430,7 @@
                             <div class="average-item">
                                 <i class="fas fa-clock average-icon"></i>
                                 <div class="average-details">
-                                    <p class="average-title">Waiting / Hour</p>
+                                    <p class="average-title">Klage på vent / Hour</p>
                                     <h4 id="iswhg-holder" class="average-value btn btn-sm btn-primary">-</h4>
                                 </div>
                             </div>
@@ -385,7 +438,7 @@
                             <div class="average-item">
                                 <i class="fas fa-exchange-alt average-icon"></i>
                                 <div class="average-details">
-                                    <p class="average-title">Redirect / Hour</p>
+                                    <p class="average-title">Videresende klage / Hour</p>
                                     <h4 id="idha-holder" class="average-value btn btn-sm btn-primary">-</h4>
                                 </div>
                             </div>
@@ -394,7 +447,10 @@
                                 <i class="fas fa-comment average-icon"></i>
                                 <div class="average-details">
                                     <p class="average-title">SMS</p>
-                                    <h4 id="sms-holder" class="average-value btn btn-sm btn-primary">-</h4>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h4 id="sms-holder" class="average-value btn btn-sm btn-primary">-</h4>
+                                        <a href="/reports/sms" class="btn btn-sm btn-info">See All</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -406,7 +462,7 @@
                 <div class="card card-block card-stretch card-height">
                 <div class="card-header border-none">
                     <div class="header-title">
-                        <h4 class="card-title">Total Fix Average Time</h4>
+                        <h4 class="card-title">Total gjennomsnittstid for å løse klagen</h4>
                     </div>
                 </div>
                 <div class="card-body">
@@ -431,8 +487,8 @@
                 <div class="card card-block card-stretch card-height ">
                     <div class="card-header border-none">   
                         <div class="header-title d-flex justify-content-between">
-                            <h4 class="card-title">Recent Reports</h4>
-                            <a class="btn btn-primary" href="/reports">Show All</a>
+                            <h4 class="card-title">Nylige rapporter</h4>
+                            <a class="btn btn-primary" href="/reports">Vise Alle</a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -500,7 +556,7 @@
                     <div class="card-header border-none">
                         <div class="header-title ">
                             <h4 class="card-title">
-                                Solvers
+                                Løsere og tid brukt
                             </h4>
                         </div>
                     </div>
@@ -594,7 +650,7 @@
       plotBackgroundColor: null,
       plotBorderWidth: null,
       plotShadow: false,
-      height: 300,
+      height: 400,
       type: 'pie'
     },
     title: {
@@ -613,8 +669,7 @@
         allowPointSelect: true,
         cursor: 'pointer',
         dataLabels: {
-          enabled: true, // Set this to true to show data labels
-          format: '{point.name}: {point.percentage:.1f} %'
+          enabled: false, // Set this to true to show data labels
         },
         showInLegend: true
       }
@@ -639,7 +694,13 @@
           }
         ]
       }
-    ]
+    ],
+    legend: {
+      labelFormatter: function () {
+        // Display both the legend name and the real value
+        return this.name + ': ' + this.y;
+      }
+    }
   });
 } else {
   console.log('not found');
@@ -762,7 +823,8 @@ function updateChart(data) {
       {
         name: 'Total Average',
         data: data.map(item => item.value)
-      }
+      },
+      
     ],
     chart: {
       type: 'bar',
@@ -1158,12 +1220,15 @@ if (jQuery("#layout-3-chart-04").length) {
     // kmzLayer.setMap(map);
     var geocoder = new google.maps.Geocoder();
     var geoXml = new geoXML3.parser({
-                    map: map,
-                    zoom: false, 
-                 });
+        map: map,
+        zoom: false, 
+        singleInfoWindow: true, 
+        suppressDirections: true,
+    });
 
-    geoXml.parse("https://nordic.bilsjekk.in/kmz/norway_administrative_boundaries_province_polygon.kml");
+    geoXml.parse("http://localhost:9090/kmz/norway_administrative_boundaries_province_polygon.kml");
     google.maps.event.addListener(geoXml,'parsed', function() {
+        console.log(geoXml.docs);
       geocoder.geocode( { 'address': "Norway"}, function(results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
             console.log(results);
@@ -1249,11 +1314,16 @@ for (let i = 0; i < machines.length; i++) {
         iw.close()
     })
 
+    geoXml.docs[0].placemarks.map(pm => {
+        pm.polygon.infoWindow.close()
+    })
+
     infowindow.open(map, marker);
   });
 
   markers.push(marker);
 }
+
 
 // Use the MarkerClusterer to cluster nearby markers
 // const markerCluster = new MarkerClusterer(map, markers, {
@@ -1263,6 +1333,93 @@ for (let i = 0; i < machines.length; i++) {
 
 }
 google.maps.event.addDomListener(window, "load", initialize);
+
+
+am4core.ready(function() {
+
+// Themes begin
+am4core.useTheme(am4themes_animated);
+// Themes end
+
+// Create chart instance
+var chart = am4core.create("chartdiv", am4charts.XYChart);
+
+// Add data
+// chart.data = [
+//   {date:new Date(2019,5,12), value1:50, value2:48, previousDate:new Date(2019, 5, 5)},
+//   {date:new Date(2019,5,13), value1:53, value2:51, previousDate:new Date(2019, 5, 6)},
+//   {date:new Date(2019,5,14), value1:56, value2:58, previousDate:new Date(2019, 5, 7)},
+//   {date:new Date(2019,5,15), value1:52, value2:53, previousDate:new Date(2019, 5, 8)},
+//   {date:new Date(2019,5,16), value1:48, value2:44, previousDate:new Date(2019, 5, 9)},
+//   {date:new Date(2019,5,17), value1:47, value2:42, previousDate:new Date(2019, 5, 10)},
+//   {date:new Date(2019,5,18), value1:59, value2:55, previousDate:new Date(2019, 5, 11)}
+// ]
+
+chart.data = [
+    {
+        date: moment('2023-04').format('YYYY-MM'),
+        value1: 40,
+        value2: 30,
+        previousDate: moment('2023-03')
+    },
+
+    {
+        date: moment('2023-05').format('YYYY-MM'),
+        value1: 50,
+        value2: 68,
+        previousDate: moment('2023-03-01')
+    },
+
+    {
+        date: moment('2023-06').format('YYYY-MM'),
+        value1: 10,
+        value2: 12,
+        previousDate: moment('2023-03')
+    }
+]
+// Create axes
+var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+dateAxis.renderer.minGridDistance = 30;
+
+var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+
+// Create series
+var series = chart.series.push(new am4charts.LineSeries());
+series.dataFields.valueY = "value1";
+series.dataFields.dateX = "date";
+series.strokeWidth = 2;
+series.minBulletDistance = 10;
+series.tooltipText = "[bold]{date.formatDate()}:[/] {value1}\n[bold]{previousDate.formatDate()}:[/] {value2}";
+series.tooltip.pointerOrientation = "vertical";
+series.fillOpacity = 0.1; // Fill the area under the line
+series.stroke = am4core.color("lightblue"); // Set line color
+series.fill = am4core.color("lightgreen"); // Set the fill color
+
+series.name = 'Issues'
+
+
+// Create series
+var series2 = chart.series.push(new am4charts.LineSeries());
+series2.dataFields.valueY = "value2";
+series2.dataFields.dateX = "date";
+series2.strokeWidth = 2;
+series2.fillOpacity = 0.3; // Fill the area under the
+series2.stroke = am4core.color("red"); // Set line color for the second series
+series.fill = am4core.color("red"); // Set the fill color
+series2.name = 'Average'
+
+
+// Add cursor
+chart.cursor = new am4charts.XYCursor();
+chart.cursor.xAxis = dateAxis;
+
+chart.legend = new am4charts.Legend();
+
+chart.legend.useDefaultMarker = true; // Show markers in the legend
+
+
+}); // 
+
     </script>
 </body>
 

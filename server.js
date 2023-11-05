@@ -28,6 +28,12 @@ app.get('/login', (req,res) =>{
     return res.status(200).render('auth/login')
 })
 
+
+app.get('/rp', async (req, res) => {
+    return res.status(200).render('issues/create_issue')
+})
+
+
 const PDFArchieve = require('./models/PdfArchieve')
 
 app.get('/archieve',async (req,res) =>{
@@ -301,7 +307,6 @@ app.use(
     zonesFront,
     imeiFront
 )
-
 
 
 const Violation = require('./models/Violation');

@@ -35,28 +35,13 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-left">
                     <li class="breadcrumb-item"><a href="/">Hjem</a></li>
-                    <li class="breadcrumb-item active"><a href="/issues">Problemer</a></li>
-                    <li class="breadcrumb-item active">Kategori</li>
+                    <li class="breadcrumb-item active"><a href="/reports/dashboard">Dashboard</a></li>
+                    <li class="breadcrumb-item active">SMS</li>
                     </ol>
                 </div><!-- /.col -->
                 </div><!-- /.row -->
 
             </div><!-- /.container-fluid -->
-            </div>
-
-            <div class="d-flex justify-content-end align-items-center mb-2 container-fluid">
-                <a href="/machines/create" class="btn btn-info btn-sm mr-1">
-                    <i class="fa fa-plus"></i>
-                    <span>Legge</span>
-                </a>
-                <a href="/issues/categories/create" class="btn btn-warning btn-sm mr-1">
-                    <i class="fa fa-plus"></i>
-                    <span>Opprett kategori</span>
-                </a>
-                <button data-toggle="modal" data-target="#confirmAllDeleteModal" class="btn btn-danger btn-sm">
-                    <i class="fa fa-trash"></i>
-                    <span>Slett alle</span>
-                </button>
             </div>
 
             <div class="content">
@@ -65,7 +50,7 @@
                         <div class="card">
                             <div class="card-header">
                               <h3 class="card-title d-flex justify-content-between align-items-center">
-                                Maskindata
+                                SMS Data
                               </h3>
                             </div>
                             <!-- /.card-header -->
@@ -73,75 +58,32 @@
                               <table id="example1" class="table table-bordered table-striped text-center">
                                 <thead>
                                     <tr>
-                                        <th>Dato</th>
-                                        <th>Seriell</th>
-                                        <th>Sone</th>
-                                        <th>Category</th>
-                                        <th>Problem</th>
-                                        <th>Importance</th>
-                                        <th>Rute</th>
-                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Recievers</th>
+                                        <th>Total</th>
+                                        <th>About</th>
+                                        <th>Content</th>
+                                        <th>Sender</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                        <% 
-                                        let importanceLevelJumpTable = {
-                                            1: 'High',
-                                            2: 'Medium',
-                                            3: 'Low',
-                                        }    
-
-                                        let importanceLevelColorJumpTable = {
-                                            1: 'red',
-                                            2: 'gold',
-                                            3: 'green'
-                                        }
-                                        let importanceLevelBGColorJumpTable = {
-                                            1: '#f2e7e7',
-                                            2: '#fef8ed',
-                                            3: '#e6f7f5'
-                                        }
-                                    %>
-                                        <% if (issues.length === 0) { %>
+                                    
+                                        <% if (smss.length === 0) { %>
                                             <tr>
-                                                <td colspan="6">Ingen problemrapporter ennå</td>
+                                                <td colspan="6">No SMS yet</td>
                                             </tr>
                                         <% } else { %>
-                                            <% issues.forEach(report => { %>
+                                            <% smss.forEach(sms => { %>
                                                 <tr>
-                                                    <td><%= report.date %></td>
-                                                    <td><%= report.serial %></td>
-                                                    <td><%= report.zone %></td>
-                                                    <td><%= report.category %></td>
-                                                    <td><%= report.problem %></td>
-                                                    <td style="color: <%= importanceLevelColorJumpTable[report.importanceLevel] %>; font-size: 16px;">
-                                                    <div class="p-0" style="background-color: <%= importanceLevelBGColorJumpTable[report.importanceLevel] %>">
-                                                        <%= importanceLevelJumpTable[report.importanceLevel] %>
-                                                    </div></td>
-                                                    <td><%= report.zoneLocation %></td>
-                                                    <td><%= report.status %></td>
+                                                    <td><%= sms.delivery_date %></td>
+                                                    <td><%= sms.delivered_to.join(', ') %></td>
+                                                    <td><%= sms.total_received %></td>
+                                                    <td><%= sms.about %></td>
+                                                    <td><%= sms.content %></td>
+                                                    <td><%= sms.sender %></td>
                                                 
                                                 </tr>
-                            
-                                                <div class="modal fade" id="deleteReportModal<%= report._id %>" tabindex="-1" aria-labelledby="deleteReportModalLabel" aria-hidden="true">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title" id="deleteReportModalLabel">Slett rapportbekreftelse</h5>
-                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                    <span aria-hidden="true">&times;</span>
-                                                                </button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                Er du sikker på at du vil slette denne problemrapporten?
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
-                                                                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deleteReport('<%= report._id %>')" id="confirmDeleteBtn">Slett</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                        
                                             <% }); %>
                                         <% } %>
                                         </tbody>
@@ -164,26 +106,6 @@
     </div>
 </aside>
         <%- include('../components/footer') %>
-    </div>
-
-    <div class="modal fade" id="confirmAllDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmAllDeleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="confirmAllDeleteModalLabel">Delete all issue categories confirmation</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Do you want to delete all issue categories?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Avbryt</button>
-                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deleteAllIssueCategories()" id="confirmAllDeleteBtn">Slett</button>
-                </div>
-            </div>
-        </div>
     </div>
 
 

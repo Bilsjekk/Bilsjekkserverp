@@ -7,6 +7,7 @@ const Manager = require('../models/Manager')
 const Machine = require('../models/Machine')
 const Issue = require('../models/Issue')
 const moment = require('moment');
+let SMS = require('../models/SMS')
 
 router.get('/reports', async (req, res) => {
   try{
@@ -25,6 +26,23 @@ router.get('/reports', async (req, res) => {
     res.status(500).send(err.message);
   }
 });
+
+router.get('/reports/sms', async (req, res) => {
+  try {
+    let smss = await SMS.find()
+    let jwt_access_token = req.cookies.jwt_token
+    let decoded = jwt.verify(jwt_access_token,process.env.JWT_SECRET_KEY)
+    let manager = await Manager.findOne({ _id: decoded.id })
+
+    return res.status(200).render('reports/sms',{
+      smss: smss,
+      isAdmin: decoded.role === 'admin',
+      permissions: manager.permissions 
+    });
+  }catch(err){
+    return res.status(500).send(err.message)
+  }
+})
 
 router.get('/reports/dashboard', async (req, res) => {
   let machines = await Machine.find()
