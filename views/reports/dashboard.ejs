@@ -1216,7 +1216,7 @@ if (jQuery("#layout-3-chart-04").length) {
     
 
     // const {KmlLayer} = await google.maps.importLibrary("maps")
-    // KmlLayer.setUrl('http://localhost:9090/kmz/gadm41_NOR_2.kmz')
+    // KmlLayer.setUrl('https://nordic.bilsjekk.in/kmz/gadm41_NOR_2.kmz')
     // kmzLayer.setMap(map);
     var geocoder = new google.maps.Geocoder();
     var geoXml = new geoXML3.parser({
@@ -1226,7 +1226,7 @@ if (jQuery("#layout-3-chart-04").length) {
         suppressDirections: true,
     });
 
-    geoXml.parse("http://localhost:9090/kmz/norway_administrative_boundaries_province_polygon.kml");
+    geoXml.parse("https://nordic.bilsjekk.in/kmz/norway_administrative_boundaries_province_polygon.kml");
     google.maps.event.addListener(geoXml,'parsed', function() {
         console.log(geoXml.docs);
       geocoder.geocode( { 'address': "Norway"}, function(results, status) {
